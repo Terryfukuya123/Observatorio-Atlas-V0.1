@@ -244,6 +244,32 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="prepos" data-desk="mercados" class="card liveCard ppCard" aria-labelledby="ppTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="calendar"></i>
+            <h2 id="ppTitle">Pré e pós-mercado</h2>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Momento do dia">
+            <button data-pp="auto" aria-pressed="true">Agora</button>
+            <button data-pp="pre" aria-pressed="false">Antes da abertura</button>
+            <button data-pp="post" aria-pressed="false">Depois do fechamento</button>
+          </div>
+        </div>
+        <p class="ppMode"></p>
+        <div class="ppBody">
+          <div id="ppHost" class="liveHost ppHost" role="region" aria-label="Cotações">
+            <div class="liveState"><strong>Role até aqui para carregar as cotações</strong></div>
+          </div>
+          <aside class="ppSide" aria-live="polite"></aside>
+        </div>
+        <p class="sourceNote">
+          Cotações por widget público do TradingView (contratos e ADRs negociam fora do horário
+          da B3; uso provisório, pendente de acordo comercial). O roteiro ao lado usa dados da
+          plataforma: BCB, Tesouro dos EUA, BCE, OCDE e a agenda conferida. Volume e origem do
+          pregão vêm da planilha <i>Dados de Mercado</i> da B3, importada manualmente.
+        </p>
+      </section>
       <section id="indices" data-desk="mercados" class="card liveCard" aria-labelledby="indicesTitle">
         <div class="cardhead">
           <div class="headtitle">

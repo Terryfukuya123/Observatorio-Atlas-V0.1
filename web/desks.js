@@ -24,8 +24,9 @@ export const DESKS = {
   mercados: {
     title: "Mercados",
     icon: "grid",
-    lead: "Como estão as bolsas, os setores e as moedas agora.",
+    lead: "Como o mundo chega ao pregão, como ele fecha e como estão bolsas, setores e moedas.",
     parts: [
+      ["prepos", "Pré e pós-mercado"],
       ["indices", "Índices mundiais"],
       ["aovivo", "Mapas de calor"],
       ["moedas", "Força das moedas"],

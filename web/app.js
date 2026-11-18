@@ -13,6 +13,7 @@ import { glossary } from "./glossary.js";
 import { agenda } from "./agenda.js";
 import { dossier } from "./dossier.js";
 import { riskMeter } from "./risk.js";
+import { prePost } from "./prepos.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
@@ -104,6 +105,7 @@ pulse({ root: $("#pulse") });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
 riskMeter({ root: $("#termometro") });
+prePost({ root: $("#prepos"), read, save });
 dossier({
   info,
   read,

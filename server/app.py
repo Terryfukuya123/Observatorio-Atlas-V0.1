@@ -11,6 +11,7 @@ from server.service import Feed
 from server.editions import MonthlyEdition
 from server.macro import MacroStore
 from server.funds import FundFlows
+from server.b3 import B3Store
 from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
 
@@ -82,6 +83,9 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/fundos":
             body = json.dumps(self.server.funds.read(), ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
+        elif path == "/api/b3":
+            body = json.dumps(self.server.b3.read(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
         elif path == "/api/fluxo":
             self.server.macro.refresh_if_due()
             body = json.dumps(self.server.macro.flows(), ensure_ascii=False, allow_nan=False).encode()
@@ -92,7 +96,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/funds.js", "/desks.js", "/pulse.js", "/symbols.js", "/clock.js", "/fx-board.js", "/compass.js", "/cycle-clock.js", "/finder.js", "/panel-store.js", "/glossary.js", "/agenda.js", "/dossier.js", "/risk.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/funds.js", "/desks.js", "/pulse.js", "/symbols.js", "/clock.js", "/fx-board.js", "/compass.js", "/cycle-clock.js", "/finder.js", "/panel-store.js", "/glossary.js", "/agenda.js", "/dossier.js", "/risk.js", "/prepos.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)
@@ -136,6 +140,7 @@ def main():
         server.editions = MonthlyEdition(ROOT, server.feed)
         server.macro = MacroStore(ROOT)
         server.funds = FundFlows(ROOT)
+        server.b3 = B3Store(ROOT)
         print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
         try:
             server.serve_forever()

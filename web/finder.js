@@ -8,6 +8,7 @@ export const DESTINATIONS = [
   ["#semana", "Próximos eventos", "Panorama", "Eventos de peso das próximas duas semanas", "agenda semana eventos divulgacao hoje amanha calendario"],
   ["#relogio", "Relógio dos pregões", "Panorama", "Quais bolsas estão abertas agora", "bolsas abertas pregao horario abertura fechamento sessao asia europa"],
   ["#atlas", "Mapa e ficha do país", "Panorama", "Indicadores e câmbio por país no mapa", "mapa pais paises pib per capita inflacao crescimento heatmap mensal ativos"],
+  ["#prepos", "Pré e pós-mercado", "Mercados", "Futuros dos EUA, Brasil em NY, agenda do dia e fechamento do pregão", "pre mercado pos mercado abertura fechamento futuros ewz adr petrobras vale premarket after hours pregao volume b3 roteiro"],
   ["#indices", "Índices mundiais", "Mercados", "Bolsas do mundo no dia", "indices bolsa acoes ibovespa sp500 s&p dow jones nasdaq nikkei dax ftse cac hang seng"],
   ["#aovivo", "Mapas de calor ao vivo", "Mercados", "Ações e cripto por setor e tamanho", "heatmap mapa de calor acoes setores cripto bitcoin ethereum ibovespa sp500"],
   ["#moedas", "Força das moedas", "Mercados", "Ranking e matriz cruzada de 10 moedas", "cambio moedas forex real dolar euro iene libra yuan rupia ranking matriz cruzada"],
