@@ -78,6 +78,21 @@
         <p class="pulseHeadline" aria-live="polite"></p>
         <div class="pulseGrid"><p class="empty">Carregando indicadores…</p></div>
       </section>
+      <section id="semana" class="card agCard" data-desk="panorama" aria-labelledby="weekTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="calendar"></i>
+            <h2 id="weekTitle">Próximos eventos</h2>
+          </div>
+          <span class="agSummary unit-label"></span>
+        </div>
+        <div class="agList"></div>
+        <p class="sourceNote">
+          Eventos de peso das próximas duas semanas, no horário deste dispositivo. Toque num evento
+          para ver o número anterior, o que o mercado espera e o que muda se vier acima ou
+          abaixo. <a href="#agenda">Agenda completa →</a>
+        </p>
+      </section>
       <section id="relogio" class="card clockCard" data-desk="panorama" aria-labelledby="clockTitle">
         <div class="cardhead">
           <div class="headtitle">
@@ -547,6 +562,29 @@
             <div id="cliList"><p class="empty">Carregando ciclo…</p></div>
           </section>
         </div>
+      </section>
+      <section id="agenda" class="card agCard" data-desk="global" aria-labelledby="agendaTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="calendar"></i>
+            <h2 id="agendaTitle">Agenda com impacto</h2>
+          </div>
+          <div class="agFilters" role="group" aria-label="Filtrar eventos">
+            <button type="button" data-ag-filter="all">Todos</button>
+            <button type="button" data-ag-filter="big">Só os grandes</button>
+            <button type="button" data-ag-filter="BRA">Brasil</button>
+            <button type="button" data-ag-filter="USA">EUA</button>
+            <button type="button" data-ag-filter="EMU">Zona do euro</button>
+          </div>
+        </div>
+        <div class="agList"></div>
+        <p class="sourceNote">
+          Datas conferidas em 18/11/2026 nos calendários oficiais (IBGE, BLS, Banco Central,
+          Federal Reserve e BCE), no horário deste dispositivo. "Esperado" aparece quando há
+          base nos dados da plataforma: a inflação mensal implícita no Focus e a Selic do
+          Focus para o fim do ano. As leituras de "acima" e "abaixo" são a reação típica do
+          mercado, não uma previsão.
+        </p>
       </section>
       <section id="bulletin" data-desk="global" aria-labelledby="bulletinTitle">
         <div class="sectionTitle">

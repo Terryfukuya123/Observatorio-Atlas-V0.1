@@ -4,6 +4,7 @@
 
 export const DESTINATIONS = [
   ["#pulse", "Pulso do dia", "Panorama", "Os números do dia com leitura em uma frase", "resumo hoje manchete destaques dolar selic ipca reservas"],
+  ["#semana", "Próximos eventos", "Panorama", "Eventos de peso das próximas duas semanas", "agenda semana eventos divulgacao hoje amanha calendario"],
   ["#relogio", "Relógio dos pregões", "Panorama", "Quais bolsas estão abertas agora", "bolsas abertas pregao horario abertura fechamento sessao asia europa"],
   ["#atlas", "Mapa e ficha do país", "Panorama", "Indicadores e câmbio por país no mapa", "mapa pais paises pib per capita inflacao crescimento heatmap mensal ativos"],
   ["#indices", "Índices mundiais", "Mercados", "Bolsas do mundo no dia", "indices bolsa acoes ibovespa sp500 s&p dow jones nasdaq nikkei dax ftse cac hang seng"],
@@ -19,6 +20,7 @@ export const DESTINATIONS = [
   ["#ciclo", "Relógio do ciclo econômico", "Global", "Fase do ciclo de cada economia do G20", "ciclo economico ocde cli expansao desaceleracao contracao recuperacao g20 paises"],
   ["#juros", "Curva de juros dos EUA", "Global", "Treasuries de 1 mês a 30 anos", "curva juros eua estados unidos treasury tesouro fed 10 anos"],
   ["#recessionSignal", "Sinal de recessão", "Global", "Diferença entre os juros de 10 e 2 anos dos EUA", "recessao inversao curva invertida spread 10a 2a"],
+  ["#agenda", "Agenda com impacto", "Global", "Copom, FOMC, IPCA, payroll: o que muda se vier acima ou abaixo", "agenda calendario eventos copom fomc bce ipca ipca-15 payroll cpi pib pnad focus divulgacao expectativa impacto"],
   ["#bulletin", "Notícias e agenda", "Global", "Comunicados oficiais e calendário", "noticias calendario agenda copom fomc bce reuniao comunicados"],
   ["meta", "Fontes e metodologia", "Plataforma", "De onde vem cada dado e como é calculado", "fontes metodologia licenca dados origem"],
 ];
