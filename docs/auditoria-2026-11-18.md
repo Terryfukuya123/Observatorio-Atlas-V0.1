@@ -34,3 +34,13 @@ A bateria Python cobre os provedores e o servidor, inclusive negócios com posi�
 
 
 Resultado em 18/11/2026: **92 testes Python aprovados**. Os dois roteiros passaram no Chrome em 1440 px e 390 px de largura. O teste de fumaça percorreu Panorama, Mercados, Brasil e Global, exibiu 73 coletas em Saúde e 13 fontes na página Sobre.
+
+## Continuação na instância 8842
+
+O relógio e o roteiro de pregão passaram a usar a mesma grade de ações para B3 e Nova York em 2026. A grade inclui feriados, a abertura da Quarta-feira de Cinzas e os fechamentos antecipados da NYSE. Na B3 o fechamento considera o call final. Outras praças e anos usam horários semanais estimados. [B3 · feriados](https://www.b3.com.br/pt_br/noticias/calendario-de-negociacao-da-b3-confira-o-funcionamento-da-bolsa-em-2026.htm) · [B3 · março](https://www.b3.com.br/pt_br/noticias/operacoes-8AA8D0CD9C709633019CC38376552862.htm) · [B3 · novembro](https://b3.com.br/pt_br/noticias/b3-ajusta-horarios-de-negociacao-de-acoes-e-derivativos-acompanhando-fim-do-horario-de-verao-nos-eua.htm) · [NYSE](https://www.nyse.com/markets/hours-calendars).
+
+No mapa mensal, **Copiar análise** gera um endereço local com mercado, setor, ativo, métrica, moeda, competência e identificação da edição. O servidor guarda em `data/cache/editions` uma cópia das edições consultadas. O link exige acesso à mesma instância ou a uma instalação com a mesma edição arquivada.
+
+O perfil local mantém os widgets de demonstração. Para uma apresentação local com as duas fontes restritas, encerre o servidor com `.\scripts\stop.ps1` e inicie com `.\scripts\start.ps1 -Perfil profissional`. Nesse perfil, o servidor substitui a leitura do relatório B3 por um estado de restrição e o navegador bloqueia os widgets externos. A autorização comercial continua pendente. Antes de distribuir, obter confirmação por escrito sobre público, atraso, atribuição e redistribuição de cada produto. [TradingView · termos](https://www.tradingview.com/policies/) · [B3 · termos](https://www.b3.com.br/pt_br/termos-de-uso-e-protecao-de-dados/termos-de-uso/).
+
+Verificação na porta 8842 em 18/11/2026. Passaram 95 testes Python, os testes de calendário e os dois roteiros de interface no Chrome. Uma sessão nova reproduziu ITUB4, Financeiro, volume e EUR pela revisão arquivada. Uma competência ausente exibiu o estado de indisponibilidade. Em uma instância temporária com o perfil profissional, o Chrome abriu o mapa nativo da CVM, exibiu a restrição do widget e registrou zero requisições ao TradingView. A API do relatório B3 retornou apenas o estado de restrição e seus metadados.

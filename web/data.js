@@ -14,7 +14,7 @@ export function cachedFetch(url) {
         return { ok: false, status: r.status, json: () => Promise.reject(Error("HTTP " + r.status)) };
       }
       const text = await r.text();
-      return { ok: true, status: r.status, json: () => Promise.resolve(JSON.parse(text)) };
+      return { ok: true, status: r.status, revision: r.headers.get("X-Edition-Revision"), json: () => Promise.resolve(JSON.parse(text)) };
     })
     .catch((error) => {
       store.delete(url);

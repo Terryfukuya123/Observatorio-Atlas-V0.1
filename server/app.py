@@ -14,7 +14,7 @@ from server.service import Feed
 from server.editions import MonthlyEdition
 from server.macro import MacroStore
 from server.funds import FundFlows
-from server.b3 import B3Store
+from server.b3 import B3Store, RestrictedB3
 from server.news import NewsStore
 from server.health import health
 from core.fx import compare_rates, in_base, usd_cross
@@ -125,9 +125,16 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(self.server.macro.flows(), ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
         elif path == "/api/heatmaps":
-            body = self.server.editions.read()
+            query = parse_qs(urlsplit(self.path).query, keep_blank_values=True)
+            months = query.get("competencia", [])
+            revisions = query.get("rev", [])
+            if ((months and (len(months) != 1 or not re.fullmatch(r"[0-9]{4}-(?:0[1-9]|1[0-2])", months[0])))
+                    or (revisions and (not months or len(revisions) != 1 or not re.fullmatch(r"[a-f0-9]{64}", revisions[0])))):
+                self.send_error(400, "Edicao invalida")
+                return
+            body = self.server.editions.read(months[0], revisions[0] if revisions else None) if months else self.server.editions.read()
             if body is None:
-                self.send_error(503, "Edicao mensal indisponivel")
+                self.send_error(404 if months else 503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
         elif path == "/" or is_static(path):
@@ -140,6 +147,11 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self.send_error(404)
             return
+        professional = getattr(self.server, "profile", "local") == "profissional"
+        if professional and path in {"/", "/index.html"}:
+            body = body.replace(b'<html lang="pt-BR"', b'<html data-profile="profissional" lang="pt-BR"')
+            etag = '"' + hashlib.sha1(body).hexdigest()[:20] + '"'
+            packed = None
         if path.startswith("/api/"):
             etag = '"' + hashlib.sha1(body).hexdigest()[:20] + '"'
             packed = None
@@ -149,12 +161,15 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Cache-Control", "no-cache")
             self.end_headers()
             return
+        revision = hashlib.sha256(body).hexdigest() if path == "/api/heatmaps" else None
         if "gzip" in self.headers.get("Accept-Encoding", "") and len(body) > 1024 and mime.startswith(COMPRESSIBLE):
             body = packed or gzip.compress(body, 5)
             encoded = True
         else:
             encoded = False
         self.send_response(200)
+        if revision:
+            self.send_header("X-Edition-Revision", revision)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-cache")
@@ -164,8 +179,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Encoding", "gzip")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'sha256-JyHF32z4Ou/Ujas95CX3WgBqlTt7Dxzo/fQG5/5oBo8='; script-src 'self' https://s3.tradingview.com; "
-                         "frame-src https://www.tradingview-widget.com https://s.tradingview.com; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+        widget_policy = "script-src 'self'; frame-src 'none'; " if professional else (
+            "script-src 'self' https://s3.tradingview.com; frame-src https://www.tradingview-widget.com https://s.tradingview.com; ")
+        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'sha256-JyHF32z4Ou/Ujas95CX3WgBqlTt7Dxzo/fQG5/5oBo8='; " + widget_policy +
+                         "object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
         self.end_headers()
         try:
             self.wfile.write(body)
@@ -174,6 +191,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 class Server(ThreadingHTTPServer):
+    profile = "local"
     request_queue_size = 64  # Módulos e painéis abrem conexões em paralelo na primeira visita.
     # No Windows, SO_REUSEADDR permite que um segundo processo escute na mesma porta e
     # receba parte das requisições. Sem ele, a segunda instância falha ao iniciar.
@@ -183,6 +201,7 @@ class Server(ThreadingHTTPServer):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8842)
+    parser.add_argument("--perfil", choices=("local", "profissional"), default="local")
     args = parser.parse_args()
     try:
         server = Server(("127.0.0.1", args.port), Handler)
@@ -193,7 +212,8 @@ def main():
         server.editions = MonthlyEdition(ROOT, server.feed)
         server.macro = MacroStore(ROOT)
         server.funds = FundFlows(ROOT)
-        server.b3 = B3Store(ROOT)
+        server.profile = args.perfil
+        server.b3 = RestrictedB3() if args.perfil == "profissional" else B3Store(ROOT)
         server.news = NewsStore(ROOT)
         print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
         try:

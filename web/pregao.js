@@ -1,3 +1,5 @@
+import { sessionDay } from "./session-calendar.js";
+import { MARKETS } from "./indices.js";
 // Pregão da B3: quanto se negociou, quem negociou e para onde foi o dinheiro estrangeiro.
 // Fonte: relatório "Dados de Mercado" da B3, baixado à mão e salvo em data/b3/ (a B3 veda
 // coleta automática). O relatório é acumulado no mês: volume até D-1 e investidores até
@@ -64,10 +66,10 @@ const range = (x) => (x.from && x.to ? (sessions(x.from, x.to) > 1 ? shortDay(ne
 const next = (iso) => {
   const t = new Date(iso + "T12:00:00Z");
   do t.setUTCDate(t.getUTCDate() + 1);
-  while (t.getUTCDay() === 0 || t.getUTCDay() === 6);
+  while (!sessionDay(MARKETS.b3, t.toISOString().slice(0, 10)).trades);
   return t.toISOString().slice(0, 10);
 };
-// Dias úteis entre dois retratos (sem feriados): diz se a diferença cobre mais de um pregão.
+// Sessões da B3 entre dois retratos: diz se a diferença cobre mais de um pregão.
 export function sessions(from, to) {
   let n = 0;
   for (let d = next(from); d <= to; d = next(d)) n++;
@@ -244,6 +246,10 @@ export function pregao({ root }) {
   cachedFetch("/api/b3")
     .then((r) => (r.ok ? r.json() : null))
     .then((b3) => {
+      if (b3?.restricted) {
+        root.querySelector("#pgKpis").textContent = b3.status;
+        return;
+      }
       if (!b3?.data) {
         root.querySelector("#pgKpis").innerHTML =
           '<div class="ppPending"><b>' + esc(b3?.status || "Aguardando importação") + '</b><p>Baixe o relatório <i>Dados de Mercado</i> no site da B3 e salve o arquivo na pasta <code>data/b3</code> do Observatório. A B3 não permite coleta automática.</p></div>';

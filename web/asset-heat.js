@@ -30,7 +30,19 @@ function fact(list, label, value) {
 }
 
 export function assetHeat({ $, fmt, timestamp, render }) {
+  const params = new URLSearchParams(location.search);
+  const linkedGroup = params.get("heatmap");
+  let initial = ["br", "us", "crypto"].includes(linkedGroup) ? {
+    group: linkedGroup, sector: params.get("setor"), mode: params.get("metrica"), asset: params.get("ativo"),
+  } : null;
+  const month = initial ? params.get("competencia") : null;
+  const revision = month ? params.get("rev") : null;
+  const query = new URLSearchParams();
+  if (month) query.set("competencia", month);
+  if (revision) query.set("rev", revision);
+  const endpoint = "/api/heatmaps" + (query.size ? "?" + query : "");
   const selected = {};
+  let editionRevision;
   let edition,
     pending,
     failed = false,
@@ -39,11 +51,12 @@ export function assetHeat({ $, fmt, timestamp, render }) {
   const marketMap = sectorMap(tiles);
   async function load() {
     try {
-      const response = await cachedFetch("/api/heatmaps");
+      const response = await cachedFetch(endpoint);
       if (!response.ok) throw Error();
       const data = await response.json();
       if (!data.groups || !data.fx?.length) throw Error();
       edition = data;
+      editionRevision = response.revision;
       failed = false;
       loadedAt = Date.now();
     } catch {
@@ -65,14 +78,14 @@ export function assetHeat({ $, fmt, timestamp, render }) {
 
     panel.replaceChildren();
     foot.replaceChildren();
-    if (!pending && !failed && (!edition || Date.now() - loadedAt > 300000)) {
+    if (!pending && !failed && (!edition || (!month && Date.now() - loadedAt > 300000))) {
       pending = true;
       load();
     }
     if (!edition) {
       tiles.replaceChildren();
       $("#heatDate").textContent = failed
-        ? "Edição mensal indisponível"
+        ? (month ? "Edição solicitada indisponível · " + month : "Edição mensal indisponível")
         : "Carregando edição mensal…";
       if (failed) {
         const retry = el("button", "Tentar novamente", "contextlink");
@@ -81,6 +94,11 @@ export function assetHeat({ $, fmt, timestamp, render }) {
           render();
         };
         tiles.append(retry);
+        if (month) {
+          const latest = el("a", "Abrir edição mais recente", "contextlink");
+          latest.href = "?heatmap=" + group + "#atlas";
+          tiles.append(latest);
+        }
       }
       return;
     }
@@ -89,22 +107,57 @@ export function assetHeat({ $, fmt, timestamp, render }) {
         (b.quotes[base]?.percent ?? -Infinity) -
         (a.quotes[base]?.percent ?? -Infinity),
     );
+    const restore = initial?.group === group ? initial : null;
+    const basket = restore?.sector && items.some(a => a.sector === restore.sector)
+      ? items.filter(a => a.sector === restore.sector) : items;
     const item =
-      items.find((a) => a.symbol === selected[group]) ||
-      items.find((a) => a.funds) ||
+      basket.find(a => a.symbol === (restore?.asset || selected[group])) ||
+      basket.find(a => a.funds) ||
+      basket[0] ||
       items[0];
-    const month = new Intl.DateTimeFormat("pt-BR", {
+    const monthLabel = new Intl.DateTimeFormat("pt-BR", {
       month: "long",
       year: "numeric",
       timeZone: "UTC",
     }).format(new Date(edition.to + "T00:00:00Z"));
-    $("#heatDate").textContent = month + " · " + base;
+    $("#heatDate").textContent = monthLabel + " · " + base;
     const eligible = items.filter((a) => a.quotes[base]);
     const count = eligible.filter((a) => a.quotes[base].percent > 0).length;
-    marketMap({group, base, items: edition.groups[group], selected: item?.symbol, choose(symbol) {
+    const selection = marketMap({group, base, initial: restore, items: edition.groups[group], selected: item?.symbol, choose(symbol) {
       selected[group] = symbol;
       draw(group, base);
     }});
+    initial = null;
+    if (item) selected[group] = item.symbol;
+    if (restore && ((restore.asset && restore.asset !== item?.symbol) ||
+        (restore.sector && restore.sector !== selection().sector) ||
+        (restore.mode && restore.mode !== selection().mode))) {
+      foot.append(el("span", "Parte da seleção compartilhada está indisponível nesta edição."));
+    }
+    const copy = el("button", "Copiar análise", "contextlink");
+    copy.type = "button";
+    const receipt = el("span");
+    receipt.setAttribute("role", "status");
+    copy.onclick = async () => {
+      const view = selection();
+      const url = new URL("/", location.origin);
+      const fields = {heatmap: group, base, competencia: edition.to.slice(0,7),
+        rev: editionRevision, metrica: view.mode, setor: view.sector, ativo: item?.symbol};
+      for (const [key, value] of Object.entries(fields)) if (value) url.searchParams.set(key, value);
+      url.hash = "atlas";
+      try {
+        await navigator.clipboard.writeText(url.href);
+        receipt.textContent = "Link copiado";
+      } catch {
+        const input = el("input");
+        input.readOnly = true;
+        input.setAttribute("aria-label", "Link da análise");
+        input.value = url.href;
+        receipt.replaceChildren(input);
+        input.select();
+      }
+    };
+    foot.append(copy, receipt);
     foot.append(
       el(
         "span",
@@ -189,7 +242,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
           timestamp(edition.generated) +
           ".",
       ),
-      link("Dados da edição", "/api/heatmaps"),
+      link("Dados da edição", endpoint),
       document.createTextNode(" · "),
       link("Licença ODbL 1.0", edition.license),
     );

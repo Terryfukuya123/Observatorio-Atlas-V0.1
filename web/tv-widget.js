@@ -36,6 +36,11 @@ function message(host, title, detail, retry) {
 // Monta (ou remonta) um widget em `host`. `kind` é o nome do widget, como "stock-heatmap".
 export function tvWidget(host, { kind, config, title, onFail }) {
   runs.get(host)?.abort();
+  if (document.documentElement.dataset.profile === "profissional") {
+    host.dataset.status = "restricted";
+    message(host, "Widget indisponível neste perfil", "A exibição profissional depende de acordo com o TradingView.");
+    return;
+  }
   const run = new AbortController();
   runs.set(host, run);
   const current = () => !run.signal.aborted;

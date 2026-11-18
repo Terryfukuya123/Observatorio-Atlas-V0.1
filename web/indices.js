@@ -1,3 +1,4 @@
+import { instantAt, localClock, sessionDay } from "./session-calendar.js";
 // Bolsas do mundo: horário regular de cada pregão, estado agora (aberto, intervalo,
 // fechado) e os índices de cada região, usados pelo bloco "Bolsas agora" (prepos.js).
 
@@ -68,44 +69,31 @@ export const REGIONS = {
 };
 
 const minutes = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3));
-const DAYS = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-const zoned = new Map();
-function clock(tz, now) {
-  if (!zoned.has(tz))
-    zoned.set(
-      tz,
-      new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
-    );
-  const parts = Object.fromEntries(zoned.get(tz).formatToParts(now).map((p) => [p.type, p.value]));
-  return { day: DAYS[parts.weekday], now: Number(parts.hour) * 60 + Number(parts.minute), text: parts.hour + ":" + parts.minute };
-}
 const span = (mins) => {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return h ? h + "h" + (m ? String(m).padStart(2, "0") : "") : m + " min";
 };
 
-// Estado de um pregão em `now`. Feriados não são considerados.
 export function session(market, now = new Date()) {
-  const c = clock(market.tz, now);
-  const open = minutes(market.open);
-  const close = minutes(market.close);
-  const weekday = c.day >= 1 && c.day <= 5;
-  if (weekday && c.now >= open && c.now < close) {
-    if (market.lunch) {
-      const [a, b] = market.lunch.map(minutes);
-      if (c.now >= a && c.now < b) return { state: "lunch", local: c.text, wait: b - c.now };
-    }
-    return { state: "open", local: c.text, wait: close - c.now };
+  const c = localClock(market.tz, now);
+  const today = sessionDay(market, c.date);
+  const info = { local: c.time, covered: today.covered, holiday: today.holiday };
+  if (today.trades && c.time >= today.open && c.time < today.close) {
+    if (market.lunch && c.time >= market.lunch[0] && c.time < market.lunch[1])
+      return { ...info, state: "lunch", wait: minutes(market.lunch[1]) - minutes(c.time) };
+    return { ...info, state: "open", wait: minutes(today.close) - minutes(c.time) };
   }
-  // Próxima abertura: hoje (se ainda não abriu) ou no próximo dia útil.
-  for (let d = 0; d < 8; d++) {
-    const day = (c.day + d) % 7;
-    if (day === 0 || day === 6) continue;
-    const wait = d * 1440 + open - c.now;
-    if (wait > 0) return { state: "closed", local: c.text, wait, opensAt: new Date(now.getTime() + wait * 60000) };
+  const midnight = Date.parse(c.date + "T00:00:00Z");
+  for (let d = 0; d < 12; d++) {
+    const date = new Date(midnight + d * 86400000).toISOString().slice(0, 10);
+    const day = sessionDay(market, date);
+    if (today.covered && !day.covered) break;
+    if (!day.trades || (!d && c.time >= day.open)) continue;
+    const opensAt = new Date(instantAt(date, day.open, market.tz));
+    return { ...info, state: "closed", opensAt, nextCovered: day.covered, wait: Math.ceil((opensAt - now) / 60000) };
   }
-  return { state: "closed", local: c.text, wait: 0 };
+  return { ...info, state: "closed", wait: null };
 }
 
 const here = new Intl.DateTimeFormat("pt-BR", { weekday: "short", hour: "2-digit", minute: "2-digit" });
@@ -113,7 +101,8 @@ const hereTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-
 export function describe(s, now) {
   if (s.state === "open") return ["Aberto", "fecha em " + span(s.wait)];
   if (s.state === "lunch") return ["Intervalo", "reabre em " + span(s.wait)];
+  if (!s.opensAt) return ["Fechado", (s.holiday ? s.holiday + " · " : "") + "próxima sessão a confirmar"];
   const sameDay = s.opensAt && s.opensAt.toDateString() === now.toDateString();
   const when = s.opensAt ? (sameDay ? "hoje " + hereTime.format(s.opensAt) : here.format(s.opensAt).replace(".", "")) : "";
-  return ["Fechado", s.wait < 180 ? "abre em " + span(s.wait) : "abre " + when];
+  return ["Fechado", (s.holiday ? s.holiday + " · " : "") + (s.nextCovered ? "abre " : "abertura prevista ") + when];
 }

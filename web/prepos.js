@@ -85,7 +85,7 @@ function world(now) {
       .map(([name, ids]) => {
         const list = ids.map((id) => [MARKETS[id], session(MARKETS[id], now)]);
         const open = list.filter(([, s]) => s.state !== "closed");
-        const next = list.filter(([, s]) => s.state === "closed").sort((a, b) => a[1].wait - b[1].wait)[0];
+        const next = list.filter(([, s]) => s.state === "closed" && s.wait != null).sort((a, b) => a[1].wait - b[1].wait)[0];
         const state = open.length ? "open" : "closed";
         const text = open.length
           ? open.length === list.length ? "abertos" : open.length + " de " + list.length + " abertos"
@@ -141,6 +141,7 @@ function flowDay(flows) {
 
 // Pregão da B3: volume e origem, a partir da planilha importada.
 function b3Block(b3) {
+  if (b3?.restricted) return '<p class="ppMuted">' + esc(b3.status) + '</p>';
   const d = b3?.data;
   if (!d) {
     return (

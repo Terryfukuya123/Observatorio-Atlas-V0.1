@@ -118,6 +118,21 @@ class Editions(TestCase):
                 self.assertEqual(publish.call_count, 1)
             self.assertIsNotNone(MonthlyEdition(Path(folder), None).next_check)
 
+    def test_shared_revision_survives_month_rollover_and_corrections(self):
+        from hashlib import sha256
+        with TemporaryDirectory() as folder:
+            service = MonthlyEdition(Path(folder), None)
+            service.seed.parent.mkdir(parents=True)
+            original = json.dumps({"to":"2026-10-31","groups":{"br":[1]},"fx":[1]}).encode()
+            service.seed.write_bytes(original)
+            self.assertEqual(service.read("2026-10"), original)
+            revision = sha256(original).hexdigest()
+            for month in ["2026-10-31", "2026-11-30"]:
+                service.seed.write_text(json.dumps({"to":month,"groups":{"br":[2]},"fx":[1]}))
+                self.assertEqual(service.read("2026-10", revision), original)
+            self.assertIsNone(service.read("2026-09", revision))
+            self.assertIsNone(service.read("2026-10", "a" * 64))
+
     def test_corrupt_runtime_file_falls_back_to_seed(self):
         with TemporaryDirectory() as folder:
             service = MonthlyEdition(Path(folder), None)

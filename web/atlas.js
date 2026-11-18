@@ -52,9 +52,16 @@ export function atlas({ read, save, compare, spaces }) {
   if (["fx", "br", "us", "crypto"].includes(requestedHeat)) {
     state.layer = "heat";
     state.group = requestedHeat;
+    if (new URLSearchParams(location.search).get("base") === "EUR") {
+      state.base = "EUR";
+      $("#fxBase").value = "EUR";
+    }
   }
   function syncHeatLink() {
     const url = new URL(location.href);
+    if (state.layer !== "heat" || url.searchParams.get("heatmap") !== state.group) {
+      for (const field of ["setor", "metrica", "ativo", "base", "competencia", "rev"]) url.searchParams.delete(field);
+    }
     if (state.layer === "heat") url.searchParams.set("heatmap", state.group);
     else url.searchParams.delete("heatmap");
     if (url.href !== location.href) history.replaceState(null, "", url);

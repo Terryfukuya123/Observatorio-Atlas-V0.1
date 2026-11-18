@@ -68,18 +68,43 @@ class MonthlyEdition:
         except (OSError, ValueError, KeyError, TypeError):
             pass
 
-    def read(self):
+    def remember(self, body, month):
+        archive = self.directory / "editions"
+        archive.mkdir(parents=True, exist_ok=True)
+        revision = hashlib.sha256(body).hexdigest()
+        target = archive / f"{month}_{revision}.json"
+        if not target.exists():
+            with tempfile.NamedTemporaryFile(dir=archive, delete=False) as tmp:
+                tmp.write(body)
+            os.replace(tmp.name, target)
+
+    def read(self, month=None, revision=None):
         body, observed, weighted = None, "", False
-        for file in (self.directory / "heatmaps.json", self.seed):
+        files = [self.directory / "heatmaps.json", self.seed]
+        if month:
+            archive = self.directory / "editions"
+            if revision:
+                files.insert(0, archive / f"{month}_{revision}.json")
+            else:
+                files.extend(sorted(archive.glob(f"{month}_*.json")))
+        for file in files:
             try:
                 candidate = file.read_bytes()
                 parsed = json.loads(candidate)
                 day = date.fromisoformat(parsed["to"]).isoformat()
+                if month and not day.startswith(month + "-"):
+                    continue
+                if revision and hashlib.sha256(candidate).hexdigest() != revision:
+                    continue
                 has_weights = parsed.get("weight_currency") == "BRL"
                 if (day, has_weights) > (observed, weighted) and parsed["groups"] and parsed["fx"]:
                     body, observed, weighted = candidate, day, has_weights
             except (OSError, ValueError, KeyError, TypeError):
                 continue
+        if body:
+            self.remember(body, observed[:7])
+        if month:
+            return body
         now = datetime.now(UTC)
         target = now.date().replace(day=1) - timedelta(days=1)
         if observed < target.isoformat():

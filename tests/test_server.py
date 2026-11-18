@@ -48,6 +48,24 @@ class StaticFiles(unittest.TestCase):
         again, empty = self.get("/app.js", **{"If-None-Match": etag})
         self.assertEqual((again.status, empty), (304, b""))
 
+    def test_professional_profile_blocks_external_frames_and_b3_contents(self):
+        from server.b3 import RestrictedB3
+        self.server.profile = "profissional"
+        self.server.b3 = RestrictedB3()
+        for path in ["/", "/index.html"]:
+            response, body = self.get(path)
+            self.assertIn(b'data-profile="profissional"', body)
+            self.assertIn("frame-src 'none'", response.getheader("Content-Security-Policy"))
+            self.assertNotIn("tradingview.com", response.getheader("Content-Security-Policy"))
+        import json
+        data = json.loads(self.get("/api/b3")[1])
+        self.assertTrue(data["restricted"])
+        self.assertIsNone(data["data"])
+
+    def test_invalid_monthly_links(self):
+        for query in ["competencia=", "competencia=2026-13", "rev=x", "competencia=2026-10&rev=bad"]:
+            self.assertEqual(self.get("/api/heatmaps?" + query)[0].status, 400)
+
     def test_new_file_is_served_without_restart(self):
         from server.app import WEB
         new = WEB / "zz-teste-novo.js"
