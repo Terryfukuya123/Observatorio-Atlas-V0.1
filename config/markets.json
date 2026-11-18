@@ -1,0 +1,98 @@
+{
+  "BRA": {
+    "name": "Brasil",
+    "region": "Américas",
+    "series": "BRL",
+    "index": "Ibovespa",
+    "market": "B3",
+    "currency": "BRL"
+  },
+  "USA": {
+    "name": "Estados Unidos",
+    "region": "Américas",
+    "series": "USD",
+    "index": "S&P 500",
+    "market": "NYSE / Nasdaq",
+    "currency": "USD"
+  },
+  "CAN": {
+    "name": "Canadá",
+    "region": "Américas",
+    "series": "CAD",
+    "index": "S&P/TSX Composite",
+    "market": "Toronto",
+    "currency": "CAD"
+  },
+  "EMU": {
+    "name": "Zona do Euro",
+    "region": "Europa",
+    "series": "USD",
+    "index": "EURO STOXX 50",
+    "market": "Zona do Euro",
+    "currency": "EUR"
+  },
+  "DEU": {
+    "name": "Alemanha",
+    "region": "Europa",
+    "series": "USD",
+    "index": "DAX",
+    "market": "Xetra",
+    "currency": "EUR"
+  },
+  "FRA": {
+    "name": "França",
+    "region": "Europa",
+    "series": "USD",
+    "index": "CAC 40",
+    "market": "Euronext Paris",
+    "currency": "EUR"
+  },
+  "GBR": {
+    "name": "Reino Unido",
+    "region": "Europa",
+    "series": "GBP",
+    "index": "FTSE 100",
+    "market": "Londres",
+    "currency": "GBP"
+  },
+  "CHN": {
+    "name": "China",
+    "region": "Ásia-Pacífico",
+    "series": "CNY",
+    "index": "Shanghai Composite",
+    "market": "Xangai",
+    "currency": "CNY"
+  },
+  "JPN": {
+    "name": "Japão",
+    "region": "Ásia-Pacífico",
+    "series": "JPY",
+    "index": "Nikkei 225",
+    "market": "Tóquio",
+    "currency": "JPY"
+  },
+  "IND": {
+    "name": "Índia",
+    "region": "Ásia-Pacífico",
+    "series": "INR",
+    "index": "NIFTY 50",
+    "market": "NSE India",
+    "currency": "INR"
+  },
+  "HKG": {
+    "name": "Hong Kong",
+    "region": "Ásia-Pacífico",
+    "series": "HKD",
+    "index": "Hang Seng",
+    "market": "HKEX",
+    "currency": "HKD"
+  },
+  "AUS": {
+    "name": "Austrália",
+    "region": "Ásia-Pacífico",
+    "series": "AUD",
+    "index": "S&P/ASX 200",
+    "market": "ASX",
+    "currency": "AUD"
+  }
+}

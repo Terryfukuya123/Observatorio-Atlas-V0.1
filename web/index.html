@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Panorama global · Observatório Econômico Global</title>
+    <link rel="icon" href="/mark.svg" />
+    <link rel="stylesheet" href="/app.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="shell nav">
+        <a class="brand" href="#top"
+          ><img src="/mark.svg" width="37" height="37" alt="" /><span
+            >Observatório<small>Econômico Global</small></span
+          ></a
+        >
+        <nav aria-label="Navegação principal">
+          <a class="active" href="#top">Panorama</a
+          ><a href="#markets">Mercados</a><button id="sources">Fontes</button>
+        </nav>
+        <div class="tools">
+          <button id="searchOpen" class="search">
+            <i data-icon="search"></i><span>Buscar mercado</span
+            ><kbd>/</kbd></button
+          ><button class="iconbtn" id="theme" aria-label="Alternar tema">
+            <i data-icon="sun"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="top" class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">
+            <span class="rule"></span>INTELIGÊNCIA ECONÔMICA
+          </div>
+          <h1>Panorama global</h1>
+          <p>Explore mercados, moedas e indicadores por região.</p>
+        </div>
+        <button class="health" id="health">
+          <b class="dot"></b><span id="healthText">Consultando fonte</span
+          ><i data-icon="chevron"></i>
+        </button>
+      </section>
+      <section id="ticker" aria-label="Referências cambiais globais"></section>
+      <div class="workspace">
+        <section class="mapcard card" aria-labelledby="mapTitle">
+          <div class="cardhead">
+            <div class="headtitle">
+              <i data-icon="globe"></i>
+              <h2 id="mapTitle">Mapa dos mercados</h2>
+            </div>
+            <label class="regionpick"
+              ><i data-icon="layers"></i
+              ><select id="region" aria-label="Região do mapa">
+                <option value="">Todas as regiões</option>
+                <option>Américas</option>
+                <option>Europa</option>
+                <option>Ásia-Pacífico</option>
+                <option>África</option>
+                <option>Antártida</option>
+              </select></label
+            >
+          </div>
+          <div class="canvas">
+            <svg
+              id="map"
+              viewBox="0 0 1000 435"
+              tabindex="0"
+              role="group"
+              aria-label="Mapa interativo. Use as setas para mover, mais e menos para zoom e a busca para selecionar um território."
+            >
+              <g id="grid"></g>
+              <g id="land"></g>
+              <g id="pins"></g>
+            </svg>
+            <div class="maptools">
+              <button id="zin" aria-label="Aumentar zoom">+</button
+              ><button id="zout" aria-label="Diminuir zoom">−</button
+              ><button id="home" aria-label="Restaurar enquadramento">
+                <i data-icon="fit"></i>
+              </button>
+            </div>
+          </div>
+          <div class="legend">
+            <span><b class="swatch sel"></b>Seleção</span
+            ><span><b class="swatch cov"></b>Com dados</span
+            ><span><b class="swatch none"></b>Sem cobertura</span
+            ><span class="credit">Natural Earth · 1:50m</span>
+          </div>
+        </section>
+        <aside class="card context" aria-label="Painel contextual">
+          <div class="eyebrow"><b class="dot"></b> MERCADO SELECIONADO</div>
+          <div id="detail" aria-live="polite"></div>
+        </aside>
+      </div>
+      <section id="markets" class="card">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="list"></i>
+            <h2>Mercados acompanhados</h2>
+          </div>
+          <span id="count" class="muted"></span>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Mercado</th>
+                <th>Índice de referência</th>
+                <th>Par cambial</th>
+                <th>Referência BCE</th>
+                <th>Var. diária¹</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+      <footer>
+        <span
+          >¹ Variação do par calculada pelo Observatório. Taxas de referência
+          disponíveis gratuitamente no
+          <a
+            href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"
+            target="_blank"
+            rel="noreferrer"
+            >BCE ↗</a
+          >.</span
+        ><button id="method">Fontes e metodologia ↗</button>
+      </footer>
+    </main>
+    <dialog id="finder">
+      <div class="modalhead">
+        <h2>Buscar mercado</h2>
+        <button class="close" aria-label="Fechar">×</button>
+      </div>
+      <label class="inputwrap"
+        ><i data-icon="search"></i
+        ><input
+          id="query"
+          type="search"
+          placeholder="País, região, índice ou moeda"
+          autocomplete="off"
+          aria-label="País, região, índice ou moeda"
+      /></label>
+      <div id="results"></div>
+    </dialog>
+    <dialog id="metadata">
+      <div class="modalhead">
+        <h2>Fontes e metodologia</h2>
+        <button class="close" aria-label="Fechar">×</button>
+      </div>
+      <div id="metaBody"></div>
+    </dialog>
+  </body>
+</html>
