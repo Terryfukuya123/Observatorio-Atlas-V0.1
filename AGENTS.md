@@ -5,6 +5,8 @@ sem um assistente de IA (Claude Code, Codex, Cursor, Copilot e afins leem este a
 automaticamente). Leia inteiro antes da primeira mudança. O `README.md` descreve cada seção e as
 regras de cálculo. O `docs/fontes.md` traz a matriz de fontes e licenças.
 
+**Trabalho em paralelo:** antes de começar, leia também o [COLABORACAO.md](COLABORACAO.md). Ele explica como assumir uma frente, sincronizar com a `main`, evitar e resolver conflitos e deixar a passagem de bastão no fim de cada sessão. Para seguir as regras dele não é preciso que alguém peça.
+
 ## O que é
 
 Uma plataforma local, em português do Brasil, que reúne dados públicos de economia e mercado:
@@ -96,9 +98,18 @@ Padrões já usados (siga-os):
 
 ## Fluxo de trabalho
 
-- Uma **branch por frente** (`narrador-ia`, `fiscal`, `b3-licenca`…). Não commite direto na `main`.
-- Commits pequenos, mensagem em pt-BR: título curto e corpo com o que mudou e por quê.
-- Abra um Pull Request para a `main`, com o que foi feito, como testar e o resultado dos testes.
+O detalhe está no [COLABORACAO.md](COLABORACAO.md). O essencial:
+
+- **Uma frente = uma issue = uma branch = um PR.** Branch `frente/<nome>` (ou `correcao/`, `docs/`,
+  `dados/`) criada da `origin/main`, com PR em rascunho desde o primeiro commit. Nunca commite na `main`.
+- No começo da sessão: `git fetch origin`, leia a issue e o último comentário de passagem de bastão,
+  e rode `git rebase origin/main`.
+- Nos arquivos compartilhados (`index.html`, `app.css`, `app.js`, `server/app.py`, `config/macro.json`,
+  `README.md`), mexa só no seu bloco: CSS no fim do arquivo, uma rota por `elif`, nada de reformatar.
+- Conflito em lista ou bloco: mantenha os dois lados. Conflito de lógica: pare e combine no PR.
+- Commits pequenos, com mensagem em pt-BR. Testes e smoke passando antes de pedir revisão.
+  O merge (Squash and merge) é do dono do repositório.
+- No fim da sessão, deixe um comentário de passagem de bastão no PR.
 - Seção nova, nesta ordem:
   1. o módulo em `web/`, montado em `app.js`;
   2. a `<section>` no `index.html`, com `id` e `data-desk`;
