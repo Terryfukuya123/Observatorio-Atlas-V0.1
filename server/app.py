@@ -21,7 +21,7 @@ from providers.ecb import CURRENCIES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
-STATIC_TYPES = {".html", ".css", ".js", ".json", ".svg", ".ttf"}
+STATIC_TYPES = {".html", ".css", ".js", ".json", ".svg", ".ttf", ".png"}
 STATIC_NAME = re.compile(r"/[A-Za-z0-9][A-Za-z0-9_-]*(\.[A-Za-z0-9]+)+")
 
 

@@ -47,9 +47,9 @@ export const DESKS = {
     lead: "Juros, inflação e atividade, e para onde foi o dinheiro: do câmbio aos fundos.",
     parts: [
       ["bussola", "Bússola dos juros"],
-      ["brasil", "Indicadores"],
+      ["brasil", "Painel Brasil"],
       ["focus", "Expectativas · Focus"],
-      ["fluxo", "Fluxo cambial"],
+      ["fluxo", "Fluxo de capital"],
       ["fundos", "Fundos"],
     ],
     next: [
@@ -149,7 +149,8 @@ export function desks({ main, rail, read, save, base = document.title }) {
 
   function route() {
     // A ficha do país (#ficha/BRA) abre por cima do espaço atual, sem trocar de espaço.
-    if (location.hash.startsWith("#ficha/")) {
+    // O mesmo vale para a página Sobre (#sobre).
+    if (location.hash.startsWith("#ficha/") || location.hash === "#sobre") {
       if (!current) show(DESKS[read("desk", "panorama")] ? read("desk", "panorama") : "panorama");
       return;
     }

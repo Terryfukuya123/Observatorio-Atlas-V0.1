@@ -60,6 +60,7 @@ class StaticFiles(unittest.TestCase):
     def test_every_web_file_is_served_and_nothing_else(self):
         self.assertEqual(self.get("/pregao.js")[0].status, 200)
         self.assertEqual(self.get("/data.js")[0].status, 200)
+        self.assertEqual(self.get("/og.png")[0].getheader("Content-Type"), "image/png")
         self.assertEqual(self.get("/")[0].status, 200)
         for path in ["/../server/app.py", "/..%5Cserver%5Capp.py", "/nao-existe.js", "/README.md", "/web/app.js", "/.git", "/app.js.bak"]:
             self.assertEqual(self.get(path)[0].status, 404, path)

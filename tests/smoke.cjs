@@ -33,6 +33,18 @@ const VIEWS = { computador: { width: 1440, height: 900 }, celular: { width: 390,
       page.on("response", (r) => {
         if (r.url().startsWith(BASE) && r.status() >= 400) problems.push(where() + " · HTTP " + r.status() + " em " + r.url().slice(BASE.length));
       });
+      // Primeira visita: o tour aparece, percorre os passos e não volta depois de concluído.
+      await page.goto(BASE + "/#/panorama", { waitUntil: "load" });
+      await page.waitForSelector(".tour", { timeout: 5000 }).catch(() => problems.push(view + " · tour de boas-vindas não apareceu"));
+      for (let i = 0; i < 8 && (await page.locator(".tour [data-tour-next]").count()); i++) {
+        const box = await page.locator(".tour").boundingBox();
+        if (box && (box.x < 0 || box.y < 0 || box.x + box.width > viewport.width + 1 || box.y + box.height > viewport.height + 1))
+          problems.push(view + " · tour passo " + i + " fora da tela");
+        await page.click(".tour [data-tour-next]");
+        await page.waitForTimeout(150);
+      }
+      if (await page.locator(".tour").count()) problems.push(view + " · tour não fechou ao concluir");
+      console.log("ok  " + view.padEnd(10) + "tour");
       await page.goto(BASE + "/#/panorama", { waitUntil: "load" });
       for (const [desk, sections] of Object.entries(DESKS)) {
         await page.goto(BASE + "/#/" + desk);
@@ -64,6 +76,13 @@ const VIEWS = { computador: { width: 1440, height: 900 }, celular: { width: 390,
       await page.waitForSelector("#saude[open] .hsGroup li", { timeout: 5000 }).catch(() => problems.push(view + " · saúde das fontes não abriu"));
       const rows = await page.locator("#saude .hsGroup li").count();
       console.log("ok  " + view.padEnd(10) + "saúde    " + rows + " coletas · " + (await page.locator("#healthText").textContent()));
+      // Sobre, fontes e licenças abre pelo endereço #sobre.
+      await page.goto(BASE + "/#sobre");
+      await page.reload();
+      await page.waitForSelector("#sobre[open] .abSources tbody tr", { timeout: 5000 }).catch(() => problems.push(view + " · página Sobre não abriu"));
+      const wide = await page.evaluate(() => { const d = document.querySelector("#sobre"); return d ? d.scrollWidth - d.clientWidth : 0; });
+      if (wide > 2) problems.push(view + " · página Sobre " + wide + "px mais larga que a janela");
+      console.log("ok  " + view.padEnd(10) + "sobre    " + (await page.locator("#sobre .abSources tbody tr").count()) + " fontes");
       await context.close();
     }
   } finally {

@@ -20,10 +20,14 @@ import { atlas, fmt, timestamp } from "./atlas.js";
 import { read, save } from "./storage.js";
 import { shell } from "./shell.js";
 import { sourceHealth } from "./health.js";
+import { about } from "./about.js";
+import { tourGuide } from "./tour.js";
 const $ = (s) => document.querySelector(s);
 const compare = comparison({ read, save, fmt, timestamp });
 shell({ read, save });
 sourceHealth({ button: $("#health"), text: $("#healthText"), dialog: $("#saude") });
+about({ dialog: $("#sobre"), openers: [$("#sources"), $("#method")] });
+tourGuide({ read, save });
 const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
 // Seções de outros espaços só buscam dados e se desenham quando o espaço é aberto.
 function whenShown(root, start) {

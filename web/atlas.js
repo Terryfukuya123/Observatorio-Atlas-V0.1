@@ -777,8 +777,6 @@ export function atlas({ read, save, compare, spaces }) {
     }
   };
   $("#region").onchange = (e) => chooseRegion(e.target.value);
-  for (const id of ["sources", "method"])
-    $("#" + id).onclick = openMeta;
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;

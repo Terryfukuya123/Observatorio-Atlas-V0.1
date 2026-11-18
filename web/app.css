@@ -5690,3 +5690,194 @@ dialog.dossier {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* Sobre, fontes e licenças */
+.abDialog {
+  width: min(900px, calc(100vw - 24px));
+}
+.abBody {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--soft);
+}
+.abBody h3 {
+  margin: 22px 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.abLead {
+  margin: 4px 0 14px;
+  font-size: 16px;
+  color: var(--text);
+}
+.abDesks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.abDesks a {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--soft);
+  font-size: 12px;
+  text-decoration: none;
+}
+.abDesks a:hover {
+  border-color: var(--accent);
+}
+.abDesks b {
+  color: var(--text);
+  font-size: 14px;
+}
+.abList {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+.abSources {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.abSources th:first-child {
+  width: 22%;
+}
+.abSources th:last-child {
+  width: 34%;
+}
+.abSources th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 6px 8px 6px 0;
+}
+.abSources td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  padding: 8px 8px 8px 0;
+  border-top: 1px solid var(--border);
+}
+.abSources td:first-child {
+  overflow-wrap: normal;
+}
+.abSources mark {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  background: color-mix(in srgb, var(--pos) 18%, transparent);
+  color: var(--pos);
+}
+.abSources mark[data-status="provisorio"] {
+  background: color-mix(in srgb, #e6ad71 18%, transparent);
+  color: #e6ad71;
+}
+.abSources mark[data-status="pendente"] {
+  background: color-mix(in srgb, var(--neg, #c9785c) 18%, transparent);
+  color: var(--neg, #c9785c);
+}
+.abNote,
+.abFoot {
+  font-size: 12px;
+  color: var(--muted);
+}
+.abFoot {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 760px) {
+  .abDesks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .abSources thead {
+    display: none;
+  }
+  .abSources tr {
+    display: grid;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+  }
+  .abSources td {
+    border: 0;
+    padding: 2px 0;
+  }
+}
+
+/* Primeira visita guiada */
+.tour {
+  position: fixed;
+  z-index: 60;
+  width: min(340px, calc(100vw - 16px));
+  padding: 16px 18px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--soft);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.45);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.tour[data-anchored="false"] {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.tour h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--text);
+}
+.tour p {
+  margin: 0;
+}
+.tour .tourStep {
+  margin-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.tourActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+.tourActions .linkish {
+  margin-right: auto;
+  color: var(--muted);
+}
+.tourActions button:not(.linkish) {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.tourActions .tourNext {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #111;
+}
+.tourFocus {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

@@ -71,9 +71,9 @@ A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatma
 
 A seção **Índices mundiais** resume a tela de índices globais dos terminais profissionais no que importa para consulta rápida. São quatro regiões: Américas, Europa, Ásia-Pacífico e Referências (DXY, VIX, dólar em reais, ouro, Brent e bitcoin). Cada uma mostra valor, variação do dia e gráfico do índice escolhido, pelo widget público do TradingView. Alguns índices aparecem por contratos que os acompanham, indicados como "contrato". Ao lado, **Pregões agora** informa se cada bolsa da região está aberta, em intervalo ou fechada, quanto falta para fechar ou abrir, e a hora local. Esse cálculo é feito no navegador a partir do horário regular de cada bolsa, sem feriados. P/L, estimativas e dividendos ficaram de fora por falta de fonte gratuita licenciada.
 
-## Mercados ao vivo
+## Mapas de calor ao vivo
 
-A seção **Mercados ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js` e `web/indices.js`, que dependem de `web/tv-widget.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
+A seção **Mapas de calor ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js` e `web/indices.js`, que dependem de `web/tv-widget.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
 
 ## Fluxo de capital
 
@@ -95,6 +95,18 @@ A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de US
 Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões por tema com histórico e a tabela do Focus), **Juros e ciclo global** (curva dos EUA e indicador antecedente da OCDE), a aba **Indicadores** do mapa (coroplético em quintis, com seletor do indicador) e o bloco **Indicadores macro** da ficha de cada país.
 
 [Camada macro: fontes, cache e rotas](docs/camada-macro.md)
+
+## Sobre, primeira visita e compartilhamento
+
+- **Sobre e fontes:** o botão do menu lateral (ou o endereço `#sobre`) abre a página Sobre. Ela traz:
+  - o que é a plataforma e o que há em cada espaço;
+  - como ler os números;
+  - a tabela de fontes com a condição de uso de cada uma (liberada, provisória ou com licença pendente);
+  - a privacidade.
+
+  Os detalhes do câmbio do BCE continuam acessíveis a partir dela.
+- **Primeira visita:** um tour de cinco passos mostra os espaços, a busca, o painel personalizável, a saúde das fontes e a página Sobre. Ele aparece uma vez, fica marcado no navegador e pode ser refeito pela página Sobre.
+- **Compartilhamento:** a página tem descrição, Open Graph e cartão do Twitter com a imagem `web/og.png` (1200×630). Ao publicar num domínio, troque `og:image` pelo endereço completo (`https://…/og.png`), que algumas redes exigem.
 
 ## Saúde das fontes
 
