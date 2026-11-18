@@ -9,6 +9,7 @@ import { capitalFlows } from "./flows.js";
 import { fundFlows } from "./funds.js";
 import { desks } from "./desks.js";
 import { pulse } from "./pulse.js";
+import { glossary } from "./glossary.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
@@ -97,6 +98,7 @@ $("#railToggle").onclick = () => {
 };
 const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
 pulse({ root: $("#pulse") });
+glossary();
 sessionClock({ root: $("#relogio") });
 fxBoard({ root: $("#moedas"), read, save });
 compass({ root: $("#bussola") });

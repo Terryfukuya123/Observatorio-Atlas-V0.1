@@ -4555,3 +4555,76 @@ main > .hero[data-desk] {
     flex-wrap: wrap;
   }
 }
+
+/* Glossário "O que é isso?" */
+.gloss {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font: 600 10px/1 var(--sans, inherit);
+  vertical-align: middle;
+  cursor: help;
+}
+.gloss.inline {
+  margin-left: 6px;
+  position: relative;
+  top: -1px;
+}
+h2 > .gloss.inline {
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+}
+.gloss:hover,
+.gloss[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.gloss.corner {
+  position: absolute;
+  top: 10px;
+  right: 36px;
+  opacity: 0.6;
+}
+.pulseCell:hover .gloss.corner,
+.gloss.corner[aria-expanded="true"] {
+  opacity: 1;
+}
+.glossTip {
+  position: fixed;
+  z-index: 60;
+  width: min(320px, calc(100vw - 16px));
+  padding: 12px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--panel);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.35);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.glossTip strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.glossTip p {
+  margin: 0;
+}
+.glossTip .why {
+  margin-top: 6px;
+  color: var(--muted);
+}
+.glossTip .why b {
+  color: var(--text);
+  font-weight: 600;
+}
