@@ -37,7 +37,7 @@ O endereço guarda o espaço (`#/brasil`) ou a parte (`#fluxo`), então os links
 ## Usar o atlas
 
 - Clique em um território, um marcador, um cartão de câmbio ou um nome na tabela. A ficha indica mercado, par, nível, variação do par, histórico e cobertura.
-- Selecione uma região para reenquadrar o mapa e filtrar a lista. Pesquise por **Zona do Euro** para destacar o bloco. A tecla **/** abre a busca. Digite um país, região, moeda, par ou índice. Enter seleciona o primeiro resultado. Tab percorre os resultados, Esc fecha a janela.
+- Selecione uma região para reenquadrar o mapa e filtrar a lista. Pesquise por **Zona do Euro** para destacar o bloco. A tecla **/** (ou **Ctrl+K**) abre a busca universal. Digite um país, região, moeda, par ou índice, ou um assunto como **Selic**, **fluxo**, **euro** ou **recessão**: a busca leva direto à parte certa, em qualquer espaço. Com a busca vazia aparecem sugestões, e um país também abre o seu ponto no relógio do ciclo. Enter seleciona o primeiro resultado. Tab percorre os resultados, Esc fecha a janela.
 - Arraste o mapa ou use a roda do mouse. Com foco no mapa, use as setas, **+**, **−** e **Home**. O botão de enquadramento restaura a região corrente.
 - Alterne o intervalo do gráfico entre 7, 30 e 90 dias corridos. A tabela em **Ver origem e metodologia** mostra todas as observações disponíveis. Tema, país, região e intervalo ficam no armazenamento local do navegador, por endereço.
 - **Fontes** apresenta saúde, tentativas, latência, datas de coleta e observação, identificador da captura, metodologia e direitos. O indicador de saúde representa a consulta ao BCE. A sessão das bolsas depende de calendário próprio e está identificada como não verificada.

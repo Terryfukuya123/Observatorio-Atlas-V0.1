@@ -13,7 +13,8 @@ import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
 import { compass, focusCharts } from "./compass.js";
-import { cycleClock, recessionSignal } from "./cycle-clock.js";
+import { cycleClock, recessionSignal, NAMES as CYCLE } from "./cycle-clock.js";
+import { findDestinations } from "./finder.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -771,9 +772,40 @@ function results() {
         .join(" "),
     ).includes(q);
   });
-  $("#results").innerHTML =
+  // Destinos da plataforma primeiro; com a busca vazia, sugestões.
+  const raw = $("#query").value.trim();
+  const goes = findDestinations(raw).slice(0, raw ? 6 : 6);
+  const cycleHits = raw ? hits.filter((k) => CYCLE[k]).slice(0, 3) : [];
+  const destinations =
+    goes
+      .map(
+        ([hash, title, space, hint]) =>
+          '<button class="result go" data-go="' +
+          escape(hash) +
+          '"><span class="goSpace">' +
+          escape(space) +
+          "</span><strong>" +
+          escape(title) +
+          "</strong><small>" +
+          escape(hint) +
+          "</small></button>",
+      )
+      .join("") +
+    cycleHits
+      .map(
+        (k) =>
+          '<button class="result go" data-go="#ciclo" data-cycle="' +
+          escape(k) +
+          '"><span class="goSpace">Global</span>' +
+          flag(k) +
+          "<strong>" +
+          escape(CYCLE[k]) +
+          " no ciclo econômico</strong><small>Fase e caminho dos últimos meses</small></button>",
+      )
+      .join("");
+  const markets =
     regionHits.join("") +
-      hits
+    hits
         .map(
           (k) =>
             '<button class="result" data-pick="' +
@@ -786,7 +818,15 @@ function results() {
             escape(info(k).index || info(k).region) +
             "</small></button>",
         )
-        .join("") || '<p class="empty">Nenhum mercado encontrado.</p>';
+        .join("");
+  $("#results").innerHTML =
+    (destinations
+      ? '<h3 class="resultHead">' + (raw ? "Ir para" : "Sugestões") + "</h3>" + destinations
+      : "") +
+      (markets
+        ? '<h3 class="resultHead">Mercados e países</h3>' + markets
+        : "") ||
+    '<p class="empty">Nada encontrado. Tente um país, uma moeda ou um assunto, como Selic ou fluxo.</p>';
   $("#results").scrollTop = 0;
 }
 function search() {
@@ -816,6 +856,20 @@ document.addEventListener("click", (e) => {
     btn.closest("dialog").close();
     return;
   }
+  if (btn.dataset.go) {
+    if ($("#finder").open) $("#finder").close();
+    if (btn.dataset.go === "meta") openMeta();
+    else {
+      if (btn.dataset.cycle)
+        window.dispatchEvent(
+          new CustomEvent("oeg:cycle", { detail: btn.dataset.cycle }),
+        );
+      if (location.hash === btn.dataset.go)
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      else location.hash = btn.dataset.go;
+    }
+    return;
+  }
   if (btn.dataset.pick || btn.dataset.region) {
     if ($("#finder").open) $("#finder").close();
     if (btn.dataset.pick) select(btn.dataset.pick, true);
@@ -837,6 +891,9 @@ document.addEventListener("keydown", (e) => {
   ) {
     e.preventDefault();
     search();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    if (!$("#finder").open) search();
   }
 });
 for (const btn of document.querySelectorAll("button[data-layer]")) {

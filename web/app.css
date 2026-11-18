@@ -4328,3 +4328,47 @@ main > .hero[data-desk] {
     font-size: 17px;
   }
 }
+
+/* Busca universal */
+.resultHead {
+  margin: 12px 3px 2px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.resultHead:first-child {
+  margin-top: 4px;
+}
+.result.go {
+  gap: 10px;
+}
+.result.go strong {
+  white-space: nowrap;
+}
+.result.go small {
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.goSpace {
+  flex: none;
+  min-width: 70px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--link);
+  font-size: 10px;
+  text-align: center;
+}
+.result:focus-visible,
+.result:hover {
+  background: var(--alt);
+}
+@media (max-width: 670px) {
+  .result.go small {
+    display: none;
+  }
+}

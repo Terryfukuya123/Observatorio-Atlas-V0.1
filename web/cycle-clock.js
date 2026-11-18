@@ -3,7 +3,7 @@
 // são as quatro fases do ciclo. Também o histórico do sinal de recessão da curva dos EUA.
 import { flagAt, round } from "./symbols.js";
 
-const NAMES = {
+export const NAMES = {
   G20: "G20", G7: "G7", USA: "Estados Unidos", CHN: "China", DEU: "Alemanha", JPN: "Japão", GBR: "Reino Unido", IND: "Índia", FRA: "França",
   ITA: "Itália", BRA: "Brasil", MEX: "México", KOR: "Coreia do Sul", CAN: "Canadá", AUS: "Austrália", ESP: "Espanha", TUR: "Turquia",
   IDN: "Indonésia", ZAF: "África do Sul",
@@ -136,6 +136,8 @@ export function cycleClock({ root, read, save }) {
     save("cyclePick", code);
     draw();
   }
+  // A busca universal pode pedir um país específico.
+  window.addEventListener("oeg:cycle", (event) => pick(event.detail));
   root.addEventListener("click", (event) => {
     const el = event.target.closest("[data-area]");
     if (el) pick(el.dataset.area);
