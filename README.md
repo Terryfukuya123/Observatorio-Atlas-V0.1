@@ -24,7 +24,7 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
 
-**Vai colaborar?** Comece pelo [AGENTS.md](AGENTS.md): como rodar e testar, a estrutura, as regras do projeto e as frentes abertas. Assistentes de IA (Claude Code, Codex, Cursor e afins) leem esse arquivo automaticamente.
+**Vai colaborar?** Comece pelo [AGENTS.md](AGENTS.md), com como rodar e testar, a estrutura, as regras do projeto e as frentes abertas. Depois leia o [COLABORACAO.md](COLABORACAO.md), que explica como trabalhar em paralelo: issues, branches, conflitos e passagem de bastão. Assistentes de IA (Claude Code, Codex, Cursor e afins) leem esse arquivo automaticamente.
 
 ## Espaços de análise
 
