@@ -256,30 +256,58 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
-      <section id="prepos" data-desk="mercados" class="card liveCard ppCard" aria-labelledby="ppTitle">
+      <section id="bolsas" data-desk="mercados" class="card liveCard bsCard" aria-labelledby="bsTitle">
         <div class="cardhead">
           <div class="headtitle">
-            <i data-icon="calendar"></i>
-            <h2 id="ppTitle">Pré e pós-mercado</h2>
+            <i data-icon="list"></i>
+            <h2 id="bsTitle">Bolsas agora</h2>
           </div>
-          <div class="layerTabs" role="group" aria-label="Momento do dia">
-            <button data-pp="auto" aria-pressed="true">Agora</button>
-            <button data-pp="pre" aria-pressed="false">Antes da abertura</button>
-            <button data-pp="post" aria-pressed="false">Depois do fechamento</button>
+          <p class="bsClock" aria-live="polite"></p>
+        </div>
+        <div class="bsViews" role="tablist" aria-label="O que ver">
+          <button id="prepos" role="tab" data-view="roteiro" aria-selected="true">
+            <b>Roteiro do pregão</b><small>O que olhar antes, durante e depois da B3</small>
+          </button>
+          <button id="indices" role="tab" data-view="mundo" aria-selected="false">
+            <b>Bolsas do mundo</b><small>Os índices de cada região, no horário de cada bolsa</small>
+          </button>
+        </div>
+        <div class="bsFilters">
+          <div class="layerTabs" role="group" aria-label="Momento do dia" data-for="roteiro">
+            <button data-moment="auto" aria-pressed="true">Agora</button>
+            <button data-moment="pre" aria-pressed="false">Antes da abertura</button>
+            <button data-moment="live" aria-pressed="false">Pregão aberto</button>
+            <button data-moment="post" aria-pressed="false">Depois do fechamento</button>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Região" data-for="mundo" hidden>
+            <button data-region="americas" aria-pressed="true">Américas</button>
+            <button data-region="europe" aria-pressed="false">Europa</button>
+            <button data-region="asia" aria-pressed="false">Ásia-Pacífico</button>
+            <button data-region="refs" aria-pressed="false">Referências</button>
           </div>
         </div>
-        <p class="ppMode"></p>
-        <div class="ppBody">
-          <div id="ppHost" class="liveHost ppHost" role="region" aria-label="Cotações">
+        <p class="bsExplain"></p>
+        <div class="bsBody">
+          <div id="bsHost" class="liveHost bsHost" role="region" aria-label="Cotações">
             <div class="liveState"><strong>Role até aqui para carregar as cotações</strong></div>
           </div>
-          <aside class="ppSide" aria-live="polite"></aside>
+          <aside class="bsSide" aria-live="polite"></aside>
         </div>
+        <details class="bsLegend">
+          <summary>Como ler as cotações</summary>
+          <dl>
+            <div><dt>Índice à vista</dt><dd>O número oficial da bolsa, como Ibovespa ou Nikkei. Só se move com a bolsa aberta; fora do horário mostra o último fechamento.</dd></div>
+            <div><dt>Contrato</dt><dd>Derivativo que acompanha o índice e negocia quase 24 horas. É por ele que se vê, de madrugada, como Wall Street deve abrir.</dd></div>
+            <div><dt>ADR</dt><dd>Ação de empresa brasileira negociada em Nova York (Petrobras, Vale, Itaú). Antecipa o humor com o Brasil antes da B3 abrir e depois que ela fecha.</dd></div>
+            <div><dt>EWZ</dt><dd>Fundo negociado em Nova York que replica as maiores ações brasileiras. Termômetro do estrangeiro para o Brasil.</dd></div>
+            <div><dt>VIX e DXY</dt><dd>VIX mede o medo no mercado americano; DXY, a força do dólar contra as principais moedas. Subindo, costumam pesar sobre a bolsa brasileira.</dd></div>
+            <div><dt>Atraso</dt><dd>Algumas cotações chegam com atraso de até 15 minutos, conforme a bolsa (marcadas com D no widget).</dd></div>
+          </dl>
+        </details>
         <p class="sourceNote">
-          Cotações por widget público do TradingView (contratos e ADRs negociam fora do horário
-          da B3; uso provisório, pendente de acordo comercial). O roteiro ao lado usa dados da
-          plataforma: BCB, Tesouro dos EUA, BCE, OCDE e a agenda conferida. Volume e origem do
-          pregão vêm da planilha <i>Dados de Mercado</i> da B3, importada manualmente.
+          Cotações por widget público do TradingView, carregadas direto no navegador. O roteiro ao lado usa dados
+          da plataforma: BCB, Tesouro dos EUA, BCE, OCDE, agenda conferida e o relatório da B3 importado.
+          Horário regular de cada bolsa, sem feriados nem leilões.
         </p>
       </section>
       <section id="pregao" data-desk="mercados" aria-labelledby="pgTitle">
@@ -340,42 +368,6 @@
           </section>
         </div>
         <p id="pgNote" class="sourceNote"></p>
-      </section>
-      <section id="indices" data-desk="mercados" class="card liveCard" aria-labelledby="indicesTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="list"></i>
-            <h2 id="indicesTitle">Índices mundiais</h2>
-          </div>
-          <div class="layerTabs" role="group" aria-label="Região dos índices">
-            <button data-region="americas" aria-pressed="true">Américas</button>
-            <button data-region="europe" aria-pressed="false">Europa</button>
-            <button data-region="asia" aria-pressed="false">Ásia-Pacífico</button>
-            <button data-region="refs" aria-pressed="false">Referências</button>
-          </div>
-        </div>
-        <div class="indicesBody">
-          <div id="indicesHost" class="liveHost indicesHost" role="region">
-            <div class="liveState"><strong>Role até aqui para carregar as cotações</strong></div>
-          </div>
-          <aside class="sessions" aria-labelledby="sessionsTitle">
-            <div class="sessionsHead">
-              <h3 id="sessionsTitle">Pregões agora</h3>
-              <span id="sessionSummary"></span>
-            </div>
-            <ul id="sessionList" aria-live="polite"></ul>
-            <p class="sourceNote">
-              Horário regular de cada bolsa, sem feriados nem leilões. Aberturas
-              no horário deste dispositivo.
-            </p>
-          </aside>
-        </div>
-        <p class="sourceNote">
-          Clique num índice para ver o gráfico do dia. Cotações do widget
-          público do TradingView, com atraso conforme a bolsa; alguns índices
-          aparecem por contratos que acompanham o índice. Os dados não passam
-          pelo servidor do Observatório.
-        </p>
       </section>
       <section id="aovivo" data-desk="mercados" class="card liveCard" aria-labelledby="liveTitle">
         <div class="cardhead">

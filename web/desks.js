@@ -18,7 +18,7 @@ export const DESKS = {
     ],
     next: [
       ["#fluxo", "Brasil", "Quem trouxe e quem tirou dinheiro do país"],
-      ["#indices", "Mercados", "Bolsas abertas agora e índices do dia"],
+      ["#bolsas", "Mercados", "Bolsas abertas agora, pré e pós-mercado"],
       ["#juros", "Global", "Juros dos EUA e ciclo das economias"],
     ],
   },
@@ -27,9 +27,8 @@ export const DESKS = {
     icon: "grid",
     lead: "Como o mundo chega ao pregão, como ele fecha e como estão bolsas, setores e moedas.",
     parts: [
-      ["prepos", "Pré e pós-mercado"],
+      ["bolsas", "Bolsas agora"],
       ["pregao", "Pregão B3"],
-      ["indices", "Índices mundiais"],
       ["aovivo", "Mapas de calor"],
       ["moedas", "Força das moedas"],
       ["comparison", "Comparador de câmbio"],

@@ -193,7 +193,7 @@ const builders = {
       deltaTone: open.length ? "pos" : "flat",
       chart: dots,
       read: next ? "Próxima: " + next.m.name + " em " + (next.s.wait >= 60 ? Math.floor(next.s.wait / 60) + "h" : next.s.wait + " min") : "",
-      go: "Índices mundiais",
+      go: "Bolsas do mundo",
     });
   },
 };

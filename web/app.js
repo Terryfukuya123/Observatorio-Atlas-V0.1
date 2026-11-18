@@ -1,7 +1,6 @@
 // Ponto de entrada: monta a moldura, os espaços e cada seção da plataforma.
 import { comparison } from "./comparison.js";
 import { liveHeat } from "./live-heat.js";
-import { worldIndices } from "./indices.js";
 import { capitalFlows } from "./flows.js";
 import { fundFlows } from "./funds.js";
 import { desks } from "./desks.js";
@@ -10,7 +9,7 @@ import { glossary } from "./glossary.js";
 import { agenda } from "./agenda.js";
 import { dossier } from "./dossier.js";
 import { riskMeter } from "./risk.js";
-import { prePost } from "./prepos.js";
+import { bolsas } from "./prepos.js";
 import { pregao } from "./pregao.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
@@ -44,7 +43,7 @@ pulse({ root: $("#pulse") });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
 riskMeter({ root: $("#termometro") });
-whenShown($("#prepos"), () => prePost({ root: $("#prepos"), read, save }));
+whenShown($("#bolsas"), () => bolsas({ root: $("#bolsas"), read, save }));
 whenShown($("#pregao"), () => pregao({ root: $("#pregao") }));
 sessionClock({ root: $("#relogio") });
 whenShown($("#moedas"), () => fxBoard({ root: $("#moedas"), read, save }));
@@ -70,6 +69,5 @@ dossier({
 
 await panorama.ready;
 whenShown($("#aovivo"), () => liveHeat({ root: $("#aovivo"), read, save }));
-whenShown($("#indices"), () => worldIndices({ root: $("#indices"), read, save }));
 whenShown($("#fluxo"), () => capitalFlows({ root: $("#fluxo"), read, save }));
 whenShown($("#fundos"), () => fundFlows({ root: $("#fundos"), read, save }));

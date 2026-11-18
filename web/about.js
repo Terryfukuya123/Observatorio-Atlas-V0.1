@@ -24,7 +24,7 @@ export function aboutHtml() {
     '<div class="abDesks">' +
     [
       ["#/panorama", "Panorama", "O essencial do dia: pulso, termômetro de risco, próximos eventos e o mapa por país."],
-      ["#/mercados", "Mercados", "Pré e pós-mercado, pregão da B3, bolsas do mundo, mapas de calor e força das moedas."],
+      ["#/mercados", "Mercados", "Bolsas agora (roteiro do pregão e bolsas do mundo), pregão da B3, mapas de calor e força das moedas."],
       ["#/brasil", "Brasil", "Selic, inflação, expectativas do Focus, fluxo de capital e fundos."],
       ["#/global", "Global", "Ciclo econômico, juros dos EUA, agenda com impacto e notícias oficiais."],
     ]

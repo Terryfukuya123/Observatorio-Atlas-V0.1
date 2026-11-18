@@ -1,8 +1,5 @@
-// Índices mundiais por região (cotações do widget público do TradingView) e
-// "Pregões agora", calculado localmente a partir do horário regular de cada bolsa.
-import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
-import { round } from "./symbols.js";
-import { esc } from "./format.js";
+// Bolsas do mundo: horário regular de cada pregão, estado agora (aberto, intervalo,
+// fechado) e os índices de cada região, usados pelo bloco "Bolsas agora" (prepos.js).
 
 // Horário regular, no fuso da bolsa. `lunch` marca o intervalo de almoço, quando existe.
 export const MARKETS = {
@@ -113,75 +110,10 @@ export function session(market, now = new Date()) {
 
 const here = new Intl.DateTimeFormat("pt-BR", { weekday: "short", hour: "2-digit", minute: "2-digit" });
 const hereTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
-function describe(s, now) {
+export function describe(s, now) {
   if (s.state === "open") return ["Aberto", "fecha em " + span(s.wait)];
   if (s.state === "lunch") return ["Intervalo", "reabre em " + span(s.wait)];
   const sameDay = s.opensAt && s.opensAt.toDateString() === now.toDateString();
   const when = s.opensAt ? (sameDay ? "hoje " + hereTime.format(s.opensAt) : here.format(s.opensAt).replace(".", "")) : "";
   return ["Fechado", s.wait < 180 ? "abre em " + span(s.wait) : "abre " + when];
-}
-
-export function worldIndices({ root, read, save }) {
-  const host = root.querySelector("#indicesHost");
-  const list = root.querySelector("#sessionList");
-  const summary = root.querySelector("#sessionSummary");
-  const tabs = [...root.querySelectorAll("[data-region]")];
-  let current = REGIONS[read("indicesRegion", "americas")] ? read("indicesRegion", "americas") : "americas";
-  let shown = null;
-
-  function mount() {
-    const key = current + "|" + tvTheme();
-    if (!isVisible() || shown === key) return;
-    shown = key;
-    const region = REGIONS[current];
-    tvWidget(host, {
-      kind: "market-overview",
-      title: "Índices · " + region.label,
-      onFail: () => (shown = null),
-      config: {
-        dateRange: "1D",
-        showChart: true,
-        isTransparent: false,
-        showSymbolLogo: true,
-        showFloatingTooltip: true,
-        largeChartUrl: "",
-        tabs: [{ title: region.label, symbols: region.symbols.map(([s, d]) => ({ s, d })) }],
-      },
-    });
-  }
-
-  function sessions() {
-    const now = new Date();
-    const rows = REGIONS[current].markets.map((id) => {
-      const m = MARKETS[id];
-      const s = session(m, now);
-      const [label, detail] = describe(s, now);
-      return { m, s, label, detail };
-    });
-    const open = rows.filter((r) => r.s.state === "open").length;
-    summary.textContent = open ? open + " de " + rows.length + " abertos" : "Todos fechados";
-    list.innerHTML = rows
-      .map(
-        ({ m, s, label, detail }) =>
-          '<li data-state="' + s.state + '"><b class="dot"></b>' + round(m.country) + '<span><strong>' + esc(m.name) + "</strong><small>" +
-          esc(m.venue) + " · " + esc(s.local) + ' local</small></span><span class="sessionState"><em>' + label +
-          "</em><small>" + esc(detail) + "</small></span></li>",
-      )
-      .join("");
-  }
-
-  function select(id) {
-    if (!REGIONS[id]) return;
-    current = id;
-    save("indicesRegion", id);
-    for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab.dataset.region === id));
-    host.setAttribute("aria-label", "Índices de " + REGIONS[id].label + ", cotações do TradingView");
-    sessions();
-    mount();
-  }
-
-  for (const tab of tabs) tab.addEventListener("click", () => select(tab.dataset.region));
-  const isVisible = whenVisible(host, mount);
-  select(current);
-  setInterval(sessions, 30000);
 }
