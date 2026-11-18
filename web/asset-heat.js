@@ -1,3 +1,4 @@
+import { sectorMap } from "./sector-map.js";
 import { cachedFetch } from "./data.js";
 const titles = {
   crypto: "Criptomoedas",
@@ -35,6 +36,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
     failed = false,
     loadedAt = 0;
   const tiles = $("#heatTiles");
+  const marketMap = sectorMap(tiles);
   async function load() {
     try {
       const response = await cachedFetch("/api/heatmaps");
@@ -60,7 +62,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
     );
     const panel = $("#assetDetail");
     const foot = $("#heatFoot");
-    tiles.replaceChildren();
+
     panel.replaceChildren();
     foot.replaceChildren();
     if (!pending && !failed && (!edition || Date.now() - loadedAt > 300000)) {
@@ -68,6 +70,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
       load();
     }
     if (!edition) {
+      tiles.replaceChildren();
       $("#heatDate").textContent = failed
         ? "Edição mensal indisponível"
         : "Carregando edição mensal…";
@@ -98,54 +101,23 @@ export function assetHeat({ $, fmt, timestamp, render }) {
     $("#heatDate").textContent = month + " · " + base;
     const eligible = items.filter((a) => a.quotes[base]);
     const count = eligible.filter((a) => a.quotes[base].percent > 0).length;
-    for (const asset of items) {
-      const change = asset.quotes[base]?.percent;
-      const dir =
-        change == null
-          ? "missing"
-          : change > 0
-            ? "up"
-            : change < 0
-              ? "down"
-              : "flat";
-      const strength =
-        Math.abs(change) >= 8
-          ? "strong"
-          : Math.abs(change) >= 2
-            ? "medium"
-            : "soft";
-      const button = el("button", null, "tile " + dir + " " + strength);
-      button.dataset.asset = asset.symbol;
-      button.setAttribute("aria-pressed", String(asset === item));
-      button.append(
-        el("strong", asset.symbol),
-        el("b", change == null ? "—" : signed.format(change) + "%"),
-        el("small", asset.name),
-      );
-      button.onclick = () => {
-        selected[group] = asset.symbol;
-        draw(group, base);
-        if (window.matchMedia("(max-width: 670px)").matches) {
-          const heading = panel.querySelector("h2");
-          heading.tabIndex = -1;
-          heading.focus();
-        } else
-          tiles
-            .querySelector("button[aria-pressed=true]")
-            ?.focus({ preventScroll: true });
-      };
-      tiles.append(button);
-    }
+    marketMap({group, base, items: edition.groups[group], selected: item?.symbol, choose(symbol) {
+      selected[group] = symbol;
+      draw(group, base);
+    }});
     foot.append(
       el(
         "span",
         count +
           " em alta de " +
           eligible.length +
-          " com dados · Blocos de mesmo tamanho",
+          " com variação mensal",
       ),
       link("CVM · Carteiras declaradas ↗", edition.dataset),
     );
+    const liveLink = el("a", "Abrir mapa de mercado ↗");
+    liveLink.href = "#live-" + group;
+    foot.append(liveLink);
     const now = new Date();
     const expected = new Date(
       Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0),
@@ -187,6 +159,14 @@ export function assetHeat({ $, fmt, timestamp, render }) {
       );
     const facts = el("div", null, "facts");
     fact(facts, "Competências", fmt(edition.from) + " – " + fmt(edition.to));
+    fact(facts, "Setor", item.sector || "Sem classificação");
+    for (const [field, title] of [["position","Posições dos fundos"], ["volume","Compras + vendas"]]) {
+      const weight = item[field];
+      const total = items.reduce((sum,a)=>sum+(a[field]||0),0);
+      const amount = weight == null ? "Não informado" :
+        new Intl.NumberFormat("pt-BR", {style:"currency",currency:base,notation:"compact"}).format(weight/Number(edition.fx[1][base]));
+      fact(facts, title, amount + (weight != null && total ? " · " + (100*weight/total).toLocaleString("pt-BR",{maximumFractionDigits:2})+"% da cesta" : ""));
+    }
     fact(facts, "Fundos comparáveis", String(item.funds));
     fact(facts, "Fonte", "CVM · CDA mensal");
     panel.append(facts);
@@ -213,6 +193,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
       document.createTextNode(" · "),
       link("Licença ODbL 1.0", edition.license),
     );
+    meta.append(el("p","A área usa a posição final ou a soma de compras e vendas declaradas pelos fundos para os ativos desta cesta. Os valores em moeda-base usam o câmbio de fim de mês. Uma informação de negociação ausente aparece como indisponível."));
     panel.append(meta);
   }
   return { draw };

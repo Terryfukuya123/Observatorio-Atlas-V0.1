@@ -24,7 +24,7 @@ def publish(month, directory, feed, archives=None):
     months = [start - timedelta(days=1), end]
     snapshot = feed.read()
     exchange = [fx_at(snapshot["series"], day) for day in months]
-    marks, sources = [], []
+    marks, sources, weights = [], [], {}
     for day in months:
         period = day.strftime("%Y%m")
         url = DATA_URL.format(period)
@@ -35,12 +35,12 @@ def publish(month, directory, feed, archives=None):
                 body = response.read(65_000_001)
         if len(body) > 65_000_000:
             raise ValueError("Arquivo excede o limite de entrada")
-        marks.append(unit_marks(BytesIO(body), period, day))
+        marks.append(unit_marks(BytesIO(body), period, day, weights if day == end else None))
         sources.append(dict(url=url, sha256=hashlib.sha256(body).hexdigest()))
-    groups = build_tiles(*marks, *exchange)
+    groups = build_tiles(*marks, *exchange, weights=weights)
     if not all(any(a["funds"] for a in items) for items in groups.values()):
         raise ValueError("Amostra comparável ausente em uma classe. Edição anterior preservada.")
-    edition = {"from": months[0].isoformat(), "to": end.isoformat(),
+    edition = {"weight_currency": "BRL", "from": months[0].isoformat(), "to": end.isoformat(),
                "generated": datetime.now(UTC).isoformat(), "archives": sources,
                "fx": exchange, "fx_snapshot": snapshot["source"]["snapshot"],
                "fx_received": snapshot["source"]["received"], "fx_url": snapshot["endpoint"],
@@ -69,14 +69,15 @@ class MonthlyEdition:
             pass
 
     def read(self):
-        body, observed = None, ""
+        body, observed, weighted = None, "", False
         for file in (self.directory / "heatmaps.json", self.seed):
             try:
                 candidate = file.read_bytes()
                 parsed = json.loads(candidate)
                 day = date.fromisoformat(parsed["to"]).isoformat()
-                if day > observed and parsed["groups"] and parsed["fx"]:
-                    body, observed = candidate, day
+                has_weights = parsed.get("weight_currency") == "BRL"
+                if (day, has_weights) > (observed, weighted) and parsed["groups"] and parsed["fx"]:
+                    body, observed, weighted = candidate, day, has_weights
             except (OSError, ValueError, KeyError, TypeError):
                 continue
         now = datetime.now(UTC)

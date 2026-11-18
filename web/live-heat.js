@@ -4,7 +4,7 @@ import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 
 const COMMON = {
   symbolUrl: "",
-  hasTopBar: false,
+  hasTopBar: true,
   isDataSetEnabled: false,
   isZoomEnabled: true,
   hasSymbolTooltip: true,
@@ -22,14 +22,14 @@ export const VIEWS = {
     label: "Ações EUA",
     kind: "stock-heatmap",
     description:
-      "Empresas do S&P 500 agrupadas por setor. O tamanho é a capitalização; a cor, a variação do dia. Cotações com atraso de até 15 minutos.",
+      "Empresas do S&P 500 agrupadas por setor. Em “Por tamanho”, escolha valor de mercado, volume ou giro financeiro. A cor inicial mostra a variação do dia. Cotações com atraso de até 15 minutos.",
     config: { exchanges: [], dataSource: "SPX500", grouping: "sector", blockSize: "market_cap_basic", blockColor: "change" },
   },
   br: {
     label: "Ações Brasil",
     kind: "stock-heatmap",
     description:
-      "Empresas do Ibovespa agrupadas por setor. O tamanho é a capitalização; a cor, a variação do dia. Cotações com atraso.",
+      "Empresas do Ibovespa agrupadas por setor. Em “Por tamanho”, escolha valor de mercado, volume ou giro financeiro. A cor inicial mostra a variação do dia. Cotações com atraso.",
     config: { exchanges: [], dataSource: "IBOV", grouping: "sector", blockSize: "market_cap_basic", blockColor: "change" },
   },
 };
@@ -55,16 +55,26 @@ export function liveHeat({ root, read, save }) {
   }
 
   function select(id) {
-    if (!VIEWS[id]) return;
+    if (!Object.hasOwn(VIEWS,id)) return;
     current = id;
     save("liveView", id);
     for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab.dataset.live === id));
     desc.textContent = VIEWS[id].description;
+    root.querySelector("#monthlyLink").href = "?heatmap=" + id + "#atlas";
     host.setAttribute("aria-label", "Mapa de calor do TradingView: " + VIEWS[id].label);
     mount();
   }
 
-  for (const tab of tabs) tab.addEventListener("click", () => select(tab.dataset.live));
+  for (const tab of tabs) tab.addEventListener("click", () => {
+    if (location.hash.startsWith("#live-")) history.replaceState(null,"","#live-"+tab.dataset.live);
+    select(tab.dataset.live);
+  });
+  function fromLink() {
+    const id = location.hash.slice(6);
+    if (location.hash.startsWith("#live-") && Object.hasOwn(VIEWS,id)) select(id);
+  }
+  window.addEventListener("hashchange", fromLink);
   const isVisible = whenVisible(host, mount);
   select(current);
+  fromLink();
 }

@@ -6269,3 +6269,31 @@ dialog.dossier {
 .nwLeadItem .nwItem {
   border-top: 0;
 }
+
+/* Mapa setorial: cabeçalhos e divisórias dentro do mesmo plano ampliável. */
+.isAsset #heatTiles { display:block; min-width:0 }
+.treeBar,.liveActions {display:flex; align-items:center; flex-wrap:wrap; gap:8px 14px; margin:0 0 9px}
+.treeBar label {display:flex; align-items:center; gap:5px; color:var(--soft);font-size:11px}
+.treeBar select {max-width:150px;font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border);padding:5px;border-radius:3px}
+.treeView {position:relative; width:100%;height:clamp(310px,37vw,490px); overflow:hidden;background:#121518;color:#fff;border:1px solid #313438;isolation:isolate;touch-action:pan-y}
+.treeView:not([data-zoom="1.00"]) {touch-action:none}
+.treePlane {position:absolute;inset:0;overflow:hidden}
+.treePlane button {position:absolute; padding:0; margin:0; overflow:hidden; border:1px solid #141719; border-radius:0;color:white;min-width:0;min-height:0}
+.treeSector {background:#15191b;text-align:left;text-indent:6px;white-space:nowrap;font-size:11px;font-weight:650;line-height:1}
+.treeCell {display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1.12;white-space:nowrap;background:#374347;color:#fff;font-variant-numeric:tabular-nums}
+.treeCell strong {font-size:clamp(12px,1.1vw,19px);font-weight:650}
+.treeCell span {font-size:13px;margin-top:2px}
+.treeCell small {font-size:10px;margin-top:5px;opacity:.94}
+.treeCell.up1{background:#316354}.treeCell.up2{background:#22704e}.treeCell.up3{background:#14774d}
+.treeCell.down1{background:#744348}.treeCell.down2{background:#983b44}.treeCell.down3{background:#ae3341}
+.treeCell.neutral{background:#404448}.treeCell.missing{background:#2c3235}
+.treeCell:hover,.treeSector:hover,.treeCell:focus-visible,.treeSector:focus-visible,.treeCell[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
+.treeNav {margin-left:auto;display:flex;align-items:center;background:#15191bea;color:#fff;border:1px solid #7b8084;border-radius:4px}
+.treeNav button {background:transparent;color:inherit;border:0;padding:4px 8px;font-size:16px}
+.treeNav output {font-size:11px;font-variant-numeric:tabular-nums}
+.treeNav button:disabled {opacity:.45}
+.treeTip {position:absolute;z-index:3;pointer-events:none;max-width:min(280px,94%);padding:6px 9px;background:#101315f2;color:#fff;border:1px solid #a3a6a8;font-size:12px}
+.treeNote,.liveActions {font-size:11px;color:var(--soft);line-height:1.45}
+.treeNote {margin-top:6px}
+.liveActions {justify-content:space-between;padding:0 16px}
+@media(max-width:670px){.treeBar{gap:5px}.treeBar label{display:grid}.treeBar select{max-width:100px}.treeView{height:330px}}

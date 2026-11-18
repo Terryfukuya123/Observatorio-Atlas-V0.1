@@ -40,7 +40,20 @@ def identify(row, block):
         return "us", symbol
 
 
-def unit_marks(archive, period, end):
+SECTORS = {
+    "Financeiro": ("ITUB4", "BBDC4", "BBAS3", "V", "MA"),
+    "Materiais básicos": ("VALE3", "SUZB3"), "Energia": ("PETR4",),
+    "Consumo básico": ("ABEV3",), "Indústria": ("WEGE3",),
+    "Consumo cíclico": ("RENT3", "AMZN"),
+    "Tecnologia": ("MSFT", "NVDA", "AMAT"),
+    "Comunicações": ("META", "NFLX", "GOOGL"),
+    "Redes e protocolos": ("BTC", "ETH", "BNB"),
+    "Stablecoins": ("USDT", "USDC", "RLUSD"),
+}
+SECTOR_BY_SYMBOL = {ticker: sector for sector, tickers in SECTORS.items() for ticker in tickers}
+
+
+def unit_marks(archive, period, end, weights=None):
     positions = defaultdict(lambda: defaultdict(lambda: [Decimal(0), Decimal(0)]))
     with ZipFile(archive) as z:
         for block in (4, 7):
@@ -56,6 +69,15 @@ def unit_marks(archive, period, end):
                         continue
                     qty = Decimal(row["QT_POS_FINAL"] or "0")
                     value = Decimal(row["VL_MERC_POS_FINAL"] or "0")
+                    if weights is not None:
+                        item = weights.setdefault(asset, {"position": Decimal(0), "volume": Decimal(0),
+                                                         "complete": True})
+                        item["position"] += max(Decimal(0), value)
+                        trades = [row["VL_AQUIS_NEGOC"], row["VL_VENDA_NEGOC"]]
+                        if all(x.strip() and Decimal(x) >= 0 for x in trades):
+                            item["volume"] += sum(map(Decimal, trades))
+                        else:
+                            item["complete"] = False
                     if qty > 0 and value > 0:
                         pair = positions[asset][row["CNPJ_FUNDO_CLASSE"]]
                         pair[0] += qty
@@ -75,7 +97,7 @@ def fx_at(series, end):
     return {"observed": key, "EUR": brl[key], "USD": str(Decimal(brl[key]) / Decimal(usd[key]))}
 
 
-def build_tiles(first, last, fx_first, fx_last):
+def build_tiles(first, last, fx_first, fx_last, weights=None):
     result = {}
     for group, catalog in CATALOG.items():
         tiles = []
@@ -84,6 +106,10 @@ def build_tiles(first, last, fx_first, fx_last):
             left, right = first.get(key, {}), last.get(key, {})
             common = sorted(left.keys() & right.keys())
             item = dict(symbol=symbol, name=name, funds=len(common), quotes={})
+            weight = (weights or {}).get(key)
+            item["sector"] = SECTOR_BY_SYMBOL[symbol]
+            item["position"] = float(weight["position"]) if weight else None
+            item["volume"] = float(weight["volume"]) if weight and weight["complete"] else None
             if common:
                 for base in ("USD", "EUR"):
                     start_fx, end_fx = Decimal(fx_first[base]), Decimal(fx_last[base])

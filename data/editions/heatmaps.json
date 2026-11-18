@@ -1,7 +1,8 @@
 {
+  "weight_currency": "BRL",
   "from": "2026-09-30",
   "to": "2026-10-31",
-  "generated": "2026-11-18T02:02:21.117248+00:00",
+  "generated": "2026-11-18T14:11:09.624579+00:00",
   "archives": [
     {
       "url": "https://dados.cvm.gov.br/dados/FI/DOC/CDA/DADOS/cda_fi_202609.zip",
@@ -25,7 +26,7 @@
     }
   ],
   "fx_snapshot": "6ef5920c11e5adb540e0c58ad81ad7d6f94d6435e4f5df7dc3bcd115ba333e93",
-  "fx_received": "2026-11-18T01:03:58.767771+00:00",
+  "fx_received": "2026-11-18T11:03:44.184966+00:00",
   "fx_url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml",
   "source": "CVM · CDA",
   "license": "https://opendatacommons.org/licenses/odbl/1-0/",
@@ -45,7 +46,10 @@
             "value": 8.684834904105978,
             "percent": 4.453174191748544
           }
-        }
+        },
+        "sector": "Energia",
+        "position": 5742151550.31,
+        "volume": 3964265997.31
       },
       {
         "symbol": "VALE3",
@@ -60,7 +64,10 @@
             "value": 10.21880972780597,
             "percent": -13.646599586669524
           }
-        }
+        },
+        "sector": "Materiais básicos",
+        "position": 6906227797.0,
+        "volume": 2403843719.02
       },
       {
         "symbol": "ITUB4",
@@ -75,7 +82,10 @@
             "value": 6.374810518684505,
             "percent": -14.949259030640352
           }
-        }
+        },
+        "sector": "Financeiro",
+        "position": 2487943395.45,
+        "volume": 1097609146.86
       },
       {
         "symbol": "BBDC4",
@@ -90,7 +100,10 @@
             "value": 2.2836617676135242,
             "percent": -27.114053892326226
           }
-        }
+        },
+        "sector": "Financeiro",
+        "position": 1511283921.84,
+        "volume": 2508867005.1
       },
       {
         "symbol": "ABEV3",
@@ -105,7 +118,10 @@
             "value": 2.405588874975285,
             "percent": -7.477230490289769
           }
-        }
+        },
+        "sector": "Consumo básico",
+        "position": 540948600.4,
+        "volume": 1008445569.91
       },
       {
         "symbol": "WEGE3",
@@ -120,7 +136,10 @@
             "value": 7.9681012324523826,
             "percent": -4.825815505541973
           }
-        }
+        },
+        "sector": "Indústria",
+        "position": 742973685.48,
+        "volume": 1077232450.88
       },
       {
         "symbol": "BBAS3",
@@ -135,7 +154,10 @@
             "value": 2.713701970605681,
             "percent": -30.50829158323718
           }
-        }
+        },
+        "sector": "Financeiro",
+        "position": 971708078.43,
+        "volume": 2059952026.92
       },
       {
         "symbol": "RENT3",
@@ -150,7 +172,10 @@
             "value": 4.588743162196006,
             "percent": -33.06440005109791
           }
-        }
+        },
+        "sector": "Consumo cíclico",
+        "position": 332692145.3,
+        "volume": 443969214.3
       },
       {
         "symbol": "SUZB3",
@@ -165,7 +190,10 @@
             "value": 8.261385355565809,
             "percent": 10.420330916461815
           }
-        }
+        },
+        "sector": "Materiais básicos",
+        "position": 491321083.99,
+        "volume": 345711255.13
       }
     ],
     "us": [
@@ -182,7 +210,10 @@
             "value": 469.20476064939913,
             "percent": 4.574462013755011
           }
-        }
+        },
+        "sector": "Tecnologia",
+        "position": 380363770.41,
+        "volume": null
       },
       {
         "symbol": "AMZN",
@@ -197,7 +228,10 @@
             "value": 216.07818236033071,
             "percent": -0.8606755952127908
           }
-        }
+        },
+        "sector": "Consumo cíclico",
+        "position": 48201511.52,
+        "volume": null
       },
       {
         "symbol": "V",
@@ -212,7 +246,10 @@
             "value": 371.8234888715511,
             "percent": 18.287614059513675
           }
-        }
+        },
+        "sector": "Financeiro",
+        "position": 38408542.42,
+        "volume": null
       },
       {
         "symbol": "MA",
@@ -227,7 +264,10 @@
             "value": 573.580367715998,
             "percent": 18.896292757832537
           }
-        }
+        },
+        "sector": "Financeiro",
+        "position": 3289709.4,
+        "volume": null
       },
       {
         "symbol": "AMAT",
@@ -242,7 +282,10 @@
             "value": 350.6966397806162,
             "percent": -21.605825608020158
           }
-        }
+        },
+        "sector": "Tecnologia",
+        "position": 844993.88,
+        "volume": null
       },
       {
         "symbol": "GOOGL",
@@ -257,7 +300,10 @@
             "value": 251.4926669815535,
             "percent": -16.497131682217542
           }
-        }
+        },
+        "sector": "Comunicações",
+        "position": 2747446.73,
+        "volume": null
       },
       {
         "symbol": "NVDA",
@@ -272,7 +318,10 @@
             "value": 183.91030324637646,
             "percent": -8.00091892256169
           }
-        }
+        },
+        "sector": "Tecnologia",
+        "position": 1504621.98,
+        "volume": null
       },
       {
         "symbol": "NFLX",
@@ -287,7 +336,10 @@
             "value": 55.810831740591844,
             "percent": -8.308303829313186
           }
-        }
+        },
+        "sector": "Comunicações",
+        "position": 1022955.85,
+        "volume": null
       },
       {
         "symbol": "META",
@@ -302,7 +354,10 @@
             "value": 552.6925210787446,
             "percent": -12.929053431065872
           }
-        }
+        },
+        "sector": "Comunicações",
+        "position": 1412203.01,
+        "volume": null
       }
     ],
     "crypto": [
@@ -319,7 +374,10 @@
             "value": 68729.17192169541,
             "percent": -6.411842922729996
           }
-        }
+        },
+        "sector": "Redes e protocolos",
+        "position": 4320281.44,
+        "volume": 0.0
       },
       {
         "symbol": "ETH",
@@ -334,7 +392,10 @@
             "value": 2004.1861451693946,
             "percent": -14.49628340827662
           }
-        }
+        },
+        "sector": "Redes e protocolos",
+        "position": 311.88,
+        "volume": 0.0
       },
       {
         "symbol": "BNB",
@@ -349,7 +410,10 @@
             "value": 626.2854616980708,
             "percent": -6.881004182240051
           }
-        }
+        },
+        "sector": "Redes e protocolos",
+        "position": 2204.61,
+        "volume": 3541.27
       },
       {
         "symbol": "USDT",
@@ -364,7 +428,10 @@
             "value": 0.897892775142734,
             "percent": 2.610658018413309
           }
-        }
+        },
+        "sector": "Stablecoins",
+        "position": 450111.38,
+        "volume": 468439.42
       },
       {
         "symbol": "USDC",
@@ -379,7 +446,10 @@
             "value": 0.8983412570811968,
             "percent": 2.651127090681337
           }
-        }
+        },
+        "sector": "Stablecoins",
+        "position": 5503.16,
+        "volume": 166611.41
       },
       {
         "symbol": "RLUSD",
@@ -394,7 +464,10 @@
             "value": 0.8987000830053415,
             "percent": 2.661316527137224
           }
-        }
+        },
+        "sector": "Stablecoins",
+        "position": 2528.71,
+        "volume": 328316.81
       }
     ]
   }

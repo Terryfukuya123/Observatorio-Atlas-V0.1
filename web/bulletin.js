@@ -81,7 +81,7 @@ export function renderLocalBulletin(country, group) {
     target.append(
       make(
         "p",
-        "Esta edição não traz notícias ou eventos para este mercado.",
+        item ? "Sem próximo evento de alto impacto cadastrado." : "Esta edição não traz notícias ou eventos para este mercado.",
         "empty",
       ),
     );

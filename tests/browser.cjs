@@ -19,12 +19,14 @@ const path = require("node:path");
       viewport: { width: 1440, height: 1000 },
       locale: "pt-BR",
     });
+    await page.addInitScript(() => localStorage.setItem("oeg.tour","done"));
     const errors = [],
       external = [];
     page.on("pageerror", (e) => errors.push(String(e)));
     page.on("request", (r) => {
-      if (!r.url().startsWith("http://127.0.0.1:8842/")) external.push(r.url());
+      if (r.frame() === page.mainFrame() && !r.url().startsWith("http://127.0.0.1:8842/") && !r.url().startsWith("https://s3.tradingview.com/external-embedding/") && !r.url().startsWith("https://www.tradingview-widget.com/")) external.push(r.url());
     });
+    const initialAtlas = page.waitForResponse(r => r.url().includes("/api/atlas?base=USD") && r.ok()).then(r=>r.json());
     await page.goto("http://127.0.0.1:8842/");
     await page.waitForSelector("#detail .rate");
     await page.evaluate(() => document.fonts.ready);
@@ -35,7 +37,7 @@ const path = require("node:path");
       process.env.OEG_SCREENSHOTS ||
       path.join(__dirname, "../data/run/capturas");
     fs.mkdirSync(media, { recursive: true });
-    await page.waitForSelector(".comparisonPlot .trace2");
+    await page.waitForSelector(".comparisonPlot .trace2", { state:"attached" });
     assert.match(await page.locator("#detail").innerText(), /USD\/BRL/);
     assert.equal(
       await page
@@ -60,14 +62,15 @@ const path = require("node:path");
     await page.click('button[data-sheet="news"]');
     assert.ok(
       (await page.locator("#localBulletin a[href*='bcb.gov.br']").count()) ===
-        2,
+        1,
     );
+    assert.equal(await page.locator('#localBulletin a[href="#agenda"]').count(), 1);
     await page.locator('#pins [data-id="USA"] circle').click();
     assert.equal(
       await page
         .locator("#localBulletin a[href*='federalreserve.gov']")
         .count(),
-      2,
+      1,
     );
     await page.click('button[data-sheet="market"]');
     await page.click('button[data-layer="heat"]');
@@ -77,7 +80,7 @@ const path = require("node:path");
         .locator("#heatTiles .up,#heatTiles .down,#heatTiles .flat")
         .count()) > 0,
     );
-    await page.locator("h1").scrollIntoViewIfNeeded();
+    await page.locator("#atlas").scrollIntoViewIfNeeded();
     await page.screenshot({ path: media + "/heatmap.png" });
     assert.equal(await page.locator("#fxBase").inputValue(), "USD");
     assert.match(
@@ -100,7 +103,25 @@ const path = require("node:path");
         /CVM · CDA mensal/,
       );
       assert.match(await page.locator("#assetDetail").innerText(), /USD/);
-      await page.screenshot({ path: media + "/heatmap-" + key + ".png" });
+      const sizing = page.locator(".treeBar select[aria-label=Área]");
+      if (key === "us") assert.ok(await sizing.locator('option[value="volume"]').isDisabled());
+      if (key === "br") {
+        await sizing.selectOption("volume");
+        const cell = page.locator('[data-asset="PETR4"]');
+        const small = page.locator('[data-asset="SUZB3"]');
+        const rect = await cell.boundingBox(), other = await small.boundingBox();
+        assert.ok(rect.width * rect.height > other.width * other.height * 3);
+        await cell.hover();
+        await page.mouse.wheel(0,-260);
+        await page.waitForFunction(()=>Number(document.querySelector(".treeView").dataset.zoom)>1.25);
+        await page.locator(".treeNav").getByRole("button",{name:"Restaurar enquadramento"}).click();
+        await page.getByLabel("Setor",{exact:true}).selectOption("Financeiro");
+        assert.equal(await page.locator(".treeCell").count(),3);
+        await page.getByLabel("Setor",{exact:true}).selectOption("");
+        await cell.click();
+      }
+      await page.mouse.move(0,0);
+      await page.locator("#atlas").screenshot({ path: media + "/heatmap-" + key + ".png" });
     }
     await page.selectOption("#fxBase", "EUR");
     await page.waitForFunction(() =>
@@ -241,14 +262,14 @@ const path = require("node:path");
     await page.locator("#compareMarket").click();
     assert.equal(await page.locator("#compareA").inputValue(), "BRL");
     await page.route("**/api/atlas?*", async (route) => {
-      const response = await route.fetch();
-      const simulated = await response.json();
+      const simulated = structuredClone(await initialAtlas);
       simulated.source.status = "Fonte indisponível";
       simulated.source.error = "Simulação local de falha";
       simulated.series = {};
       simulated.usd_crosses = {};
       await route.fulfill({ json: simulated });
     });
+    await page.goto("http://127.0.0.1:8842/#atlas");
     await page.reload();
     await page
       .getByText("Fonte indisponível", { exact: true })
@@ -288,10 +309,24 @@ const path = require("node:path");
     await page.locator('[data-asset="MSFT"]').waitFor();
     assert.equal(await page.locator("#fxBase").inputValue(), "USD");
     assert.match(await page.locator("#assetDetail .assetPrice").innerText(), /USD/);
+    const newsTime = new Date().toISOString();
+    await page.route("**/api/noticias", route => route.fulfill({json:{
+      items: Array.from({length:54}, (_,i)=>({id:String(i),title:"Publicação "+i,source:"teste",
+        impact:i===0?3:1, topic:"economia",time:newsTime,link:"https://example.org/"+i})),
+      topics:{economia:"Economia"}, links:{}, sources:[{id:"teste",short:"Fonte de teste",received:newsTime}]
+    }}));
+    await page.goto("http://127.0.0.1:8842/#noticias");
+    await page.reload();
+    await page.locator(".nwMore").click();
+    assert.equal(await page.locator(".nwList .nwTitle").count(),51);
+    await page.locator(".nwMore").click();
+    const headlines=await page.locator(".nwList .nwTitle").allTextContents();
+    assert.equal(new Set(headlines).size,54);
+    assert.equal(headlines.length,54);
     assert.deepEqual(errors, []);
     assert.deepEqual(external, []);
     console.log(
-      "PASS · mapa, 242 geometrias, 12 mercados, seleção, busca, zoom, teclado, região, bloco, temas, período, recarga, origem, ausência, mobile, zero requests externos / erros JS.",
+      "PASS · mapa, 242 geometrias, 12 mercados, seleção, busca, zoom, teclado, região, bloco, temas, período, recarga, origem, ausência, mobile, heatmap setorial, volume, zoom e paginação de notícias; sem erros JS nem origens inesperadas.",
     );
   } finally {
     await browser.close();

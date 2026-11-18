@@ -11,11 +11,11 @@ export const DESKS = {
     lead: "O essencial do dia num só olhar. Cada indicador abre a análise completa.",
     parts: [
       ["pulse", "Pulso do dia"],
+      ["atlas", "Atlas de mercados"],
       ["noticias", "Ao vivo"],
       ["termometro", "Termômetro de risco"],
       ["semana", "Próximos eventos"],
       ["relogio", "Relógio dos pregões"],
-      ["atlas", "Mapa e ficha do país"],
     ],
     next: [
       ["#fluxo", "Brasil", "Quem trouxe e quem tirou dinheiro do país"],
@@ -123,7 +123,7 @@ export function desks({ main, rail, read, save, base = document.title }) {
       const id = hash.slice(2);
       return DESKS[id] ? { desk: id, target: null } : null;
     }
-    const target = hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1)));
+    const target = hash.length > 1 && document.getElementById(hash.slice(1));
     const owner = target && target.closest("[data-desk]");
     if (!owner) return null;
     return { desk: owner.dataset.desk, target: owner === target && heads[owner.dataset.desk] && members(owner.dataset.desk)[0] === target ? null : target };
@@ -154,7 +154,7 @@ export function desks({ main, rail, read, save, base = document.title }) {
       if (!current) show(DESKS[read("desk", "panorama")] ? read("desk", "panorama") : "panorama");
       return;
     }
-    const found = deskOf(location.hash) || { desk: location.hash ? "panorama" : read("desk", "panorama"), target: null };
+    const found = deskOf(location.hash) || { desk: location.hash || new URLSearchParams(location.search).has("heatmap") ? "panorama" : read("desk", "panorama"), target: null };
     if (!DESKS[found.desk]) found.desk = "panorama";
     const changed = show(found.desk);
     if (found.target) requestAnimationFrame(() => found.target.scrollIntoView({ block: "start" }));

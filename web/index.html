@@ -91,93 +91,6 @@
         <p class="pulseHeadline" aria-live="polite"></p>
         <div class="pulseGrid"><p class="empty">Carregando indicadores…</p></div>
       </section>
-      <section id="noticias" class="card nwCard" data-desk="panorama" aria-labelledby="nwTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="news"></i>
-            <h2 id="nwTitle">Ao vivo · o que acabou de sair</h2>
-          </div>
-          <span class="nwStamp unit-label">Consultando canais oficiais…</span>
-        </div>
-        <p class="nwLead">
-          Notas do Banco Central (inclusive intervenções no câmbio), governo e Fazenda, IBGE, fatos
-          relevantes das companhias, Fed e BCE, minutos depois de publicados. Cada item traz o tema, o
-          impacto provável no mercado e o atalho para a análise na plataforma.
-        </p>
-        <div class="nwControls">
-          <div class="nwTopics layerTabs" role="group" aria-label="Tema"></div>
-          <div class="nwOptions">
-            <div class="layerTabs" role="group" aria-label="Período">
-              <button type="button" data-window="24" aria-pressed="true">24 horas</button>
-              <button type="button" data-window="168" aria-pressed="false">7 dias</button>
-            </div>
-            <button type="button" class="nwToggle" data-high aria-pressed="false"><b class="nwDot"></b>Só alto impacto</button>
-            <button type="button" class="nwToggle" data-notify aria-pressed="false" hidden>Avisar alto impacto</button>
-          </div>
-        </div>
-        <div class="nwList" aria-live="polite"><p class="empty">Carregando notícias…</p></div>
-        <details class="nwHow">
-          <summary>Como o impacto é definido</summary>
-          <dl>
-            <div><dt><b class="nwDot" data-level="3"></b>Alto</dt><dd>Decisão de juros (Copom, Fed, BCE), leilão ou intervenção no câmbio, medida fiscal (IOF, bloqueio, meta, reforma) e dados de peso (IPCA, PIB, desemprego, CPI, payroll).</dd></div>
-            <div><dt><b class="nwDot" data-level="2"></b>Médio</dt><dd>Política monetária e fiscal em geral, câmbio, dados secundários, novas regras e fatos relevantes de empresas grandes ou com operações societárias e proventos.</dd></div>
-            <div><dt><b class="nwDot" data-level="1"></b>Baixo</dt><dd>O restante. Rotinas como rolagem de swaps, estudos e relatórios periódicos valem um nível a menos.</dd></div>
-          </dl>
-          <p>As regras são palavras-chave fixas, iguais para todas as fontes, sem modelo de IA. Erram para os dois lados: leia a fonte antes de agir.</p>
-        </details>
-        <p class="sourceNote">
-          <span class="nwStatus"></span>. Fontes: Banco Central do Brasil, Agência Brasil (CC BY 4.0), IBGE,
-          CVM (fatos relevantes, com alguns dias de atraso), Federal Reserve e Banco Central Europeu.
-          Mostramos título, resumo curto e link; o texto completo fica na fonte. Notícias de agências
-          privadas (Reuters, Bloomberg, Valor) exigem licença.
-        </p>
-      </section>
-      <section id="termometro" class="card rkCard" data-desk="panorama" aria-labelledby="rkTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="globe"></i>
-            <h2 id="rkTitle">Termômetro de risco · Brasil</h2>
-          </div>
-          <span class="unit-label">0 = aversão · 100 = apetite</span>
-        </div>
-        <div class="rkBody"><p class="empty">Calculando o termômetro…</p></div>
-        <p class="sourceNote">
-          Placar calculado pelo Observatório com regras fixas: cada um dos nove sinais recebe
-          nota de −2 a +2, e a média vira um número de 0 a 100. A seta compara com o mesmo
-          placar de um mês atrás. Leitura sintética para orientar a análise, não recomendação
-          de investimento.
-        </p>
-      </section>
-      <section id="semana" class="card agCard" data-desk="panorama" aria-labelledby="weekTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="calendar"></i>
-            <h2 id="weekTitle">Próximos eventos</h2>
-          </div>
-          <span class="agSummary unit-label"></span>
-        </div>
-        <div class="agList"></div>
-        <p class="sourceNote">
-          Eventos de peso das próximas duas semanas, no horário deste dispositivo. Toque num evento
-          para ver o número anterior, o que o mercado espera e o que muda se vier acima ou
-          abaixo. <a href="#agenda">Agenda completa →</a>
-        </p>
-      </section>
-      <section id="relogio" class="card clockCard" data-desk="panorama" aria-labelledby="clockTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="calendar"></i>
-            <h2 id="clockTitle">Relógio dos pregões</h2>
-          </div>
-          <span class="clockSummary unit-label"></span>
-        </div>
-        <div class="clockBody"></div>
-        <p class="sourceNote">
-          Horário regular de cada bolsa no fuso deste dispositivo, com o intervalo de
-          almoço das bolsas asiáticas. Feriados e leilões de abertura e fechamento não
-          entram. A linha dourada marca agora.
-        </p>
-      </section>
       <section class="hero" data-desk="panorama">
         <div class="atlasSettings">
           <p id="edition">Referências diárias do Banco Central Europeu</p>
@@ -298,6 +211,93 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="noticias" class="card nwCard" data-desk="panorama" aria-labelledby="nwTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="news"></i>
+            <h2 id="nwTitle">Ao vivo · o que acabou de sair</h2>
+          </div>
+          <span class="nwStamp unit-label">Consultando canais oficiais…</span>
+        </div>
+        <p class="nwLead">
+          Notas do Banco Central (inclusive intervenções no câmbio), governo e Fazenda, IBGE, fatos
+          relevantes das companhias, Fed e BCE, minutos depois de publicados. Cada item traz o tema, o
+          impacto provável no mercado e o atalho para a análise na plataforma.
+        </p>
+        <div class="nwControls">
+          <div class="nwTopics layerTabs" role="group" aria-label="Tema"></div>
+          <div class="nwOptions">
+            <div class="layerTabs" role="group" aria-label="Período">
+              <button type="button" data-window="24" aria-pressed="true">24 horas</button>
+              <button type="button" data-window="168" aria-pressed="false">7 dias</button>
+            </div>
+            <button type="button" class="nwToggle" data-high aria-pressed="false"><b class="nwDot"></b>Só alto impacto</button>
+            <button type="button" class="nwToggle" data-notify aria-pressed="false" hidden>Avisar alto impacto</button>
+          </div>
+        </div>
+        <div class="nwList" aria-live="polite"><p class="empty">Carregando notícias…</p></div>
+        <details class="nwHow">
+          <summary>Como o impacto é definido</summary>
+          <dl>
+            <div><dt><b class="nwDot" data-level="3"></b>Alto</dt><dd>Decisão de juros (Copom, Fed, BCE), leilão ou intervenção no câmbio, medida fiscal (IOF, bloqueio, meta, reforma) e dados de peso (IPCA, PIB, desemprego, CPI, payroll).</dd></div>
+            <div><dt><b class="nwDot" data-level="2"></b>Médio</dt><dd>Política monetária e fiscal em geral, câmbio, dados secundários, novas regras e fatos relevantes de empresas grandes ou com operações societárias e proventos.</dd></div>
+            <div><dt><b class="nwDot" data-level="1"></b>Baixo</dt><dd>O restante. Rotinas como rolagem de swaps, estudos e relatórios periódicos valem um nível a menos.</dd></div>
+          </dl>
+          <p>As regras são palavras-chave fixas, iguais para todas as fontes, sem modelo de IA. Erram para os dois lados: leia a fonte antes de agir.</p>
+        </details>
+        <p class="sourceNote">
+          <span class="nwStatus"></span>. Fontes: Banco Central do Brasil, Agência Brasil (CC BY 4.0), IBGE,
+          CVM (fatos relevantes, com alguns dias de atraso), Federal Reserve e Banco Central Europeu.
+          Mostramos título, resumo curto e link; o texto completo fica na fonte. Notícias de agências
+          privadas (Reuters, Bloomberg, Valor) exigem licença.
+        </p>
+      </section>
+      <section id="termometro" class="card rkCard" data-desk="panorama" aria-labelledby="rkTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="globe"></i>
+            <h2 id="rkTitle">Termômetro de risco · Brasil</h2>
+          </div>
+          <span class="unit-label">0 = aversão · 100 = apetite</span>
+        </div>
+        <div class="rkBody"><p class="empty">Calculando o termômetro…</p></div>
+        <p class="sourceNote">
+          Placar calculado pelo Observatório com regras fixas: cada um dos nove sinais recebe
+          nota de −2 a +2, e a média vira um número de 0 a 100. A seta compara com o mesmo
+          placar de um mês atrás. Leitura sintética para orientar a análise, não recomendação
+          de investimento.
+        </p>
+      </section>
+      <section id="semana" class="card agCard" data-desk="panorama" aria-labelledby="weekTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="calendar"></i>
+            <h2 id="weekTitle">Próximos eventos</h2>
+          </div>
+          <span class="agSummary unit-label"></span>
+        </div>
+        <div class="agList"></div>
+        <p class="sourceNote">
+          Eventos de peso das próximas duas semanas, no horário deste dispositivo. Toque num evento
+          para ver o número anterior, o que o mercado espera e o que muda se vier acima ou
+          abaixo. <a href="#agenda">Agenda completa →</a>
+        </p>
+      </section>
+      <section id="relogio" class="card clockCard" data-desk="panorama" aria-labelledby="clockTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="calendar"></i>
+            <h2 id="clockTitle">Relógio dos pregões</h2>
+          </div>
+          <span class="clockSummary unit-label"></span>
+        </div>
+        <div class="clockBody"></div>
+        <p class="sourceNote">
+          Horário regular de cada bolsa no fuso deste dispositivo, com o intervalo de
+          almoço das bolsas asiáticas. Feriados e leilões de abertura e fechamento não
+          entram. A linha dourada marca agora.
+        </p>
+      </section>
       <section id="bolsas" data-desk="mercados" class="card liveCard bsCard" aria-labelledby="bsTitle">
         <div class="cardhead">
           <div class="headtitle">
@@ -418,12 +418,13 @@
             <h2 id="liveTitle">Mapas de calor ao vivo</h2>
           </div>
           <div class="layerTabs" role="group" aria-label="Mercado do mapa ao vivo">
-            <button data-live="crypto" aria-pressed="true">Cripto</button>
-            <button data-live="us" aria-pressed="false">Ações EUA</button>
-            <button data-live="br" aria-pressed="false">Ações Brasil</button>
+            <button id="live-crypto" data-live="crypto" aria-pressed="true">Cripto</button>
+            <button id="live-us" data-live="us" aria-pressed="false">Ações EUA</button>
+            <button id="live-br" data-live="br" aria-pressed="false">Ações Brasil</button>
           </div>
         </div>
         <p id="liveDesc" class="liveDesc"></p>
+        <div class="liveActions"><span>Role sobre o mapa para ampliar. Passe o cursor sobre um ativo para ver os detalhes.</span><a id="monthlyLink" href="?heatmap=crypto#atlas">Ver posições e volumes dos fundos →</a></div>
         <div id="liveHost" class="liveHost" role="region">
           <div class="liveState"><strong>Role até aqui para carregar o mapa</strong></div>
         </div>

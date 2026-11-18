@@ -17,7 +17,7 @@ São cestas de acompanhamento escolhidas pela presença de posições identific�
 1. O servidor lê os blocos 4 e 7 dos informes públicos de setembro e outubro. Filtra posições por identificador, tipo de ativo e, para ações dos EUA, bolsa e país. As coincidências com derivativos, ETFs e recibos são descartadas.
 2. Para cada fundo e ativo, soma quantidade e valor das posições positivas. Exige pelo menos R$ 100 de posição nos dois meses. Divide o valor declarado em reais pela quantidade para obter uma marcação contábil por unidade.
 3. Converte cada marcação à moeda escolhida pela referência do BCE do último dia TARGET até a competência. Nesta edição, as datas cambiais são 30/09 e 30/10. O fechamento contábil de outubro é 31/10.
-4. Calcula a variação de cada fundo presente nos dois meses. A cor representa a mediana dessas variações. A ficha exibe a mediana das marcações finais, o intervalo e o número de fundos comparáveis. Áreas iguais permitem comparar ativos sem sugerir peso por capitalização.
+4. Calcula a variação de cada fundo presente nos dois meses. A cor representa a mediana dessas variações. A ficha exibe a mediana das marcações finais, o intervalo e o número de fundos comparáveis. No mapa setorial, a área padrão representa o valor das posições declaradas no fim do mês. O seletor de área também oferece compras mais vendas quando os dois campos estão disponíveis.
 5. Valores refletem critérios de marcação dos declarantes e conversão cambial. Tratam-se de marcações mensais sem ajustes por dividendos ou desdobramentos. Especialmente nos tokens pareados ao dólar, a variação também pode refletir a diferença entre câmbio contábil do fundo e referência do BCE.
 
 ## Operação e direitos
@@ -29,3 +29,9 @@ O conjunto CDA é publicado pela CVM sob ODbL 1.0. A base derivada é oferecida 
 O acesso à camada mensal dispara uma verificação da competência. A atualização consulta dois ZIPs identificados por AAAAMM e conserva a última edição em caso de atraso, falha, ausência de câmbio ou falta de amostra em uma classe inteira. A publicação é atômica, com uma tentativa por dia quando a edição está vencida. Cada edição tem geração identificada. Revisões posteriores da mesma competência podem ser incorporadas pelo comando no README.
 
 O câmbio usa uma coleta compartilhada com validade de quatro horas. As consultas do navegador permanecem locais. O próximo incremento para acompanhamento de pregão é um feed com autorização de exibição, calendário de negociação e distinção entre sessão aberta e fechamento. [Condições do TradingView](https://www.tradingview.com/policies/) · [Licenças CoinGecko](https://support.coingecko.com/articles/1043089972-what-are-the-differences-between-commercial-and-custom-licenses).
+
+## Área, participação e zoom
+
+Os pesos usam a competência final da edição. A posição soma o valor das posições positivas identificadas. O volume soma compras e vendas em reais dos informes selecionados, inclusive negócios cuja posição final ficou zerada. Se uma das pernas vier em branco em qualquer linha do ativo, sua participação em volume fica indisponível. O denominador é a soma dos pesos conhecidos da cesta do mercado escolhido. Focar um setor amplia sua distribuição e preserva o denominador para a leitura da participação na cesta.
+
+Os setores são agrupamentos editoriais do Observatório. Os valores declarados e a amostra de fundos presentes nos dois meses respondem a perguntas diferentes. A ficha identifica as duas medidas e o tamanho da amostra de retorno. A roda amplia no ponto do cursor, o arraste desloca o mapa ampliado e o seletor de ativo localiza posições pequenas ou sem área. No mapa de pregão, os agrupamentos e as métricas são fornecidos diretamente pelo widget.

@@ -35,13 +35,15 @@ function message(host, title, detail, retry) {
 
 // Monta (ou remonta) um widget em `host`. `kind` é o nome do widget, como "stock-heatmap".
 export function tvWidget(host, { kind, config, title, onFail }) {
-  const run = (runs.get(host) || 0) + 1;
+  runs.get(host)?.abort();
+  const run = new AbortController();
   runs.set(host, run);
-  const current = () => runs.get(host) === run;
+  const current = () => !run.signal.aborted;
   host.dataset.status = "loading";
   message(host, "Conectando ao TradingView", "O widget público pode levar alguns segundos para responder.");
   const fail = (text) => {
     if (!current()) return;
+    run.abort();
     host.dataset.status = "error";
     onFail?.();
     message(host, text, "", () => tvWidget(host, { kind, config, title, onFail }));
@@ -65,9 +67,10 @@ export function tvWidget(host, { kind, config, title, onFail }) {
         host.dataset.status = "loaded";
         host.querySelector(".liveState")?.remove();
       },
-      { once: true },
+      { once: true, signal: run.signal },
     );
   });
+  run.signal.addEventListener("abort", () => { clearTimeout(timer); observer.disconnect(); }, { once: true });
   observer.observe(container, { childList: true, subtree: true });
   const script = document.createElement("script");
   script.async = true;

@@ -57,6 +57,31 @@ class MonthlyMarks(TestCase):
         self.assertEqual(item["quotes"]["EUR"]["percent"], 20.0)
         self.assertEqual(result["crypto"][0]["quotes"], {})
 
+    def test_monthly_position_and_trades_include_exited_assets(self):
+        from io import BytesIO
+        from zipfile import ZipFile
+        from providers.cvm import unit_marks
+        zfile = BytesIO()
+        cols = "DT_COMPTC;CNPJ_FUNDO_CLASSE;CD_ATIVO;TP_APLIC;QT_POS_FINAL;VL_MERC_POS_FINAL;VL_AQUIS_NEGOC;VL_VENDA_NEGOC"
+        rows = [cols,
+                "2026-10-31;A;PETR4;Ações;10;200;10;20",
+                "2026-10-31;B;PETR4;Ações;0;0;0;100",
+                "2026-10-31;A;VALE3;Ações;1;180;;50",
+                "2026-10-31;A;ABEV3;Ações;3;150;0;0"]
+        with ZipFile(zfile, "w") as z:
+            z.writestr("cda_fi_BLC_4_202610.csv", "\n".join(rows).encode("latin1"))
+            z.writestr("cda_fi_BLC_7_202610.csv", "")
+        weights = {}
+        marks = unit_marks(zfile, "202610", date(2026,10,31), weights)
+        fx = {"USD":"5","EUR":"6"}
+        assets = {a["symbol"]: a for a in build_tiles(marks,marks,fx,fx,weights)["br"]}
+        self.assertEqual(assets["PETR4"]["volume"],130)
+        self.assertEqual(assets["PETR4"]["position"],200)
+        self.assertEqual(assets["PETR4"]["funds"],1)
+        self.assertIsNone(assets["VALE3"]["volume"])
+        self.assertEqual(assets["ABEV3"]["volume"],0)
+        self.assertIsNone(assets["ITUB4"]["position"])
+
     def test_currency_dates_weekend_and_gap(self):
         s = {"BRL": {"history": [("2026-10-30", "6")]},
              "USD": {"history": [("2026-10-30", "1.2")]}}

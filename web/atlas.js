@@ -418,6 +418,7 @@ export function atlas({ read, save, compare, spaces }) {
     const assets = heat && state.group !== "fx";
     $(".workspace").classList.toggle("isAsset", assets);
     $("#assetDetail").hidden = !assets;
+    $("#mapTitle").textContent = assets ? "Carteiras dos fundos por setor" : "Mapa e ficha do país";
     $(".contexthead h2").textContent = assets
       ? "Ficha do ativo"
       : "Ficha do mercado";
@@ -457,7 +458,7 @@ export function atlas({ read, save, compare, spaces }) {
           map?.draw(state.id, values, "macro", lastDate, paint);
         },
         () => {
-          if (version !== paintVersion) return;
+          if (version !== paintVersion || state.layer !== "macro") return;
           $("#mapScope").textContent = "Indicador indisponível no momento";
           $("#mapLegend").innerHTML = "";
           map?.draw(state.id, values, "macro", lastDate, null);
@@ -749,14 +750,11 @@ export function atlas({ read, save, compare, spaces }) {
               "</small></button>",
           )
           .join("");
-    $("#results").innerHTML =
-      (destinations
-        ? '<h3 class="resultHead">' + (raw ? "Ir para" : "Sugestões") + "</h3>" + destinations
-        : "") +
-        (markets
-          ? '<h3 class="resultHead">Mercados e países</h3>' + markets
-          : "") ||
-      '<p class="empty">Nada encontrado. Tente um país, uma moeda ou um assunto, como Selic ou fluxo.</p>';
+    const marketSection = markets ? '<h3 class="resultHead">Mercados e países</h3>' + markets : "";
+    const destinationSection = destinations ? '<h3 class="resultHead">' + (raw ? "Ir para" : "Sugestões") + "</h3>" + destinations : "";
+    const exactMarket = raw && hits.some(k => [k, info(k).name, info(k).index].some(v => v && plain(v) === q));
+    $("#results").innerHTML = (exactMarket ? marketSection + destinationSection : destinationSection + marketSection)
+      || '<p class="empty">Nada encontrado. Tente um país, uma moeda ou um assunto, como Selic ou fluxo.</p>';
     $("#results").scrollTop = 0;
   }
   function search() {

@@ -206,3 +206,8 @@ Também confere o painel de saúde das fontes.
 O teste de navegador requer pelo menos uma captura válida do BCE e verifica também uma falha simulada isolada na página de teste. O navegador alternativo pode ser definido em `OEG_BROWSER`. A bateria Python é offline.
 
 [Fontes e permissões](docs/fontes.md) · [Contrato de dados](docs/contrato.md) · [Relatório da primeira entrega](docs/entrega-1.md)
+
+
+## Revisão do atlas e das notícias — 18/11/2026
+
+No Panorama, o atlas vem logo após o Pulso. O mapa mensal agrupa os ativos por setor e dimensiona os blocos pelas posições ou pelo volume informado pelos fundos. No mapa de mercado, a barra do TradingView permite alterar o tamanho, a cor e o agrupamento. Links diretos preservam o mercado escolhido entre as duas vistas. [Auditoria de continuidade](docs/auditoria-2026-11-18.md).

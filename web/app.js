@@ -69,7 +69,8 @@ dossier({
   },
 });
 
-await panorama.ready;
 whenShown($("#aovivo"), () => liveHeat({ root: $("#aovivo"), read, save }));
 whenShown($("#fluxo"), () => capitalFlows({ root: $("#fluxo"), read, save }));
 whenShown($("#fundos"), () => fundFlows({ root: $("#fundos"), read, save }));
+
+await panorama.ready;

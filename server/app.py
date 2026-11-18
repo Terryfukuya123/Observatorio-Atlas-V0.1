@@ -174,6 +174,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 class Server(ThreadingHTTPServer):
+    request_queue_size = 64  # Módulos e painéis abrem conexões em paralelo na primeira visita.
     # No Windows, SO_REUSEADDR permite que um segundo processo escute na mesma porta e
     # receba parte das requisições. Sem ele, a segunda instância falha ao iniciar.
     allow_reuse_address = sys.platform != "win32"

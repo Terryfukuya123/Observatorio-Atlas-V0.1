@@ -102,12 +102,13 @@ export function liveNews({ root, flash, read, save }) {
     }
     // Destaque: o item de maior impacto do período (o mais recente em caso de empate).
     const lead = high ? null : picked.find((i) => i.impact === 3);
+    const timeline = lead ? picked.filter((i) => i !== lead) : picked;
     let html = lead
       ? '<div class="nwLeadItem"><h3 class="nwDay">Mais importante ' + (span === "24" ? "nas últimas 24 horas" : "nos últimos 7 dias") +
         '</h3><ol class="nwItems">' + row(lead, data, { fresh: isFresh(lead) }) + "</ol></div>"
       : "";
     let day = null;
-    for (const item of picked.slice(0, shown)) {
+    for (const item of timeline.slice(0, shown)) {
       const label = dayLabel(new Date(item.time), new Date(now));
       if (label !== day) {
         if (day) html += "</ol>";
@@ -116,8 +117,8 @@ export function liveNews({ root, flash, read, save }) {
       }
       html += row(item, data, { fresh: isFresh(item) });
     }
-    html += "</ol>";
-    if (picked.length > shown) html += '<button type="button" class="nwMore" data-more>Mostrar mais ' + Math.min(PAGE, picked.length - shown) + " de " + (picked.length - shown) + "</button>";
+    if (day) html += "</ol>";
+    if (timeline.length > shown) html += '<button type="button" class="nwMore" data-more>Mostrar mais ' + Math.min(PAGE, timeline.length - shown) + " de " + (timeline.length - shown) + "</button>";
     list.innerHTML = html;
   }
 
@@ -201,7 +202,7 @@ export function liveNews({ root, flash, read, save }) {
       });
       return;
     } else return;
-    if (!t.dataset.more) shown = PAGE;
+    if (!t.hasAttribute("data-more")) shown = PAGE;
     draw();
   });
   flash?.addEventListener("click", (event) => {
