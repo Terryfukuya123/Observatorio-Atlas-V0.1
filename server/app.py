@@ -92,7 +92,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/funds.js", "/desks.js", "/pulse.js", "/symbols.js", "/clock.js", "/fx-board.js", "/compass.js", "/cycle-clock.js", "/finder.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/funds.js", "/desks.js", "/pulse.js", "/symbols.js", "/clock.js", "/fx-board.js", "/compass.js", "/cycle-clock.js", "/finder.js", "/panel-store.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)

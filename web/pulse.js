@@ -2,6 +2,7 @@
 // e o caminho para a análise completa. Lê as mesmas APIs das seções detalhadas.
 import { MARKETS, session } from "./indices.js";
 import { flag, pair, round } from "./symbols.js";
+import { ALIAS, DEFAULT_PANEL, isDefault, keyOf, panel, setPanel } from "./panel-store.js";
 
 const nf = (digits) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const n1 = nf(1);
@@ -203,6 +204,72 @@ const builders = {
   },
 };
 
+// Nome curto de cada cartão fixo, para o catálogo do Meu painel.
+const LABELS = {
+  dollar: "Dólar · PTAX",
+  selic: "Selic meta",
+  inflation: "IPCA em 12 meses",
+  flow: "Fluxo cambial no ano",
+  funds: "Fundos no ano",
+  treasury: "Juros EUA · 10 anos",
+  reserves: "Reservas internacionais",
+  sessions: "Bolsas abertas agora",
+};
+
+// Todas as séries do painel Brasil (BCB, IBGE e PTAX) que podem virar cartão.
+function seriesOf(macro) {
+  const list = [...(macro?.brasil || []), ...(macro?.ibge || [])];
+  for (const [code, p] of Object.entries(macro?.ptax || {})) {
+    const prev = p.history?.length > 1 ? Number(p.history.at(-2)[1]) : null;
+    list.push({
+      ...p,
+      id: "ptax:" + code,
+      name: "PTAX " + p.instrument,
+      unit: "R$",
+      decimals: 4,
+      group: "Câmbio",
+      frequency: "Diária",
+      previous: prev == null ? null : { delta: String(Number(p.value) - prev) },
+    });
+  }
+  return list.filter((x) => x.value != null);
+}
+
+function shown(s) {
+  const v = num(s.value);
+  const d = Number(s.decimals ?? 2);
+  if (s.unit === "R$") return "R$ " + n4.format(v);
+  if (s.unit === "US$ milhões") return "US$ " + n1.format(v / 1000) + " bi";
+  if (s.unit === "R$ milhões") return v >= 1e6 ? "R$ " + n2.format(v / 1e6) + " tri" : "R$ " + n1.format(v / 1000) + " bi";
+  if (String(s.unit).startsWith("%")) return nf(d).format(v) + "%";
+  return nf(d).format(v);
+}
+
+function seriesTile(s) {
+  const delta = num(s.previous?.delta);
+  const pct = String(s.unit).startsWith("%");
+  const big = s.unit === "US$ milhões" || s.unit === "R$ milhões";
+  const scale = !big ? null : s.unit === "R$ milhões" && num(s.value) >= 1e6 ? [1e6, " tri"] : [1000, " bi"];
+  const d = s.unit === "R$" ? 4 : Number(s.decimals ?? 2);
+  const deltaText =
+    delta == null || !Number.isFinite(delta)
+      ? ""
+      : sign(delta) + (s.unit === "R$" ? "R$ " : "") + (scale ? nf(1).format(Math.abs(delta) / scale[0]) + scale[1] : nf(d).format(Math.abs(delta)) + (pct ? " p.p." : "")) + " na leitura anterior";
+  const when = s.period || (s.frequency === "Mensal" ? monthName(s.observed) + "/" + s.observed.slice(2, 4) : s.frequency === "Anual" ? s.observed.slice(0, 4) : day(s.observed));
+  const fx = s.id.startsWith("ptax:");
+  return tile({
+    href: fx ? "#moedas" : "#brasil",
+    label: s.name,
+    icon: fx ? pair(s.id.slice(5), "BRL") : flag("BRA"),
+    value: shown(s),
+    delta: deltaText,
+    deltaTone: tone(delta),
+    chart: mini((s.history || []).slice(-60).map(([, v]) => v)),
+    read: (s.group || "Brasil") + " · " + when,
+    go: fx ? "Força das moedas" : "Painel Brasil",
+  });
+}
+
 // Manchete: os números do pulso numa frase corrida, com o sinal de cada um.
 function headline({ macro, flows, funds }) {
   const b = (text, t = "") => "<b" + (t ? ' data-tone="' + t + '"' : "") + ">" + esc(text) + "</b>";
@@ -234,21 +301,56 @@ export function pulse({ root }) {
   const grid = root.querySelector(".pulseGrid");
   const lead = root.querySelector(".pulseHeadline");
   const stamp = root.querySelector(".pulseStamp");
+  const mine = root.querySelector(".pulseMine");
+  const toggle = root.querySelector(".pulseCustomize");
+  const picker = root.querySelector(".pulsePicker");
   let sources = {};
 
+  function build(key) {
+    if (builders[key]) {
+      const source = { flow: "flows", funds: "funds", treasury: "curve", sessions: null }[key] ?? "macro";
+      return builders[key](source ? sources[source] : undefined);
+    }
+    const s = key.startsWith("s:") && seriesOf(sources.macro).find((x) => x.id === key.slice(2));
+    return s ? seriesTile(s) : null;
+  }
+
   function draw() {
-    const tiles = [
-      builders.dollar(sources.macro),
-      builders.selic(sources.macro),
-      builders.inflation(sources.macro),
-      builders.flow(sources.flows),
-      builders.funds(sources.funds),
-      builders.treasury(sources.curve),
-      builders.reserves(sources.macro),
-      builders.sessions(),
-    ].filter(Boolean);
-    grid.innerHTML = tiles.join("") || '<p class="empty">Carregando indicadores…</p>';
+    const list = panel();
+    const tiles = list
+      .map((key) => {
+        const html = build(key);
+        if (!html) return "";
+        const name = LABELS[key] || seriesOf(sources.macro).find((x) => "s:" + x.id === key)?.name || key;
+        return '<div class="pulseCell" data-key="' + esc(key) + '">' + html +
+          '<button type="button" class="pulseDrop" data-drop="' + esc(key) + '" title="Tirar do Meu painel" aria-label="Tirar ' + esc(name) + ' do Meu painel">×</button></div>';
+      })
+      .filter(Boolean);
+    grid.innerHTML =
+      tiles.join("") ||
+      (!sources.macro && list.length ? '<p class="empty">Carregando indicadores…</p>' : '<p class="empty">Seu painel está vazio. Use <b>Personalizar</b> para escolher os indicadores.</p>');
     if (lead && sources.macro) lead.innerHTML = headline(sources);
+    mine.hidden = isDefault(list);
+    if (!picker.hidden) drawPicker();
+  }
+
+  // Catálogo: destaques do Pulso e todas as séries do painel Brasil, por grupo.
+  function drawPicker() {
+    const list = panel();
+    const chip = (key, label, icon = "") =>
+      '<button type="button" class="pickChip" data-key="' + esc(key) + '" aria-pressed="' + list.includes(key) + '">' + icon + esc(label) + "</button>";
+    const groups = new Map([["Destaques", DEFAULT_PANEL.map((k) => chip(k, LABELS[k]))]]);
+    for (const s of seriesOf(sources.macro)) {
+      if (ALIAS[s.id]) continue;
+      const g = s.group || "Brasil";
+      if (!groups.has(g)) groups.set(g, []);
+      groups.get(g).push(chip(keyOf(s.id), s.name, s.id.startsWith("ptax:") ? pair(s.id.slice(5), "BRL") : ""));
+    }
+    picker.innerHTML =
+      '<p class="pickLead">Escolha o que aparece no seu Pulso. A escolha fica salva neste navegador. Nos cartões do Brasil, o alfinete também fixa o indicador aqui.</p>' +
+      [...groups].map(([g, chips]) => '<div class="pickGroup"><h3>' + esc(g) + "</h3><div>" + chips.join("") + "</div></div>").join("") +
+      '<div class="pickFoot"><span>' + list.length + " indicador" + (list.length === 1 ? "" : "es") + ' no painel</span><button type="button" class="pickReset"' +
+      (isDefault(list) ? " disabled" : "") + ">Restaurar padrão</button></div>";
   }
 
   async function load() {
@@ -259,6 +361,27 @@ export function pulse({ root }) {
     stamp.textContent = "Atualizado às " + new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(new Date());
     draw();
   }
+
+  toggle.addEventListener("click", () => {
+    picker.hidden = !picker.hidden;
+    toggle.setAttribute("aria-expanded", String(!picker.hidden));
+    toggle.textContent = picker.hidden ? "Personalizar" : "Concluir";
+    if (!picker.hidden) drawPicker();
+  });
+  picker.addEventListener("click", (event) => {
+    const chip = event.target.closest(".pickChip");
+    if (chip) {
+      const list = panel();
+      setPanel(list.includes(chip.dataset.key) ? list.filter((k) => k !== chip.dataset.key) : [...list, chip.dataset.key]);
+    } else if (event.target.closest(".pickReset")) setPanel(DEFAULT_PANEL);
+  });
+  grid.addEventListener("click", (event) => {
+    const drop = event.target.closest("[data-drop]");
+    if (!drop) return;
+    event.preventDefault();
+    setPanel(panel().filter((k) => k !== drop.dataset.drop));
+  });
+  window.addEventListener("oeg:panel", draw);
 
   draw();
   load();

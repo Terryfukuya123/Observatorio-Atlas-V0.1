@@ -2,6 +2,7 @@
 // bloco macro da ficha do país e camada de indicadores do mapa.
 import { svg } from "./map.js";
 import { round } from "./symbols.js";
+import { keyOf, pinButton } from "./panel-store.js";
 
 const esc = (v) =>
   String(v ?? "").replace(
@@ -128,7 +129,7 @@ export function macroLayer({ onIndicator }) {
     card.className = "macroTile";
     card.dataset.series = s.id;
     card.innerHTML =
-      "<h4>" + esc(s.name) + "</h4>" +
+      "<h4>" + esc(s.name) + "</h4>" + pinButton(keyOf(s.id), s.name) +
       '<div class="macroValue"><b>' + esc(shown) + "</b>" +
       (s.previous ? signed(s.previous.delta, s.unit === "R$" ? "" : s.unit, s.unit === "R$" ? 4 : s.decimals) : "") +
       "</div>" +

@@ -70,8 +70,11 @@
       <section id="pulse" data-desk="panorama" aria-labelledby="pulseTitle">
         <div class="sectionTitle">
           <h2 id="pulseTitle">Pulso do dia</h2>
+          <span class="pulseMine" hidden>Meu painel</span>
           <span class="pulseStamp">Consultando fontes…</span>
+          <button type="button" class="pulseCustomize" aria-expanded="false" aria-controls="pulsePicker">Personalizar</button>
         </div>
+        <div id="pulsePicker" class="pulsePicker" hidden></div>
         <p class="pulseHeadline" aria-live="polite"></p>
         <div class="pulseGrid"><p class="empty">Carregando indicadores…</p></div>
       </section>
