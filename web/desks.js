@@ -49,6 +49,7 @@ export const DESKS = {
       ["bussola", "Bússola dos juros"],
       ["tesouro", "Mercado precifica"],
       ["inflacao", "Qualidade da inflação"],
+      ["surpresas", "Surpresas"],
       ["brasil", "Painel Brasil"],
       ["focus", "Expectativas · Focus"],
       ["fluxo", "Fluxo de capital"],

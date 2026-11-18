@@ -6440,3 +6440,52 @@ dialog.dossier {
 .ifTable td:first-child {
   min-width: 9em;
 }
+
+/* Placar de surpresas */
+.spMonth {
+  display: none;
+  color: var(--muted);
+}
+.spDots {
+  display: inline-flex;
+  gap: 3px;
+}
+.spDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.55;
+}
+.spDot[data-v="acima"] { background: var(--neg); opacity: 1; }
+.spDot[data-v="abaixo"] { background: var(--pos); opacity: 1; }
+.spLegend .spDot {
+  margin-right: 5px;
+}
+.spTable th,
+.spTable td {
+  white-space: normal;
+}
+.spBar[data-tone="neg"] { fill: color-mix(in srgb, var(--neg) 75%, transparent); }
+.spBar[data-tone="pos"] { fill: color-mix(in srgb, var(--pos) 75%, transparent); }
+.spMa.cpLine { stroke: var(--text); stroke-width: 1.5; }
+.cpTag.spMa { fill: var(--text); }
+@media (max-width: 700px) {
+  .spMonth {
+    display: inline;
+  }
+  .spTable:not(.spCopom) th:nth-child(6),
+  .spTable:not(.spCopom) td:nth-child(6),
+  .spTable:not(.spCopom) th:nth-child(8),
+  .spTable:not(.spCopom) td:nth-child(8) {
+    display: none;
+  }
+  .spDot {
+    width: 6px;
+    height: 6px;
+  }
+  .spDots {
+    gap: 2px;
+  }
+}

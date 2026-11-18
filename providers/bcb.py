@@ -2,6 +2,7 @@
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 import json
+import re
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
@@ -150,6 +151,110 @@ def normalize_focus(body, today, indicators):
         for points in refs.values():
             points.sort()
     return out
+
+
+# Focus mensal e por reunião do Copom: só a última pesquisa antes de cada divulgação importa,
+# então cada mês de referência é pedido a partir do seu primeiro dia (o consenso da véspera).
+FOCUS_MONTHLY = ("https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais"
+                 "?$format=json&$top=20000&$select=Indicador,Data,DataReferencia,Mediana,DesvioPadrao,numeroRespondentes"
+                 "&$filter={filter}")
+FOCUS_SELIC = ("https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoSelic"
+               "?$format=json&$top=20000&$select=Data,Reuniao,Mediana,DesvioPadrao,numeroRespondentes"
+               "&$filter={filter}")
+SURPRISE_MONTHS = 25
+# Mês aproximado de cada uma das 8 reuniões do Copom; a consulta começa um mês antes.
+COPOM_MONTHS = (1, 3, 5, 6, 7, 9, 11, 12)
+MEETING = re.compile(r"R([1-8])/(\d{4})")
+
+
+def _months(today, count):
+    y, m = today.year, today.month
+    out = []
+    for _ in range(count):
+        out.append((y, m))
+        y, m = (y, m - 1) if m > 1 else (y - 1, 12)
+    return out[::-1]
+
+
+def focus_monthly_url(indicators, today):
+    names = sorted(indicators)
+    if not names or any("'" in name or len(name) > 60 for name in names):
+        raise ValueError("Indicador Focus inválido")
+    who = " or ".join(f"Indicador eq '{name}'" for name in names)
+    refs = " or ".join(f"(DataReferencia eq '{m:02d}/{y}' and Data ge '{y}-{m:02d}-01')"
+                       for y, m in _months(today, SURPRISE_MONTHS))
+    expression = f"({who}) and baseCalculo eq 0 and ({refs})"
+    return FOCUS_MONTHLY.format(filter=quote(expression, safe=""))
+
+
+def _last_survey(rows, key, today):
+    """Mantém a pesquisa mais recente de cada chave: [data, mediana, desvio, respondentes]."""
+    out = {}
+    for row in rows:
+        k = key(row)
+        if k is None:
+            continue
+        day = date.fromisoformat(row["Data"])
+        if day > today:
+            raise ValueError("Data futura")
+        respondents = int(row.get("numeroRespondentes") or 0)
+        if respondents <= 0 or row.get("Mediana") is None:
+            continue
+        sd = row.get("DesvioPadrao")
+        item = [day.isoformat(), _number(row["Mediana"]), None if sd is None else _number(sd), respondents]
+        if k not in out or item[0] > out[k][0]:
+            out[k] = item
+    return out
+
+
+def normalize_focus_monthly(body, today, indicators):
+    """{indicador: {"AAAA-MM": [data da última pesquisa, mediana, desvio-padrão, respondentes]}}."""
+    rows = json.loads(body, parse_float=str).get("value")
+    if not isinstance(rows, list):
+        raise ValueError("Formato inesperado do Focus mensal")
+
+    def key(row):
+        if row.get("Indicador") not in indicators:
+            raise ValueError("Indicador Focus não solicitado")
+        month, _, year = str(row.get("DataReferencia", "")).partition("/")
+        if not (month.isdigit() and year.isdigit() and 1 <= int(month) <= 12):
+            raise ValueError("Mês de referência inválido")
+        return (row["Indicador"], f"{int(year):04d}-{int(month):02d}")
+
+    found = _last_survey(rows, key, today)
+    if not found:
+        raise ValueError("Focus mensal sem expectativas")
+    out = {}
+    for (name, ref), item in sorted(found.items()):
+        out.setdefault(name, {})[ref] = item
+    return out
+
+
+def focus_selic_url(today):
+    clauses = []
+    for year in range(today.year - 2, today.year + 1):
+        for number, month in enumerate(COPOM_MONTHS, 1):
+            y, m = (year, month - 1) if month > 1 else (year - 1, 12)
+            clauses.append(f"(Reuniao eq 'R{number}/{year}' and Data ge '{y}-{m:02d}-01')")
+    expression = f"baseCalculo eq 0 and ({' or '.join(clauses)})"
+    return FOCUS_SELIC.format(filter=quote(expression, safe=""))
+
+
+def normalize_focus_selic(body, today):
+    """{"R7/2026": [data da última pesquisa, mediana, desvio-padrão, respondentes]}."""
+    rows = json.loads(body, parse_float=str).get("value")
+    if not isinstance(rows, list):
+        raise ValueError("Formato inesperado do Focus Selic")
+
+    def key(row):
+        if not MEETING.fullmatch(str(row.get("Reuniao", ""))):
+            raise ValueError("Reunião inválida")
+        return row["Reuniao"]
+
+    out = _last_survey(rows, key, today)
+    if not out:
+        raise ValueError("Focus Selic sem expectativas")
+    return dict(sorted(out.items(), key=lambda kv: (kv[0][-4:], kv[0][1])))
 
 
 # Histórico de atuações do BC no mercado de câmbio (ODbL), arquivo CSV completo desde 1999.

@@ -33,6 +33,11 @@ FOCUS = focus(*[("IPCA", d, "2026", m, 140) for d, m in [("2026-10-13", 5.0), ("
               ("IPCA", "2026-11-13", "2027", 5.0, 146), ("IPCA", "2026-11-13", "2035", 3.0, 20),
               ("Selic", "2026-11-13", "2026", 13.75, 144))
 
+FOCUS_MONTHLY = json.dumps({"value": [
+    {"Indicador": "IPCA", "Data": "2026-11-13", "DataReferencia": "11/2026", "Mediana": 13.5, "DesvioPadrao": 0.1,
+     "numeroRespondentes": 140}]}).encode()
+FOCUS_SELIC = json.dumps({"value": [
+    {"Data": "2026-11-13", "Reuniao": "R8/2026", "Mediana": 13.75, "DesvioPadrao": 0.2, "numeroRespondentes": 60}]}).encode()
 
 HEADER = 'Date,"1 Mo","1.5 Month","2 Mo","3 Mo","4 Mo","6 Mo","1 Yr","2 Yr","3 Yr","5 Yr","7 Yr","10 Yr","20 Yr","30 Yr"'
 UST = {
@@ -254,6 +259,10 @@ class Fake:
             return UST[url.split("csv/")[1][:4]]
         if url == bcb.ATUACOES:
             return ATUACOES
+        if "ExpectativaMercadoMensais" in url:
+            return FOCUS_MONTHLY
+        if "ExpectativasMercadoSelic" in url:
+            return FOCUS_SELIC
         if "Expectativas" in url:
             return FOCUS
         if "olinda" in url:
@@ -280,7 +289,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + len(store.catalog["regional"]) + len(store.catalog["fluxo"]) + len(store.catalog["inflacao"]) + 4
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + len(store.catalog["regional"]) + len(store.catalog["fluxo"]) + len(store.catalog["inflacao"]) + 4 + (2 if store.catalog["surpresas"] else 0)
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))

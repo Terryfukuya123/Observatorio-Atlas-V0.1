@@ -87,9 +87,21 @@
     {"id": "ipca_monitorados", "code": 4449, "name": "Preços monitorados", "unit": "%", "frequency": "Mensal", "block": "grupos"},
     {"id": "ipca_comercializaveis", "code": 4447, "name": "Comercializáveis", "unit": "%", "frequency": "Mensal", "block": "grupos"},
     {"id": "ipca_nao_comercializaveis", "code": 4448, "name": "Não comercializáveis", "unit": "%", "frequency": "Mensal", "block": "grupos"},
+    {"id": "ipca_alimentacao_domicilio", "code": 27864, "name": "Alimentação no domicílio", "unit": "%", "frequency": "Mensal", "block": "grupos"},
+    {"id": "ipca_industrializados", "code": 27863, "name": "Bens industrializados", "unit": "%", "frequency": "Mensal", "block": "grupos"},
     {"id": "icbr", "code": 27574, "name": "IC-Br total", "unit": "índice (dez/2005=100)", "frequency": "Mensal", "block": "commodities"},
     {"id": "icbr_agro", "code": 27575, "name": "IC-Br agropecuária", "unit": "índice (dez/2005=100)", "frequency": "Mensal", "block": "commodities"},
     {"id": "icbr_metal", "code": 27576, "name": "IC-Br metal", "unit": "índice (dez/2005=100)", "frequency": "Mensal", "block": "commodities"},
     {"id": "icbr_energia", "code": 27577, "name": "IC-Br energia", "unit": "índice (dez/2005=100)", "frequency": "Mensal", "block": "commodities"}
+  ],
+  "surpresas": [
+    {"id": "ipca", "indicator": "IPCA", "name": "IPCA", "actual": "sgs:433", "group": "inflacao"},
+    {"id": "livres", "indicator": "IPCA Livres", "name": "Preços livres", "actual": "sgs:11428", "group": "inflacao"},
+    {"id": "servicos", "indicator": "IPCA Serviços", "name": "Serviços", "actual": "sgs:10844", "group": "inflacao"},
+    {"id": "monitorados", "indicator": "IPCA Administrados", "name": "Monitorados", "actual": "sgs:4449", "group": "inflacao"},
+    {"id": "alimentacao", "indicator": "IPCA Alimentação no domicílio", "name": "Alimentação no domicílio", "actual": "sgs:27864", "group": "inflacao"},
+    {"id": "industrializados", "indicator": "IPCA Bens industrializados", "name": "Bens industrializados", "actual": "sgs:27863", "group": "inflacao"},
+    {"id": "igpm", "indicator": "IGP-M", "name": "IGP-M", "actual": "sgs:189", "group": "precos"},
+    {"id": "desocupacao", "indicator": "Taxa de desocupação", "name": "Desocupação (PNAD)", "actual": "ibge:desocupacao", "group": "atividade"}
   ]
 }

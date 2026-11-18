@@ -10,7 +10,7 @@ const BASE = process.argv[2] || process.env.OEG_URL || "http://127.0.0.1:8842";
 const DESKS = {
   panorama: ["pulse", "noticias", "termometro", "semana", "relogio", "atlas"],
   mercados: ["bolsas", "pregao", "aovivo", "moedas", "comparison"],
-  brasil: ["brasil", "bussola", "tesouro", "inflacao", "fluxo", "fundos"],
+  brasil: ["brasil", "bussola", "tesouro", "inflacao", "surpresas", "fluxo", "fundos"],
   global: ["ciclo", "juros", "agenda", "bulletin"],
 };
 const VIEWS = { computador: { width: 1440, height: 900 }, celular: { width: 390, height: 844, isMobile: true, hasTouch: true } };

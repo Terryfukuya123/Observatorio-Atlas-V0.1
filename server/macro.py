@@ -15,7 +15,7 @@ from threading import Lock, Thread
 from time import monotonic
 
 from providers import bcb, eurostat, ibge, oecd, treasury, worldbank
-from server import flows, inflation
+from server import flows, inflation, surprises
 
 TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "rg": timedelta(hours=12), "wb": timedelta(hours=24), "bcfx": timedelta(hours=12)}
 RETRY = timedelta(minutes=30)
@@ -64,6 +64,7 @@ def load_catalog(root):
     catalog.setdefault("regional", [])
     catalog.setdefault("fluxo", [])
     catalog.setdefault("inflacao", [])
+    catalog.setdefault("surpresas", [])
     ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"] + catalog["regional"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
@@ -88,6 +89,14 @@ def load_catalog(root):
     for series in catalog["inflacao"]:
         if series["frequency"] != "Mensal" or series["block"] not in inflation.BLOCKS:
             raise ValueError(f"Periodicidade ou bloco inválido em {series['id']}")
+    known = ({f"sgs:{s['code']}" for s in catalog["brasil"] + catalog["inflacao"]}
+             | {f"ibge:{s['id']}" for s in catalog["ibge"]})
+    sur_ids = [s["id"] for s in catalog["surpresas"]]
+    if len(sur_ids) != len(set(sur_ids)) or len({s["indicator"] for s in catalog["surpresas"]}) != len(sur_ids):
+        raise ValueError("Indicadores repetidos no placar de surpresas")
+    for series in catalog["surpresas"]:
+        if series["actual"] not in known or series["group"] not in surprises.GROUPS:
+            raise ValueError(f"Fonte ou grupo inválido em {series['id']}")
     for series in catalog["brasil"] + catalog["ibge"]:
         if series["frequency"] not in HISTORY:
             raise ValueError(f"Periodicidade desconhecida em {series['id']}")
@@ -148,6 +157,11 @@ class MacroStore:
         if names:
             yield ("focus:anuais", bcb.focus_url(names, today),
                    lambda body, t=today: bcb.normalize_focus(body, t, names))
+        monthly = frozenset(s["indicator"] for s in self.catalog.get("surpresas", []))
+        if monthly:
+            yield ("focus:mensais", bcb.focus_monthly_url(monthly, today),
+                   lambda body, t=today: bcb.normalize_focus_monthly(body, t, monthly))
+            yield ("focus:selic", bcb.focus_selic_url(today), lambda body, t=today: bcb.normalize_focus_selic(body, t))
         for year in (today.year - 1, today.year):
             yield (f"ust:{year}", treasury.url(year), lambda body, t=today: treasury.normalize(body, t))
         for s in self.catalog["regional"]:
@@ -494,6 +508,19 @@ class MacroStore:
             collection = {s["id"]: self.status(f"sgs:{s['code']}") for s in catalog}
         return dict(data=inflation.summary(series, catalog, headline) if catalog else None, collection=collection,
                     series=catalog, warning=self.warning, generated=self.clock().isoformat(), **RIGHTS["sgs"])
+
+    # -- Placar de surpresas -------------------------------------------------------
+    def surprises(self):
+        self.refresh_if_due()
+        catalog = self.catalog.get("surpresas", [])
+        keys = {s["actual"] for s in catalog} | {"sgs:432", "focus:mensais", "focus:selic"}
+        with self.lock:
+            data = {k: (self.entries.get(k) or {}).get("data") for k in keys}
+            collection = {k: self.status(k) for k in ("focus:mensais", "focus:selic")}
+        today = self.clock().astimezone(BRASILIA).date()
+        summary = surprises.summary(catalog, data["focus:mensais"], data["focus:selic"], data, data["sgs:432"], today) if catalog else None
+        return dict(data=summary, collection=collection, series=catalog, warning=self.warning,
+                    generated=self.clock().isoformat(), **RIGHTS["focus"])
 
     # -- Fluxo de capital -----------------------------------------------------------
     def flows(self):
