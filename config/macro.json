@@ -14,7 +14,28 @@
     {"id": "credito", "code": 20539, "name": "Saldo da carteira de crédito", "unit": "R$ milhões", "frequency": "Mensal", "group": "Crédito", "decimals": 0},
     {"id": "inadimplencia", "code": 21082, "name": "Inadimplência da carteira de crédito", "unit": "%", "frequency": "Mensal", "group": "Crédito", "decimals": 2}
   ],
+  "ibge": [
+    {"id": "desocupacao", "table": 6381, "variable": 4099, "classification": null, "name": "Taxa de desocupação (PNAD Contínua)", "unit": "%", "frequency": "Trimestral móvel", "group": "Trabalho", "decimals": 1},
+    {"id": "industria_mes", "table": 8888, "variable": 11601, "classification": "544/129314", "name": "Produção industrial, variação no mês", "unit": "% ante mês anterior, dessazonalizado", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "industria_ano", "table": 8888, "variable": 11602, "classification": "544/129314", "name": "Produção industrial, variação anual", "unit": "% ante mesmo mês do ano anterior", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "varejo_mes", "table": 8880, "variable": 11708, "classification": "11046/56734", "name": "Volume de vendas do varejo, variação no mês", "unit": "% ante mês anterior, dessazonalizado", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "varejo_ano", "table": 8880, "variable": 11709, "classification": "11046/56734", "name": "Volume de vendas do varejo, variação anual", "unit": "% ante mesmo mês do ano anterior", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "servicos_mes", "table": 5906, "variable": 11623, "classification": "11046/56726", "name": "Volume de serviços, variação no mês", "unit": "% ante mês anterior, dessazonalizado", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "servicos_ano", "table": 5906, "variable": 11624, "classification": "11046/56726", "name": "Volume de serviços, variação anual", "unit": "% ante mesmo mês do ano anterior", "frequency": "Mensal", "group": "Atividade", "decimals": 1},
+    {"id": "pib_trimestre", "table": 5932, "variable": 6564, "classification": "11255/90707", "name": "PIB, variação no trimestre", "unit": "% ante trimestre anterior, dessazonalizado", "frequency": "Trimestral", "group": "Atividade", "decimals": 1},
+    {"id": "pib_trimestre_ano", "table": 5932, "variable": 6561, "classification": "11255/90707", "name": "PIB, variação anual do trimestre", "unit": "% ante mesmo trimestre do ano anterior", "frequency": "Trimestral", "group": "Atividade", "decimals": 1}
+  ],
   "ptax": ["USD", "EUR"],
+  "focus": [
+    {"id": "focus_ipca", "indicator": "IPCA", "name": "IPCA", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_pib", "indicator": "PIB Total", "name": "PIB", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_cambio", "indicator": "Câmbio", "name": "Câmbio", "unit": "R$/US$ no fim do ano", "decimals": 2},
+    {"id": "focus_selic", "indicator": "Selic", "name": "Selic", "unit": "% a.a. no fim do ano", "decimals": 2},
+    {"id": "focus_igpm", "indicator": "IGP-M", "name": "IGP-M", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_primario", "indicator": "Resultado primário", "name": "Resultado primário", "unit": "% do PIB", "decimals": 2},
+    {"id": "focus_dlsp", "indicator": "Dívida líquida do setor público", "name": "Dívida líquida do setor público", "unit": "% do PIB", "decimals": 2},
+    {"id": "focus_conta_corrente", "indicator": "Conta corrente", "name": "Conta corrente", "unit": "US$ bilhões", "decimals": 2}
+  ],
   "global": [
     {"id": "pib_crescimento", "code": "NY.GDP.MKTP.KD.ZG", "name": "Crescimento real do PIB", "unit": "% a.a.", "group": "Atividade", "decimals": 1},
     {"id": "pib_usd", "code": "NY.GDP.MKTP.CD", "name": "PIB em dólares correntes", "unit": "US$", "group": "Atividade", "decimals": 0},
@@ -25,15 +46,5 @@
     {"id": "conta_corrente", "code": "BN.CAB.XOKA.GD.ZS", "name": "Saldo em conta corrente", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
     {"id": "comercio", "code": "NE.TRD.GNFS.ZS", "name": "Comércio exterior", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
     {"id": "populacao", "code": "SP.POP.TOTL", "name": "População", "unit": "habitantes", "group": "Demografia", "decimals": 0}
-  ],
-  "focus": [
-    {"id": "focus_ipca", "indicator": "IPCA", "name": "IPCA", "unit": "% no ano", "decimals": 2},
-    {"id": "focus_pib", "indicator": "PIB Total", "name": "PIB", "unit": "% no ano", "decimals": 2},
-    {"id": "focus_cambio", "indicator": "Câmbio", "name": "Câmbio", "unit": "R$/US$ no fim do ano", "decimals": 2},
-    {"id": "focus_selic", "indicator": "Selic", "name": "Selic", "unit": "% a.a. no fim do ano", "decimals": 2},
-    {"id": "focus_igpm", "indicator": "IGP-M", "name": "IGP-M", "unit": "% no ano", "decimals": 2},
-    {"id": "focus_primario", "indicator": "Resultado primário", "name": "Resultado primário", "unit": "% do PIB", "decimals": 2},
-    {"id": "focus_dlsp", "indicator": "Dívida líquida do setor público", "name": "Dívida líquida do setor público", "unit": "% do PIB", "decimals": 2},
-    {"id": "focus_conta_corrente", "indicator": "Conta corrente", "name": "Conta corrente", "unit": "US$ bilhões", "decimals": 2}
   ]
 }

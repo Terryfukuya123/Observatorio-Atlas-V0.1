@@ -14,11 +14,11 @@ from pathlib import Path
 from threading import Lock, Thread
 from time import monotonic
 
-from providers import bcb, treasury, worldbank
+from providers import bcb, ibge, treasury, worldbank
 
-TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "wb": timedelta(hours=24)}
+TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "wb": timedelta(hours=24)}
 RETRY = timedelta(minutes=30)
-HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30}
+HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30, "Trimestral": 24, "Trimestral móvel": 36}
 LIMIT = 8_000_000
 # O BCB publica em datas de Brasília (sem horário de verão desde 2019).
 BRASILIA = timezone(timedelta(hours=-3))
@@ -35,6 +35,9 @@ RIGHTS = {
     "ust": dict(source="Departamento do Tesouro dos EUA · Daily Treasury Par Yield Curve Rates", license="Domínio público (obra do governo federal dos EUA)",
                 license_url="https://home.treasury.gov/subfooter/site-policies-and-notices",
                 dataset="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve"),
+    "ibge": dict(source="IBGE · SIDRA", license="Uso por terceiros com citação do IBGE como fonte",
+                 license_url="https://biblioteca.ibge.gov.br/biblioteca-servicos.html",
+                 dataset="https://sidra.ibge.gov.br/"),
     "wb": dict(source="Banco Mundial · World Development Indicators", license="CC BY 4.0",
                license_url="https://creativecommons.org/licenses/by/4.0/",
                dataset="https://databank.worldbank.org/source/world-development-indicators"),
@@ -44,10 +47,11 @@ RIGHTS = {
 def load_catalog(root):
     catalog = json.loads((Path(root) / "config/macro.json").read_text(encoding="utf8"))
     catalog.setdefault("focus", [])
-    ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"]]
+    catalog.setdefault("ibge", [])
+    ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
-    for series in catalog["brasil"]:
+    for series in catalog["brasil"] + catalog["ibge"]:
         if series["frequency"] not in HISTORY:
             raise ValueError(f"Periodicidade desconhecida em {series['id']}")
     return catalog
@@ -91,6 +95,9 @@ class MacroStore:
         for s in self.catalog["brasil"]:
             yield (f"sgs:{s['code']}", bcb.sgs_url(s["code"], s["frequency"], today),
                    lambda body, t=today: bcb.normalize_sgs(body, t))
+        for s in self.catalog["ibge"]:
+            yield (f"ibge:{s['id']}", ibge.url(s["table"], s["variable"], s["classification"], s["frequency"]),
+                   lambda body, v=s["variable"], f=s["frequency"], t=today: ibge.normalize(body, v, f, t))
         for currency in self.catalog["ptax"]:
             yield (f"ptax:{currency}", bcb.ptax_url(currency, today),
                    lambda body, t=today: bcb.normalize_ptax(body, t))
@@ -111,7 +118,7 @@ class MacroStore:
     def downloader(self, key):
         if self.fetch:
             return self.fetch
-        return {"wb": worldbank.download, "ust": treasury.download}.get(key.split(":")[0], bcb.download)
+        return {"wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}.get(key.split(":")[0], bcb.download)
 
     def collect(self, now):
         pending = set(self.due(now))
@@ -200,6 +207,23 @@ class MacroStore:
                 if len(points) > 1:
                     before_day, before = points[-2]
                     item["previous"] = {"observed": before_day, "value": before,
+                                        "delta": str(Decimal(value) - Decimal(before))}
+            out.append(item)
+        return out
+
+    def ibge_series(self):
+        out = []
+        for s in self.catalog["ibge"]:
+            key = f"ibge:{s['id']}"
+            points = (self.entries.get(key) or {}).get("data") or []
+            item = dict(s, collection=self.status(key), **RIGHTS["ibge"])
+            if points:
+                day, value, label = points[-1]
+                item.update(observed=day, period=label, value=value,
+                            history=[[d, v] for d, v, _ in points[-HISTORY[s["frequency"]]:]])
+                if len(points) > 1:
+                    before_day, before, before_label = points[-2]
+                    item["previous"] = {"observed": before_day, "period": before_label, "value": before,
                                         "delta": str(Decimal(value) - Decimal(before))}
             out.append(item)
         return out
@@ -316,7 +340,7 @@ class MacroStore:
     def overview(self):
         self.refresh_if_due()
         with self.lock:
-            return dict(brasil=self.brasil(), ptax=self.ptax(), focus=self.focus(), us_curve=self.curve_summary(), indicators=self.indicators(),
+            return dict(brasil=self.brasil(), ibge=self.ibge_series(), ptax=self.ptax(), focus=self.focus(), us_curve=self.curve_summary(), indicators=self.indicators(),
                         warning=self.warning, generated=self.clock().isoformat())
 
     def curve_detail(self):

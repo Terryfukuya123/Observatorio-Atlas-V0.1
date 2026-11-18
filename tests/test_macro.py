@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from threading import Thread
 from unittest import TestCase
 
-from providers import bcb, treasury, worldbank
+from providers import bcb, ibge, treasury, worldbank
 from server.app import Handler, ThreadingHTTPServer, ROOT
 from server.macro import MacroStore, load_catalog
 
@@ -44,6 +44,11 @@ UST = {
                         "12/31/2025,3.80,3.75,3.70,3.66,3.60,3.50,3.48,3.55,3.75,3.96,4.20,4.80,4.85",
                         "11/14/2025,4.50,4.48,4.45,4.40,4.35,4.20,4.60,4.10,4.15,4.20,4.40,4.70,4.70"]).encode(),
 }
+
+
+def sidra(variable, values, locality="1"):
+    return json.dumps([{"id": str(variable), "resultados": [{"classificacoes": [], "series": [
+        {"localidade": {"id": locality}, "serie": values}]}]}]).encode()
 
 
 def wb(code, *rows):
@@ -118,6 +123,23 @@ class Providers(TestCase):
         with self.assertRaises(ValueError):
             treasury.download("https://example.com/x.csv")
 
+    def test_ibge(self):
+        self.assertEqual(ibge.period("202609", "Mensal"), ("2026-09-01", "set/2026"))
+        self.assertEqual(ibge.period("202602", "Trimestral"), ("2026-06-01", "2º tri/2026"))
+        self.assertEqual(ibge.period("202602", "Trimestral móvel"), ("2026-02-01", "dez–fev/2026"))
+        rows = ibge.normalize(sidra(4099, {"202608": "5.3", "202609": "5.2", "202607": "..."}), 4099, "Trimestral móvel", TODAY)
+        self.assertEqual(rows, [("2026-08-01", "5.3", "jun–ago/2026"), ("2026-09-01", "5.2", "jul–set/2026")])
+        address = ibge.url(8888, 11601, "544/129314")
+        self.assertTrue(address.startswith(ibge.BASE))
+        self.assertIn("periodos/-36/variaveis/11601?localidades=N1%5Ball%5D&classificacao=544%5B129314%5D", address)
+        for body, variable in ((sidra(4099, {"202612": "1"}), 4099), (sidra(4099, {"202609": "1"}), 1),
+                               (sidra(4099, {"202609": "1"}, locality="33"), 4099), (sidra(4099, {"202613": "1"}), 4099),
+                               (sidra(4099, {"202609": "abc"}), 4099), (sidra(4099, {"202609": "..."}), 4099)):
+            with self.subTest(body=body[-60:]), self.assertRaises(ValueError):
+                ibge.normalize(body, variable, "Mensal", TODAY)
+        with self.assertRaises(ValueError):
+            ibge.download("https://example.com/")
+
     def test_catalog_matches_map(self):
         catalog = load_catalog(ROOT)
         self.assertGreaterEqual(len(catalog["brasil"]), 10)
@@ -135,6 +157,9 @@ class Fake:
         self.calls.append(url)
         if self.fail:
             raise OSError("rede")
+        if url.startswith(ibge.BASE):
+            variable = url.split("/variaveis/")[1].split("?")[0]
+            return sidra(variable, {"202608": "5.3", "202609": "5.2"})
         if url.startswith(treasury.BASE):
             return UST[url.split("csv/")[1][:4]]
         if "Expectativas" in url:
@@ -163,7 +188,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + 3
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + 3
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
@@ -181,6 +206,10 @@ class Store(TestCase):
         self.assertEqual(data["focus"]["license"], "ODbL 1.0")
         self.assertEqual(data["us_curve"]["spreads"], {"10A-2A": "0.30", "10A-3M": "0.77"})
         self.assertEqual([c["code"] for c in data["us_curve"]["key"]], ["3M", "2A", "10A", "30A"])
+        unemployment = data["ibge"][0]
+        self.assertEqual((unemployment["value"], unemployment["period"], unemployment["previous"]["delta"]), ("5.2", "jul–set/2026", "-0.1"))
+        self.assertEqual(unemployment["history"], [["2026-08-01", "5.3"], ["2026-09-01", "5.2"]])
+        self.assertIn("IBGE", unemployment["license"])
         store.overview()
         self.assertEqual(len(self.fake.calls), total)  # Dentro do TTL não há nova coleta.
         restarted = self.store()
@@ -205,7 +234,7 @@ class Store(TestCase):
     def test_downloader_by_source(self):
         store = MacroStore(ROOT, clock=lambda: NOW, background=False, path=self.path)
         expected = {"sgs": bcb.download, "ptax": bcb.download, "focus": bcb.download,
-                    "wb": worldbank.download, "ust": treasury.download}
+                    "wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}
         for key, _, _ in store.jobs(TODAY):
             self.assertIs(store.downloader(key), expected[key.split(":")[0]], key)
 
