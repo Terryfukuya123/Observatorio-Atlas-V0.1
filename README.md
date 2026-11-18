@@ -4,10 +4,11 @@ Aplicação local de consulta geográfica em português. O mapa reúne 242 país
 
 ## Abrir e encerrar
 
-No PowerShell, com Python 3.11 ou superior no PATH:
+Com Python 3.11 ou superior no PATH, clone o repositório e, no Windows (PowerShell), dentro da pasta do projeto:
 
 ```powershell
-Set-Location 'F:\Observatorio_Economico_Global'
+git clone https://github.com/Terryfukuya123/Observatorio-Atlas-V0.1.git
+Set-Location .\Observatorio-Atlas-V0.1
 .\scripts\start.ps1
 ```
 
@@ -20,6 +21,8 @@ Abra http://127.0.0.1:8842/ no navegador. Para encerrar a instância iniciada pe
 Também é possível executar **em primeiro plano** com `python observatorio.py` e encerrar com Ctrl+C. A opção `--port` permite outra porta em primeiro plano. Todos os modos escutam em 127.0.0.1. O serviço usa apenas a biblioteca padrão de Python. O navegador recebe código, fonte e cartografia do servidor local. A internet permite renovar o câmbio no BCE e as edições mensais de ativos na CVM. A primeira tentativa de coleta pode levar alguns segundos.
 
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
+
+**Vai colaborar?** Comece pelo [AGENTS.md](AGENTS.md): como rodar e testar, a estrutura, as regras do projeto e as frentes abertas. Assistentes de IA (Claude Code, Codex, Cursor e afins) leem esse arquivo automaticamente.
 
 ## Espaços de análise
 

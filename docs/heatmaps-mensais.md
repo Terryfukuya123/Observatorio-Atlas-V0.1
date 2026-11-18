@@ -22,7 +22,7 @@ São cestas de acompanhamento escolhidas pela presença de posições identific�
 
 ## Operação e direitos
 
-O projeto roda em Windows, em `F:\Observatorio_Economico_Global`, com Python, HTML, CSS, JavaScript e SVG locais. O serviço inicia pelo PowerShell com `.\scripts\start.ps1` e serve exclusivamente em `127.0.0.1:8842`. O desenho usa a referência visual do Crypto Lab V2. O processamento dos informes e o componente de heatmap são próprios.
+O projeto roda localmente com Python, HTML, CSS, JavaScript e SVG. O serviço inicia com `python observatorio.py` (ou `.\scripts\start.ps1` no Windows) e serve exclusivamente em `127.0.0.1:8842`. O processamento dos informes e o componente de heatmap são próprios.
 
 O conjunto CDA é publicado pela CVM sob ODbL 1.0. A base derivada é oferecida sob a mesma licença em `/api/heatmaps`, inclusive as URLs e hashes das origens. As taxas do BCE são gratuitas na origem e os cruzamentos são cálculos do Observatório. [Dados abertos CVM](https://dados.cvm.gov.br/dataset/fi-doc-cda) · [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/) · [Política estatística do BCE](https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html).
 
