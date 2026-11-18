@@ -36,6 +36,16 @@ class StaticFiles(unittest.TestCase):
         conn.close()
         return response, body
 
+    def test_host_header_and_public_port(self):
+        port = self.server.server_port
+        self.assertEqual(self.get("/app.js")[0].status, 200)
+        self.assertEqual(self.get("/app.js", Host="evil.example:%d" % port)[0].status, 403)
+        # Container: o navegador usa a porta publicada, diferente da interna.
+        self.server.public_port = 9000
+        self.assertEqual(self.get("/app.js", Host="localhost:9000")[0].status, 200)
+        self.assertEqual(self.get("/app.js", Host="127.0.0.1:%d" % port)[0].status, 403)
+        self.assertEqual(self.get("/app.js", Host="evil.example:9000")[0].status, 403)
+
     def test_gzip_etag_and_revalidation(self):
         plain, raw = self.get("/app.js")
         self.assertEqual(plain.status, 200)

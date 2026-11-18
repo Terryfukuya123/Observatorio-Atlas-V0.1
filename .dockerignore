@@ -1,0 +1,18 @@
+# Fica fora da imagem: histórico, dados locais, caches e evidências.
+.git
+.github
+**/__pycache__
+*.py[cod]
+.env
+.venv
+node_modules
+data/cache/*
+!data/cache/.gitkeep
+data/b3/*
+!data/b3/.gitkeep
+data/run
+docs/evidencias
+tests
+Dockerfile
+docker-compose.yml
+.dockerignore

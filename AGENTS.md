@@ -25,6 +25,9 @@ python observatorio.py            # http://127.0.0.1:8842  (Ctrl+C encerra)
 python observatorio.py --port 8843
 ```
 
+Com Docker: `docker compose up -d --build` e abra http://127.0.0.1:8842 (detalhes no README, seção
+"Rodar com Docker").
+
 No Windows também há `scripts/start.ps1` e `scripts/stop.ps1`, que rodam o servidor em segundo
 plano na porta 8842. Os dados são coletados na primeira visita e guardados em `data/cache/`, que
 não é versionado.
@@ -81,7 +84,9 @@ Padrões já usados (siga-os):
 3. **CSP estrita** (`server/app.py`). Não use atributo `style` nem `<style>` novo: use classes e
    `data-*` no `app.css`. Sem `eval`, sem script externo. A única exceção é o widget do TradingView,
    que já existe. O roteiro de fumaça falha em violação de CSP.
-4. **Servidor só em loopback** (`127.0.0.1`), com checagem do cabeçalho `Host`.
+4. **Servidor só em loopback** (`127.0.0.1`), com checagem do cabeçalho `Host`. A única exceção é
+   dentro do container (`--host 0.0.0.0`), e mesmo assim o `docker-compose.yml` publica a porta só
+   no `127.0.0.1` da máquina. Não troque isso por `0.0.0.0:8842` nem rode `--host 0.0.0.0` fora do container.
 5. **B3: nunca baixe nem raspe páginas ou arquivos da B3 automaticamente.** Os termos da B3 vedam
    isso. A planilha "Dados de Mercado" entra só por importação manual em `data/b3/`, e a exibição a
    terceiros depende de licença de Market Data.

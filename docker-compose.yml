@@ -1,0 +1,21 @@
+# docker compose up -d   →   http://127.0.0.1:8842
+services:
+  observatorio:
+    build: .
+    image: observatorio-economico:latest
+    container_name: observatorio
+    restart: unless-stopped
+    ports:
+      # Publicado só no 127.0.0.1 da máquina: a plataforma não fica visível na rede.
+      - "127.0.0.1:8842:8842"
+    environment:
+      # Mudou a porta da esquerda acima (ex.: "127.0.0.1:9000:8842")? Ponha o mesmo número aqui.
+      OEG_PUBLIC_PORT: "8842"
+    volumes:
+      # Cache das coletas: sobrevive a reinícios e atualizações da imagem.
+      - observatorio-cache:/app/data/cache
+      # Planilha "Dados de Mercado" da B3, baixada à mão (a B3 veda coleta automática).
+      - ./data/b3:/app/data/b3
+
+volumes:
+  observatorio-cache:

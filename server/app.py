@@ -1,8 +1,13 @@
-"""Servidor de leitura, vinculado exclusivamente ao loopback."""
+"""Servidor de leitura, vinculado ao loopback.
+
+Dentro de um container, escuta em 0.0.0.0 (--host), mas o docker-compose publica a porta só
+no 127.0.0.1 da máquina. O cabeçalho Host continua restrito a 127.0.0.1 e localhost.
+"""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 import argparse
+import os
 import gzip
 import hashlib
 import json
@@ -56,7 +61,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         host = self.headers.get("Host", "")
-        if host not in {f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"}:
+        port = getattr(self.server, "public_port", None) or self.server.server_port
+        if host not in {f"127.0.0.1:{port}", f"localhost:{port}"}:
             self.send_error(403)
             return
         path = urlsplit(self.path).path
@@ -208,6 +214,7 @@ class Handler(BaseHTTPRequestHandler):
 
 class Server(ThreadingHTTPServer):
     profile = "local"
+    public_port = None  # porta vista pelo navegador, quando difere da interna (container)
     request_queue_size = 64  # Módulos e painéis abrem conexões em paralelo na primeira visita.
     # No Windows, SO_REUSEADDR permite que um segundo processo escute na mesma porta e
     # receba parte das requisições. Sem ele, a segunda instância falha ao iniciar.
@@ -216,11 +223,15 @@ class Server(ThreadingHTTPServer):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", type=int, default=8842)
+    parser.add_argument("--port", type=int, default=int(os.environ.get("OEG_PORT", 8842)))
+    # 0.0.0.0 só dentro de container: fora dele, expõe o servidor à rede local.
+    parser.add_argument("--host", default=os.environ.get("OEG_HOST", "127.0.0.1"))
+    parser.add_argument("--porta-publica", type=int, default=int(os.environ.get("OEG_PUBLIC_PORT", 0)) or None,
+                        help="porta usada no navegador, se for diferente de --port (mapeamento do Docker)")
     parser.add_argument("--perfil", choices=("local", "profissional"), default="local")
     args = parser.parse_args()
     try:
-        server = Server(("127.0.0.1", args.port), Handler)
+        server = Server((args.host, args.port), Handler)
     except OSError:
         sys.exit(f"Porta {args.port} já está em uso. Encerre a outra instância (scripts/stop.ps1) antes de iniciar.")
     with server:
@@ -229,10 +240,11 @@ def main():
         server.macro = MacroStore(ROOT)
         server.funds = FundFlows(ROOT)
         server.profile = args.perfil
+        server.public_port = args.porta_publica
         server.b3 = RestrictedB3() if args.perfil == "profissional" else B3Store(ROOT)
         server.news = NewsStore(ROOT)
         server.tesouro = TesouroStore(ROOT)
-        print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
+        print(f"Observatório em http://127.0.0.1:{server.public_port or server.server_port}", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

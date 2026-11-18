@@ -22,6 +22,30 @@ Abra http://127.0.0.1:8842/ no navegador. Para encerrar a instância iniciada pe
 
 Também é possível executar **em primeiro plano** com `python observatorio.py` e encerrar com Ctrl+C. A opção `--port` permite outra porta em primeiro plano. Todos os modos escutam em 127.0.0.1. O serviço usa apenas a biblioteca padrão de Python. O navegador recebe código, fonte e cartografia do servidor local. A internet permite renovar o câmbio no BCE e as edições mensais de ativos na CVM. A primeira tentativa de coleta pode levar alguns segundos.
 
+### Rodar com Docker
+
+Com o [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows e Mac) ou o Docker Engine (Linux) instalado, dentro da pasta do projeto:
+
+```bash
+docker compose up -d --build     # cria a imagem e sobe em segundo plano
+```
+
+Abra http://127.0.0.1:8842/. Outros comandos:
+
+| Para | Comando |
+|---|---|
+| Ver o registro | `docker compose logs -f` |
+| Parar | `docker compose down` |
+| Atualizar depois de `git pull` | `docker compose up -d --build` |
+| Apagar também o cache das coletas | `docker compose down -v` |
+
+- **Imagem:** `python:3.13-slim`, sem pacotes extras, com usuário sem privilégios. Testes, histórico do Git e dados locais ficam fora dela (`.dockerignore`).
+- **Rede:** dentro do container o servidor escuta em `0.0.0.0`, mas a porta é publicada só no `127.0.0.1` da máquina. Assim a plataforma não fica visível na rede, igual à execução direta. O cabeçalho `Host` continua restrito a `127.0.0.1` e `localhost`.
+- **Outra porta:** troque `"127.0.0.1:8842:8842"` por, por exemplo, `"127.0.0.1:9000:8842"` e ponha `OEG_PUBLIC_PORT: "9000"`. Sem isso o servidor recusa o acesso (erro 403).
+- **Dados:** o cache das coletas fica no volume `observatorio-cache` e sobrevive a reinícios e atualizações. A planilha da B3, baixada à mão, vai em `data/b3/` na máquina, que é montada no container. No Linux, se o container não conseguir gravar os retratos, dê permissão à pasta com `sudo chown -R 1000:1000 data/b3`.
+- **Saúde:** o Docker confere a página a cada 30 segundos (`docker ps` mostra `healthy`). A primeira coleta, com o cache vazio, leva de 30 segundos a 1 minuto.
+- **Variáveis:** `OEG_PORT` (porta interna, 8842), `OEG_HOST` (`0.0.0.0` na imagem) e `OEG_PUBLIC_PORT` (porta vista pelo navegador). As mesmas opções existem na linha de comando: `--port`, `--host` e `--porta-publica`.
+
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
 
 **Vai colaborar?** Comece pelo [AGENTS.md](AGENTS.md), com como rodar e testar, a estrutura, as regras do projeto e as frentes abertas. Depois leia o [COLABORACAO.md](COLABORACAO.md), que explica como trabalhar em paralelo: issues, branches, conflitos e passagem de bastão. Assistentes de IA (Claude Code, Codex, Cursor e afins) leem esse arquivo automaticamente.
