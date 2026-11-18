@@ -31,7 +31,9 @@ A plataforma se divide em quatro espaços, escolhidos na barra lateral. Cada um 
   - Mundo: curva de juros dos EUA, variação mensal do Treasury de 10 anos, força do dólar e ciclo do G20;
   - Brasil: força do real, fluxo cambial dos últimos 3 meses, estrangeiros em ações e títulos, ciclo do Brasil e IPCA contra o teto da meta.
 
-  Cada sinal mostra o valor, a nota, a seta em relação a um mês atrás e o porquê, com link para a análise. O número geral também se compara ao de um mês atrás. É uma leitura sintética, não uma recomendação de investimento.
+  Cada sinal mostra o valor, a data do dado, a nota, a seta em relação a um mês atrás e o porquê, com link para a análise. O número geral também se compara ao de um mês atrás. É uma leitura sintética, não uma recomendação de investimento.
+
+  **Confiança da leitura:** abaixo do medidor, uma barra conta os sinais a favor, neutros e contra e diz se estão alinhados, mistos ou divididos, e se Mundo e Brasil apontam para o mesmo lado. Cada sinal tem uma idade máxima contada do fim do período do dado (diários: 6 dias; mensais: 50; balanço de pagamentos: 75; indicador antecedente da OCDE: 100); passou disso, aparece como defasado. A confiança é alta com todos os sinais presentes e em dia e sem divisão; baixa com menos de 6 sinais, 3 ou mais defasados, ou sinais divididos com algum defasado; média nos demais casos.
 - **Ficha completa do país:** reúne numa página tudo o que a plataforma sabe de uma economia. Mostra a moeda contra o dólar e a força entre as 10 moedas, a fase do ciclo da OCDE com a curva de 24 meses, inflação, juros, desemprego e PIB, se a bolsa está aberta agora, os indicadores com a média mundial ao lado, a agenda e a notícia oficial. Abre pelo botão **Ficha completa** no mapa, pela busca ("Alemanha" → Ficha) e pelo relógio do ciclo. Tem endereço próprio (**#ficha/BRA**), com botão **Copiar link** para compartilhar.
 - **Bolsas agora (Mercados):** um bloco com duas visões. **Roteiro do pregão** muda sozinho conforme o horário da B3 (antes da abertura, pregão aberto, depois do fechamento) e mostra o que olhar em cada momento; **Bolsas do mundo** mostra os índices por região e quais pregões estão abertos.
   - **Cotações:** widget do TradingView com futuros dos EUA, Brasil em Nova York (EWZ e ADRs de Petrobras, Vale, Itaú, Bradesco e Nubank), commodities, DXY e Treasuries. Depois do fechamento, entram Ibovespa, small caps e IFIX.
@@ -192,6 +194,7 @@ Uma seção nova é um módulo em `web/` com uma função de montagem chamada em
 
 ```powershell
 python -m unittest discover -s tests -v
+node tests/risk.mjs
 ```
 
 Teste opcional da interface com o servidor ativo, Edge instalado e o pacote de desenvolvimento **playwright-core 1.65.1** acessível ao Node.js. Para preparar essa ferramenta numa pasta separada e salvar novas evidências fora das capturas da entrega:

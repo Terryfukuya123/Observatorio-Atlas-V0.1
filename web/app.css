@@ -6489,3 +6489,76 @@ dialog.dossier {
     gap: 2px;
   }
 }
+
+/* Confiança da leitura do termômetro */
+.rkTrust {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: left;
+}
+.rkTrustHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rkTrustHead b {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.rkTrust[data-level="alta"] .rkTrustHead b { color: var(--pos); background: color-mix(in srgb, var(--pos) 15%, transparent); }
+.rkTrust[data-level="média"] .rkTrustHead b { color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.rkTrust[data-level="baixa"] .rkTrustHead b { color: var(--neg); background: color-mix(in srgb, var(--neg) 15%, transparent); }
+.rkBar {
+  display: flex;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--border);
+}
+.rkBarSeg[data-k="pos"] { background: var(--pos); }
+.rkBarSeg[data-k="zero"] { background: var(--muted); opacity: 0.5; }
+.rkBarSeg[data-k="neg"] { background: var(--neg); }
+.rkBarSeg[data-w="0"] { flex: 0 0 0; }
+.rkBarSeg[data-w="1"] { flex: 1 0 0; }
+.rkBarSeg[data-w="2"] { flex: 2 0 0; }
+.rkBarSeg[data-w="3"] { flex: 3 0 0; }
+.rkBarSeg[data-w="4"] { flex: 4 0 0; }
+.rkBarSeg[data-w="5"] { flex: 5 0 0; }
+.rkBarSeg[data-w="6"] { flex: 6 0 0; }
+.rkBarSeg[data-w="7"] { flex: 7 0 0; }
+.rkBarSeg[data-w="8"] { flex: 8 0 0; }
+.rkBarSeg[data-w="9"] { flex: 9 0 0; }
+.rkBarSeg[data-w="10"] { flex: 10 0 0; }
+.rkBarSeg[data-w="11"] { flex: 11 0 0; }
+.rkBarSeg[data-w="12"] { flex: 12 0 0; }
+.rkBarSeg[data-w="0"] { display: none; }
+.rkTrustText,
+.rkTrustNote {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.rkTrustNote {
+  color: var(--muted);
+}
+.rkAsOf {
+  color: var(--muted);
+  font-style: normal;
+  white-space: nowrap;
+}
+.rkAsOf::before {
+  content: "· ";
+}
+.rkAsOf[data-stale="true"] {
+  color: var(--neg);
+}
