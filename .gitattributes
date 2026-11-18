@@ -1,0 +1,7 @@
+# Finais de linha certos para cada sistema, também no ZIP baixado do GitHub.
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.ps1     text eol=crlf
+*.command text eol=lf
+*.sh      text eol=lf
+Dockerfile text eol=lf

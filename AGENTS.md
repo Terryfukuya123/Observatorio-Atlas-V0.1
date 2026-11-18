@@ -28,6 +28,10 @@ python observatorio.py --port 8843
 Com Docker: `docker compose up -d --build` e abra http://127.0.0.1:8842 (detalhes no README, seção
 "Rodar com Docker").
 
+Para quem só vai usar: os atalhos de dois cliques `Abrir Observatorio.bat` (Windows) e
+`Abrir Observatorio.command` (Mac) rodam `observatorio.py --abrir`, que abre o navegador sozinho.
+O passo a passo para leigos fica no topo do README; mantenha-o simples ao mexer nele.
+
 No Windows também há `scripts/start.ps1` e `scripts/stop.ps1`, que rodam o servidor em segundo
 plano na porta 8842. Os dados são coletados na primeira visita e guardados em `data/cache/`, que
 não é versionado.

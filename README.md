@@ -1,8 +1,35 @@
 # Observatório Econômico Global
 
-Aplicação local de consulta geográfica em português. O mapa reúne 242 países e territórios cartografados pelo Natural Earth. Doze mercados prioritários têm fichas configuradas. Nove séries diárias do BCE alimentam o panorama cambial.
+Plataforma em português com o essencial da economia e do mercado: câmbio, juros, inflação, Focus, fluxo de capital, notícias oficiais ao vivo e um narrador que lê o que mudou. Roda no seu próprio computador, sem cadastro e sem login. **Versão de validação, gratuita. Não é recomendação de investimento.**
 
-## Abrir e encerrar
+## Como usar (sem programar)
+
+**1. Instale o Python (só na primeira vez).** Baixe em [python.org/downloads](https://www.python.org/downloads/) pelo botão amarelo **Download Python**.
+- **Windows:** na primeira tela da instalação, marque **"Add python.exe to PATH"** e depois clique em **Install Now**.
+- **Mac:** instale normalmente.
+
+**2. Baixe a plataforma.** No alto desta página, clique no botão verde **Code** e depois em **Download ZIP**. Descompacte o arquivo num lugar fácil, como a Área de Trabalho: no Windows, botão direito e **Extrair tudo**; no Mac, dois cliques no ZIP.
+
+**3. Abra.** Dentro da pasta **Observatorio-Atlas-V0.1-main**:
+- **Windows:** dois cliques em **Abrir Observatorio** (o arquivo `.bat`).
+  - Se aparecer o aviso azul "O Windows protegeu o computador", clique em **Mais informações** e depois em **Executar assim mesmo**.
+- **Mac:** na primeira vez, clique com o **botão direito** em **Abrir Observatorio** (o arquivo `.command`), escolha **Abrir** e confirme **Abrir**. Nas próximas vezes, dois cliques bastam.
+  - Se o Mac ainda bloquear, abra **Ajustes do Sistema → Privacidade e Segurança**, role até o aviso sobre "Abrir Observatorio" e clique em **Abrir Mesmo Assim**.
+
+O navegador abre sozinho em http://127.0.0.1:8842. Uma janela de texto também fica aberta: **deixe-a aberta** enquanto usa a plataforma. Para encerrar, feche essa janela. Na primeira vez, os dados levam de 1 a 2 minutos para carregar por completo, e um tour rápido mostra as seções.
+
+| Situação | O que fazer |
+|---|---|
+| A janela diz que falta o Python | Instale pelo passo 1 (a página de download abre sozinha) e dê dois cliques de novo |
+| Deu dois cliques com a plataforma já aberta | Normal: o atalho só abre o navegador de novo |
+| A página não abre | Confira se a janela de texto continua aberta. Se fechou, dê dois cliques de novo |
+| Quer a versão mais nova | Baixe o ZIP de novo (passo 2) e use a pasta nova. Pode apagar a antiga |
+
+Cada pessoa roda a sua própria cópia, que busca os dados direto nas fontes oficiais. Ninguém depende do computador de outra pessoa, e a plataforma não fica visível na rede.
+
+> **Para quem vai desenvolver:** as instruções técnicas estão abaixo. Para trabalhar com IA no projeto, comece pelo [AGENTS.md](AGENTS.md) e pelo [COLABORACAO.md](COLABORACAO.md).
+
+## Abrir e encerrar (modo técnico)
 
 Com Python 3.11 ou superior no PATH, clone o repositório e, no Windows (PowerShell), dentro da pasta do projeto:
 

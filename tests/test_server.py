@@ -36,6 +36,16 @@ class StaticFiles(unittest.TestCase):
         conn.close()
         return response, body
 
+    def test_detects_running_observatory(self):
+        # O atalho de dois cliques reconhece a plataforma já aberta e só abre o navegador.
+        import socket
+        from server.app import observatory_running
+        self.assertTrue(observatory_running(self.server.server_port))
+        with socket.socket() as free:
+            free.bind(("127.0.0.1", 0))
+            unused = free.getsockname()[1]
+        self.assertFalse(observatory_running(unused, timeout=0.5))
+
     def test_host_header_and_public_port(self):
         port = self.server.server_port
         self.assertEqual(self.get("/app.js")[0].status, 200)
