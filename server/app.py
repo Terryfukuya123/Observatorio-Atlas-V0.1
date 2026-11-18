@@ -14,6 +14,8 @@ import json
 import mimetypes
 import re
 import sys
+import urllib.request
+import webbrowser
 
 from server.service import Feed
 from server.editions import MonthlyEdition
@@ -221,6 +223,16 @@ class Server(ThreadingHTTPServer):
     allow_reuse_address = sys.platform != "win32"
 
 
+def observatory_running(port, timeout=2):
+    """Há um Observatório respondendo nesta porta? (para o atalho de dois cliques não abrir dois)."""
+    try:
+        request = urllib.request.Request(f"http://127.0.0.1:{port}/", headers={"Host": f"127.0.0.1:{port}"})
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return b"Observat" in response.read(4096)
+    except Exception:
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=int(os.environ.get("OEG_PORT", 8842)))
@@ -229,10 +241,17 @@ def main():
     parser.add_argument("--porta-publica", type=int, default=int(os.environ.get("OEG_PUBLIC_PORT", 0)) or None,
                         help="porta usada no navegador, se for diferente de --port (mapeamento do Docker)")
     parser.add_argument("--perfil", choices=("local", "profissional"), default="local")
+    parser.add_argument("--abrir", action="store_true",
+                        help="abre o navegador quando a plataforma estiver pronta (usado pelos atalhos de dois cliques)")
     args = parser.parse_args()
+    url = f"http://127.0.0.1:{args.porta_publica or args.port}/"
     try:
         server = Server((args.host, args.port), Handler)
     except OSError:
+        if args.abrir and observatory_running(args.port):
+            print(f"O Observatório já está aberto em {url} (em outra janela). Abrindo o navegador.", flush=True)
+            webbrowser.open(url)
+            return
         sys.exit(f"Porta {args.port} já está em uso. Encerre a outra instância (scripts/stop.ps1) antes de iniciar.")
     with server:
         server.feed = Feed(ROOT / "data/cache/ecb.json")
@@ -245,6 +264,11 @@ def main():
         server.news = NewsStore(ROOT)
         server.tesouro = TesouroStore(ROOT)
         print(f"Observatório em http://127.0.0.1:{server.public_port or server.server_port}", flush=True)
+        if args.abrir:
+            print("\nDeixe esta janela aberta enquanto usa a plataforma. Para encerrar, feche esta janela.\n"
+                  "Na primeira vez, os dados levam de 1 a 2 minutos para carregar por completo.", flush=True)
+            # O socket já está escutando: o navegador pode abrir antes do serve_forever.
+            webbrowser.open(url)
         try:
             server.serve_forever()
         except KeyboardInterrupt:
