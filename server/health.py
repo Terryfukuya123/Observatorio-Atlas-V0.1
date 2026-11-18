@@ -150,6 +150,18 @@ def b3_items(b3, now):
                  None if result.get("data") else result.get("status"), result.get("dataset"), note)]
 
 
+def tesouro_items(store, now):
+    result = store.read()
+    data = result.get("data") or {}
+    observed = data.get("observed")
+    status = result["status"]
+    note = "Taxas do Tesouro Direto do dia útil anterior"
+    if observed and status == "Atualizado" and (now.date() - datetime.fromisoformat(observed).date()) > timedelta(days=5):
+        status, note = "Atrasado", "O Tesouro não publica taxas novas há mais de 5 dias"
+    return [item("Tesouro Nacional", "td", "Tesouro Direto: juros e inflação implícita", status, observed,
+                 result.get("received"), result.get("next"), result.get("error"), result.get("dataset"), note)]
+
+
 def news_items(store, now):
     data = store.read()
     out = []
@@ -178,6 +190,7 @@ def health(server, now=None):
         ("funds", "CVM", lambda: funds_items(server.funds)),
         ("editions", "CVM", lambda: heatmap_items(server.editions, now)),
         ("b3", "B3", lambda: b3_items(server.b3, now)),
+        ("tesouro", "Tesouro Nacional", lambda: tesouro_items(server.tesouro, now)),
         ("news", "Ao vivo", lambda: news_items(server.news, now)),
     ]:
         if getattr(server, store, None) is None:

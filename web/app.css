@@ -6297,3 +6297,95 @@ dialog.dossier {
 .treeNote {margin-top:6px}
 .liveActions {justify-content:space-between;padding:0 16px}
 @media(max-width:670px){.treeBar{gap:5px}.treeBar label{display:grid}.treeBar select{max-width:100px}.treeView{height:330px}}
+
+/* O que o mercado precifica (Tesouro Direto) */
+.tdCard {
+  --td-be: #e0875a;
+  --td-real: #8fb86c;
+  --td-pre: #6f9fc8;
+  --td-focus: var(--soft);
+}
+:root[data-theme="light"] .tdCard {
+  --td-be: #b85a2a;
+  --td-real: #4f7d2c;
+  --td-pre: #2f6b9a;
+}
+.tdTabs {
+  flex-wrap: wrap;
+  padding: 8px 16px 0;
+}
+.tdBe.cpLine, .cpDot.tdBe { stroke: var(--td-be); }
+.tdReal.cpLine { stroke: var(--td-real); }
+.tdPre.cpLine { stroke: var(--td-pre); }
+.tdFocus.cpLine, .cpDot.tdFocus { stroke: var(--td-focus); }
+.cpDot.tdEst { fill: var(--panel); stroke-dasharray: 2 2; }
+.cpDot.tdBe:not(.tdEst) { fill: var(--td-be); }
+.cpTag.tdBe { fill: var(--td-be); }
+.cpTag.tdReal { fill: var(--td-real); }
+.cpTag.tdPre { fill: var(--td-pre); }
+.cpTag.tdFocus { fill: var(--td-focus); }
+.cpKey.tdBe { background: var(--td-be); }
+.cpKey.tdReal { background: var(--td-real); }
+.cpKey.tdPre { background: var(--td-pre); }
+.tdTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.tdTable th,
+.tdTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+.tdTable th:first-child,
+.tdTable td:first-child {
+  text-align: left;
+}
+.tdTable thead th {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tdTable tbody th {
+  padding-top: 12px;
+  color: var(--accent);
+  font-size: 12px;
+  text-align: left;
+}
+.tdTable small {
+  color: var(--muted);
+}
+.tdTable td[data-tone="neg"] { color: var(--neg); }
+.tdTable td[data-tone="pos"] { color: var(--pos); }
+.tdHow {
+  margin: 10px 16px 0;
+  font-size: 13px;
+}
+.tdHow summary {
+  color: var(--link);
+  cursor: pointer;
+}
+.tdHow dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px 16px;
+  margin: 8px 0 0;
+}
+.tdHow dt {
+  font-weight: 600;
+}
+.tdHow dd {
+  margin: 2px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+@media (max-width: 700px) {
+  .tdTable th:nth-child(2),
+  .tdTable td:nth-child(2) {
+    display: none;
+  }
+}

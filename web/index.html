@@ -535,6 +535,38 @@
           volta à meta calculados pelo Observatório. BCB sob ODbL 1.0.
         </p>
       </section>
+      <section id="tesouro" class="card cpCard tdCard" data-desk="brasil" aria-labelledby="tdTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="tdTitle">O que o mercado precifica · juros e inflação implícita</h2>
+          </div>
+          <span class="tdStamp unit-label">Tesouro Direto</span>
+        </div>
+        <p class="cpRead"></p>
+        <div class="cpKpis"></div>
+        <div class="tdTabs layerTabs" role="group" aria-label="Visão">
+          <button type="button" data-td-view="termo" aria-pressed="true">Inflação implícita × Focus × meta</button>
+          <button type="button" data-td-view="historico" aria-pressed="false">Dois anos de histórico</button>
+          <button type="button" data-td-view="titulos" aria-pressed="false">Taxa de cada título</button>
+        </div>
+        <div class="tdPlot cpPlot"><p class="empty">Carregando as taxas do Tesouro Direto…</p></div>
+        <p class="tdLegend cpLegend"></p>
+        <details class="tdHow">
+          <summary>Como ler</summary>
+          <dl>
+            <div><dt>Inflação implícita</dt><dd>A diferença entre o prefixado e o IPCA+ de mesmo prazo: (1 + prefixado) ÷ (1 + IPCA+) − 1. É a inflação média que deixa os dois títulos empatados. Acima do Focus, o mercado paga para se proteger de inflação; acima do teto da meta, duvida que o Banco Central consiga trazê-la de volta.</dd></div>
+            <div><dt>Juro real</dt><dd>A taxa do IPCA+, o ganho acima da inflação. Alto e subindo encarece o crédito e pesa sobre a bolsa; é também o custo de financiamento do governo.</dd></div>
+            <div><dt>Prefixado de 1 ano</dt><dd>Aproxima o CDI médio esperado para os próximos 12 meses. Acima da Selic, o mercado embute alta de juros ou cobra prêmio; abaixo, embute cortes.</dd></div>
+            <div><dt>Aproximações</dt><dd>Taxa média entre compra e venda do Tesouro Direto, próxima da de mercado. Títulos com cupom entram pela própria taxa. Prazos constantes (1, 5 anos) são interpolados entre vencimentos. A inflação implícita inclui prêmio de risco e de liquidez, por isso costuma ficar um pouco acima da expectativa pura.</dd></div>
+          </dl>
+        </details>
+        <p class="sourceNote">
+          Taxas diárias do Tesouro Direto (Tesouro Nacional, Tesouro Transparente, ODbL 1.0), publicadas
+          no dia útil seguinte. Focus e Selic do Banco Central. Curvas, inflação implícita e comparações
+          calculadas pelo Observatório. Não é recomendação de investimento.
+        </p>
+      </section>
       <section id="brasil" data-desk="brasil" aria-labelledby="brasilTitle">
         <div class="sectionTitle">
           <h2 id="brasilTitle">Painel Brasil</h2>

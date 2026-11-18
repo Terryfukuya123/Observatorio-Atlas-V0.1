@@ -7,6 +7,7 @@ export const SOURCES = [
   ["Banco Central do Brasil", "Selic, IPCA, PTAX, Focus, câmbio contratado, balanço de pagamentos, atuações no câmbio e notas à imprensa", "ODbL 1.0, uso comercial com atribuição", "livre", "https://dadosabertos.bcb.gov.br/"],
   ["Agência Brasil (EBC)", "Notícias de economia e política econômica na seção Ao vivo (título, resumo curto e link)", "CC BY 4.0, uso com atribuição", "livre", "https://agenciabrasil.ebc.com.br/"],
   ["Fed e BCE", "Comunicados, decisões e discursos na seção Ao vivo", "Domínio público (Fed); reuso com citação (BCE)", "livre", "https://www.federalreserve.gov/feeds/feeds.htm"],
+  ["Tesouro Nacional · Tesouro Direto", "Taxas diárias dos títulos públicos: juro nominal, juro real e inflação implícita", "ODbL 1.0", "livre", "https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto"],
   ["IBGE · SIDRA", "Desemprego, atividade, serviços e varejo", "Uso por terceiros com citação do IBGE", "livre", "https://sidra.ibge.gov.br/"],
   ["CVM", "Captação dos fundos e carteiras para os mapas de calor mensais", "ODbL 1.0", "livre", "https://dados.cvm.gov.br/"],
   ["BCE", "Câmbio de referência diário de nove moedas", "Reprodução com crédito e precisão original; dados gratuitos no BCE", "livre", "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"],
@@ -27,7 +28,7 @@ export function aboutHtml() {
     [
       ["#/panorama", "Panorama", "O essencial do dia: pulso, notícias ao vivo, termômetro de risco, próximos eventos e o mapa por país."],
       ["#/mercados", "Mercados", "Bolsas agora (roteiro do pregão e bolsas do mundo), pregão da B3, mapas de calor e força das moedas."],
-      ["#/brasil", "Brasil", "Selic, inflação, expectativas do Focus, fluxo de capital e fundos."],
+      ["#/brasil", "Brasil", "Selic, inflação, o que o mercado precifica no Tesouro Direto, expectativas do Focus, fluxo de capital e fundos."],
       ["#/global", "Global", "Ciclo econômico, juros dos EUA, agenda com impacto e notícias oficiais."],
     ]
       .map(([href, name, text]) => '<a href="' + href + '" data-close><b>' + esc(name) + "</b><span>" + esc(text) + "</span></a>")
