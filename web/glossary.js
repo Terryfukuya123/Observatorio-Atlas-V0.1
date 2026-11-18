@@ -1,6 +1,7 @@
 // Glossário "O que é isso?": cada indicador explicado em duas frases (o que é e por que
 // importa). Um botão "?" aparece nos cartões e nos títulos das seções e abre um balão.
 // Os botões são postos por um observador, então cartões desenhados depois também ganham o seu.
+import { esc } from "./format.js";
 
 export const GLOSSARY = {
   selic: {
@@ -201,8 +202,6 @@ const SECTIONS = {
   curveTitle: "curva",
 };
 
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 function button(key, cls = "") {
   const b = document.createElement("button");

@@ -3,6 +3,7 @@
 // são as quatro fases do ciclo. Também o histórico do sinal de recessão da curva dos EUA.
 import { flagAt, round } from "./symbols.js";
 import { cachedFetch } from "./data.js";
+import { esc, monthShort as month } from "./format.js";
 
 export const NAMES = {
   G20: "G20", G7: "G7", USA: "Estados Unidos", CHN: "China", DEU: "Alemanha", JPN: "Japão", GBR: "Reino Unido", IND: "Índia", FRA: "França",
@@ -15,12 +16,8 @@ const PHASES = [
   ["Contração", "abaixo da tendência e caindo"],
   ["Recuperação", "abaixo da tendência e subindo"],
 ];
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const month = (iso) => MONTHS[Number(iso.slice(5, 7)) - 1] + "/" + iso.slice(2, 4);
 const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "exceptZero" });
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 export function phase(level, change) {
   if (level >= 100) return change >= 0 ? "Expansão" : "Desaceleração";

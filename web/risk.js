@@ -5,11 +5,9 @@
 import { usdValues, strength } from "./fx-board.js";
 import { phase, track } from "./cycle-clock.js";
 import { cachedFetch } from "./data.js";
+import { esc, nf } from "./format.js";
 
-const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 // Nota pela posição do valor entre quatro limites crescentes: abaixo do 1º = −2 … acima do 4º = +2.
 // Com invert, valores altos são ruins (ex.: dólar forte).

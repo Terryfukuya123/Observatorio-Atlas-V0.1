@@ -119,6 +119,21 @@ Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões p
 | tests | Testes determinísticos e roteiro executável de navegador |
 | docs | Matriz de fontes, contrato, licença tipográfica e relatório com capturas |
 
+### Frontend (`web/`)
+
+| Módulo | Papel |
+|---|---|
+| `app.js` | Ponto de entrada: monta a moldura, os espaços e cada seção |
+| `shell.js` | Ícones, tema claro/escuro e navegação lateral |
+| `storage.js` | Preferências no navegador (`localStorage`, prefixo `oeg.`) |
+| `format.js` | Formatação comum: texto seguro, números em pt-BR, sinais, tons e datas curtas |
+| `data.js` | Busca compartilhada da API (uma vez por minuto por endereço) |
+| `desks.js` | Espaços (Panorama, Mercados, Brasil, Global) e roteamento por endereço |
+| `atlas.js` | Mapa, cotações, tabela, painel do país, busca e folhas de fontes do Panorama |
+| demais | Uma seção cada: `pulse`, `risk`, `agenda`, `clock`, `prepos`, `pregao`, `indices`, `live-heat`, `fx-board`, `comparison`, `compass`, `flows`, `funds`, `cycle-clock`, `macro`, `bulletin`, `dossier`, `glossary`, `finder` |
+
+Uma seção nova é um módulo em `web/` com uma função de montagem chamada em `app.js`. O servidor entrega o arquivo sem cadastro.
+
 ## Verificar
 
 ```powershell

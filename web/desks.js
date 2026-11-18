@@ -2,6 +2,7 @@
 // Global). Cada um abre com uma pergunta, os atalhos das suas partes e termina com o
 // caminho natural para continuar a análise. O endereço (#/brasil ou #fluxo) define o
 // espaço, então links antigos para as seções continuam funcionando.
+import { esc } from "./format.js";
 
 export const DESKS = {
   panorama: {
@@ -75,8 +76,6 @@ export const DESKS = {
   },
 };
 
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 export function desks({ main, rail, read, save, base = document.title }) {
   const members = (desk) => [...main.querySelectorAll(':scope > [data-desk="' + desk + '"]')];

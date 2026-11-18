@@ -1,12 +1,8 @@
 // Bússola dos juros: Selic e IPCA realizados, a meta de inflação com o intervalo de
 // tolerância e o caminho esperado pelo Focus, num só gráfico. Mais o Focus em gráficos.
 import { cachedFetch } from "./data.js";
+import { esc, num, monthShort as monthLabel } from "./format.js";
 const n2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const num = (v) => (v == null ? null : Number(v));
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const monthLabel = (iso) => MONTHS[Number(iso.slice(5, 7)) - 1] + "/" + iso.slice(2, 4);
 
 // Meta de inflação do CMN por ano-calendário; tolerância de 1,5 p.p.
 export const TARGET = { 2021: 3.75, 2022: 3.5, 2023: 3.25 };

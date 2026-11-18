@@ -1,15 +1,11 @@
 // Fluxo de capital no Brasil (BCB, ODbL): acumulado no ano, mês a mês, dia a dia,
 // quem moveu o dinheiro, onde os estrangeiros aplicaram e atuações do BC no câmbio.
 import { cachedFetch } from "./data.js";
+import { esc, MONTHS, num, sign, tone, fullDay as day, dayMonth as shortDay, monthShort as month } from "./format.js";
 
 const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const num = (v) => (v == null ? null : Number(v));
-const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "");
 // Valores chegam em US$ milhões.
 export function usd(millions, signed = true) {
   const v = num(millions);
@@ -18,11 +14,7 @@ export function usd(millions, signed = true) {
   const body = abs >= 1000 ? nf1.format(abs / 1000) + " bi" : nf0.format(abs) + " mi";
   return (signed ? sign(v) : v < 0 ? "−" : "") + "US$ " + body;
 }
-const day = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4);
-const shortDay = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
-const month = (ym) => MONTHS[Number(ym.slice(5, 7)) - 1] + "/" + ym.slice(2, 4);
 const longMonth = (ym) => MONTHS[Number(ym.slice(5, 7)) - 1] + "/" + ym.slice(0, 4);
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
 
 function kpi(title, value, lines, extra = "") {
   const v = num(value);

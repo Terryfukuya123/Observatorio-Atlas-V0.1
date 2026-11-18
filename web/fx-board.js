@@ -3,6 +3,7 @@
 // a força é a média dessas variações. Um clique na matriz abre o par no comparador.
 import { coin } from "./symbols.js";
 import { cachedFetch } from "./data.js";
+import { esc, dayMonth as day } from "./format.js";
 
 const PERIODS = { day: [1, "no dia", 7], week: [5, "na semana", 7], month: [21, "no mês", 30], quarter: [Infinity, "em 3 meses", 90] };
 const NAMES = {
@@ -11,9 +12,6 @@ const NAMES = {
 };
 const pct = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "exceptZero" });
 const pct1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: "exceptZero" });
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const day = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 
 // Valor de cada moeda em dólares, por data, a partir das séries "moeda por USD".
 export function usdValues(series) {

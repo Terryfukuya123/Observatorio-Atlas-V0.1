@@ -2,10 +2,9 @@
 // de cada bolsa, o intervalo de almoço e uma linha do "agora". Feriados não entram.
 import { MARKETS, session } from "./indices.js";
 import { round } from "./symbols.js";
+import { esc } from "./format.js";
 
 const DAY = 86400000;
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const hhmm = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
 // Diferença (ms) entre o relógio de parede do fuso e UTC num instante.

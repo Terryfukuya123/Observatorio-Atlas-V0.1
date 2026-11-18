@@ -4,12 +4,8 @@ import { svg } from "./map.js";
 import { round } from "./symbols.js";
 import { keyOf, pinButton } from "./panel-store.js";
 import { cachedFetch } from "./data.js";
+import { esc } from "./format.js";
 
-const esc = (v) =>
-  String(v ?? "").replace(
-    /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
-  );
 const nf = (value, digits = 2) =>
   Number(value).toLocaleString("pt-BR", {
     minimumFractionDigits: digits,

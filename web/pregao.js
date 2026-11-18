@@ -4,8 +4,8 @@
 // D-2. Cada importação vira um retrato; a diferença entre dois retratos dá o pregão.
 // Exibição a terceiros pendente de licença de Market Data da B3.
 import { cachedFetch } from "./data.js";
+import { esc, nf, sign, tone, monthShort as monthName, dayMonth as shortDay } from "./format.js";
 
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 export const INVESTORS = [
   ["foreign", "Estrangeiros"],
   ["institutions", "Institucionais"],
@@ -13,16 +13,10 @@ export const INVESTORS = [
   ["banks", "Instituições financeiras"],
   ["others", "Outros"],
 ];
-const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
-const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "");
 const isMonth = (k) => /^\d{4}-\d{2}$/.test(k);
 const isYear = (k) => /^\d{4}$/.test(k);
-export const monthName = (ym) => MONTHS[Number(ym.slice(5, 7)) - 1] + "/" + ym.slice(2, 4);
-export const shortDay = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
-
+export { monthName };
+export { shortDay };
 // Valores chegam em R$ milhões.
 export function brl(millions, signed = false) {
   const v = Number(millions);

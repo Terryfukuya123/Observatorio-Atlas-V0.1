@@ -10,12 +10,9 @@ import { EVENTS } from "./agenda.js";
 import { items as NEWS } from "./bulletin.js";
 import { euro } from "./map.js";
 import { cachedFetch } from "./data.js";
+import { esc, nf, tone } from "./format.js";
 
-const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const ordinal = (n) => n + "ª";
 const fmtDay = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
 const fmtTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });

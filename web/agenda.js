@@ -4,6 +4,7 @@
 // mostrados no horário deste dispositivo.
 import { flag } from "./symbols.js";
 import { cachedFetch } from "./data.js";
+import { esc, nf } from "./format.js";
 
 export const CHECKED = "18/11/2026";
 
@@ -80,9 +81,6 @@ export const EVENTS = [
   ["2026-12-28T08:25:00-03:00", "BRA", "focus", "Boletim Focus", "semanal", 1, FOCUS, null, "#focus"],
 ].map(([when, country, kind, title, ref, weight, source, series, href]) => ({ when, country, kind, title, ref, weight, source, series, href }));
 
-const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const dayKey = (date) => date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
 const fmtDay = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
 const fmtTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });

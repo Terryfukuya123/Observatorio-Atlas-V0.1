@@ -4,18 +4,11 @@ import { MARKETS, session } from "./indices.js";
 import { flag, pair, round } from "./symbols.js";
 import { ALIAS, DEFAULT_PANEL, isDefault, keyOf, panel, setPanel } from "./panel-store.js";
 import { cachedFetch } from "./data.js";
+import { esc, MONTHS, nf, num, sign, tone, dayMonth as day } from "./format.js";
 
-const nf = (digits) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const n1 = nf(1);
 const n2 = nf(2);
 const n4 = nf(4);
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const num = (v) => (v == null ? null : Number(v));
-const sign = (v) => (v > 0 ? "+" : v < 0 ? "−" : "");
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
-const day = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 const monthName = (iso) => MONTHS[Number(iso.slice(5, 7)) - 1];
 
 function money(value, unit, scale) {

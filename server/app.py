@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import json
 import mimetypes
+import re
 import sys
 
 from server.service import Feed
@@ -19,7 +20,13 @@ from providers.ecb import CURRENCIES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
-STATIC = {p.name for p in WEB.iterdir() if p.suffix in {".html", ".css", ".js", ".json", ".svg", ".ttf"}}
+STATIC_TYPES = {".html", ".css", ".js", ".json", ".svg", ".ttf"}
+STATIC_NAME = re.compile(r"/[A-Za-z0-9][A-Za-z0-9_-]*(\.[A-Za-z0-9]+)+")
+
+
+def is_static(path):
+    """Arquivo direto em web/, com nome simples (sem pastas, '..' ou barras invertidas)."""
+    return bool(STATIC_NAME.fullmatch(path)) and Path(path).suffix in STATIC_TYPES and (WEB / path[1:]).is_file()
 COMPRESSIBLE = ("text/", "application/json", "application/javascript", "image/svg+xml")
 _static_cache = {}
 
@@ -115,7 +122,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path == "/" or path[1:] in STATIC:
+        elif path == "/" or is_static(path):
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)

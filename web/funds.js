@@ -1,16 +1,12 @@
 // Fluxo dos fundos de investimento (CVM, ODbL): captação líquida por categoria no ano,
 // mês a mês e dia a dia, e onde está o patrimônio. Valores chegam em R$ milhões.
 import { cachedFetch } from "./data.js";
+import { esc, num, tone, fullDay as day, dayMonth as shortDay, monthShort as month } from "./format.js";
 
 const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
-const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 const ORDER = ["rf", "mm", "ac", "pv", "cb", "ou"];
 
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const num = (v) => (v == null ? null : Number(v));
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
 export function brl(millions, signed = true) {
   const v = num(millions);
   if (v == null || !Number.isFinite(v)) return "—";
@@ -19,9 +15,6 @@ export function brl(millions, signed = true) {
     abs >= 1e6 ? nf1.format(abs / 1e6) + " tri" : abs >= 1000 ? nf1.format(abs / 1000) + " bi" : nf0.format(abs) + " mi";
   return (signed ? (v > 0 ? "+" : v < 0 ? "−" : "") : v < 0 ? "−" : "") + "R$ " + body;
 }
-const day = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4);
-const shortDay = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
-const month = (ym) => MONTHS[Number(ym.slice(5, 7)) - 1] + "/" + ym.slice(2, 4);
 
 // Barras empilhadas divergentes: entradas acima de zero, saídas abaixo; ponto = saldo.
 function stacked(rows, labelOf, titleOf) {

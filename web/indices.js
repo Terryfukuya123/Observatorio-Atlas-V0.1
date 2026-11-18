@@ -2,6 +2,7 @@
 // "Pregões agora", calculado localmente a partir do horário regular de cada bolsa.
 import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 import { round } from "./symbols.js";
+import { esc } from "./format.js";
 
 // Horário regular, no fuso da bolsa. `lunch` marca o intervalo de almoço, quando existe.
 export const MARKETS = {
@@ -118,10 +119,6 @@ function describe(s, now) {
   const sameDay = s.opensAt && s.opensAt.toDateString() === now.toDateString();
   const when = s.opensAt ? (sameDay ? "hoje " + hereTime.format(s.opensAt) : here.format(s.opensAt).replace(".", "")) : "";
   return ["Fechado", s.wait < 180 ? "abre em " + span(s.wait) : "abre " + when];
-}
-
-function esc(text) {
-  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
 export function worldIndices({ root, read, save }) {

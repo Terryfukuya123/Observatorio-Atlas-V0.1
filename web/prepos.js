@@ -11,14 +11,10 @@ import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 import { flag, round } from "./symbols.js";
 import { brl, digest, monthName, shortDay } from "./pregao.js";
 import { cachedFetch } from "./data.js";
+import { esc, nf, tone, dayMonth as day } from "./format.js";
 
-const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 2) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
-const tone = (v) => (v > 0 ? "pos" : v < 0 ? "neg" : "flat");
-const esc = (text) =>
-  String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const fmtTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
-const day = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 const span = (mins) => {
   const h = Math.floor(mins / 60);
   const m = mins % 60;

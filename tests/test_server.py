@@ -48,11 +48,20 @@ class StaticFiles(unittest.TestCase):
         again, empty = self.get("/app.js", **{"If-None-Match": etag})
         self.assertEqual((again.status, empty), (304, b""))
 
+    def test_new_file_is_served_without_restart(self):
+        from server.app import WEB
+        new = WEB / "zz-teste-novo.js"
+        try:
+            new.write_text("export const x = 1;", encoding="utf8")
+            self.assertEqual(self.get("/zz-teste-novo.js")[0].status, 200)
+        finally:
+            new.unlink()
+
     def test_every_web_file_is_served_and_nothing_else(self):
         self.assertEqual(self.get("/pregao.js")[0].status, 200)
         self.assertEqual(self.get("/data.js")[0].status, 200)
         self.assertEqual(self.get("/")[0].status, 200)
-        for path in ["/../server/app.py", "/nao-existe.js", "/README.md", "/web/app.js"]:
+        for path in ["/../server/app.py", "/..%5Cserver%5Capp.py", "/nao-existe.js", "/README.md", "/web/app.js", "/.git", "/app.js.bak"]:
             self.assertEqual(self.get(path)[0].status, 404, path)
 
 
