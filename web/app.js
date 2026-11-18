@@ -12,6 +12,7 @@ import { pulse } from "./pulse.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
+import { compass, focusCharts } from "./compass.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -96,6 +97,8 @@ const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Obs
 pulse({ root: $("#pulse") });
 sessionClock({ root: $("#relogio") });
 fxBoard({ root: $("#moedas"), read, save });
+compass({ root: $("#bussola") });
+focusCharts({ root: $("#focus"), read, save });
 const state = {
   id: read("country", "BRA"),
   layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))

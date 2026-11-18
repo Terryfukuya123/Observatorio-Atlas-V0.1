@@ -285,6 +285,7 @@ class Store(TestCase):
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
         self.assertEqual(selic["license"], "ODbL 1.0")
+        self.assertEqual(selic["monthly"], [["2026-11-17", "13.75"]])  # Fechamento do mês.
         self.assertEqual(selic["collection"]["status"], "Atualizado")
         self.assertEqual(data["ptax"]["USD"]["value"], "5.757")
         self.assertAlmostEqual(data["ptax"]["USD"]["change_percent"], 1.0, places=6)

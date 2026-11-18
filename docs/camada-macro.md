@@ -40,7 +40,7 @@ Em telas a partir de 851 px a ficha acompanha a altura do mapa e rola por dentro
 
 | Rota | Conteúdo |
 |---|---|
-| `/api/macro` | Séries do Brasil (BCB e IBGE) com último valor, anterior e histórico; PTAX; resumo do Focus; vértices-chave da curva dos EUA; resumo de cobertura dos indicadores globais |
+| `/api/macro` | Séries do Brasil (BCB e IBGE) com último valor, anterior e histórico (as diárias trazem também `monthly`, o fechamento de cada mês de todo o período coletado); PTAX; resumo do Focus; vértices-chave da curva dos EUA; resumo de cobertura dos indicadores globais |
 | `/api/macro/curva` | Curva do Tesouro dos EUA com comparações, inclinações e histórico de 3M, 2A, 10A, 30A e 10A−2A |
 | `/api/macro/focus` | Expectativas Focus com histórico diário das medianas (cerca de 120 dias) |
 | `/api/macro/regional?id=eu_inflacao` | Série mensal ou trimestral do Eurostat ou da OCDE por território, com período, situação (estimado/provisório), defasagem e histórico |

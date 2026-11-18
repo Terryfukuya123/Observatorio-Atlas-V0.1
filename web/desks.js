@@ -41,6 +41,7 @@ export const DESKS = {
     icon: "flow",
     lead: "Juros, inflação e atividade, e para onde foi o dinheiro: do câmbio aos fundos.",
     parts: [
+      ["bussola", "Bússola dos juros"],
       ["brasil", "Indicadores"],
       ["focus", "Expectativas · Focus"],
       ["fluxo", "Fluxo cambial"],

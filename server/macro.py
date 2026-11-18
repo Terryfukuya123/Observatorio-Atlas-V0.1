@@ -251,6 +251,9 @@ class MacroStore:
             if points:
                 day, value = points[-1]
                 item.update(observed=day, value=value, history=points[-HISTORY[s["frequency"]]:])
+                if s["frequency"] == "Diária":
+                    # Fechamento de cada mês com todo o período coletado, para gráficos longos.
+                    item["monthly"] = list({d[:7]: [d, v] for d, v in points}.values())
                 if len(points) > 1:
                     before_day, before = points[-2]
                     item["previous"] = {"observed": before_day, "value": before,

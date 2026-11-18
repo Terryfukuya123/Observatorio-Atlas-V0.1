@@ -346,6 +346,29 @@
           </table>
         </div>
       </section>
+      <section id="bussola" class="card cpCard" data-desk="brasil" aria-labelledby="cpTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="cpTitle">Bússola dos juros</h2>
+          </div>
+          <span class="cpStamp unit-label"></span>
+        </div>
+        <p class="cpRead"></p>
+        <div class="cpKpis"></div>
+        <div class="cpPlot"><p class="empty">Carregando juros e inflação…</p></div>
+        <p class="cpLegend">
+          <span><i class="cpKey cpSelic"></i>Selic meta</span>
+          <span><i class="cpKey cpIpca"></i>IPCA em 12 meses</span>
+          <span><i class="cpKey cpDash"></i>Mediana do Focus para o fim de cada ano</span>
+          <span><i class="cpKey cpBandKey"></i>Meta de inflação e intervalo de tolerância (±1,5 p.p.)</span>
+        </p>
+        <p class="sourceNote">
+          Selic (SGS 432) e IPCA em 12 meses (SGS 13522) do Banco Central, expectativas do
+          relatório Focus e metas do Conselho Monetário Nacional. Juro real ex-ante e prazo de
+          volta à meta calculados pelo Observatório. BCB sob ODbL 1.0.
+        </p>
+      </section>
       <section id="brasil" data-desk="brasil" aria-labelledby="brasilTitle">
         <div class="sectionTitle">
           <h2 id="brasilTitle">Painel Brasil</h2>
@@ -361,8 +384,13 @@
               <h2 id="focusTitle">Expectativas de mercado · Focus</h2>
             </div>
             <span id="focusDate" class="unit-label"></span>
+            <div class="layerTabs" role="group" aria-label="Forma de ver o Focus">
+              <button data-focus-view="charts" aria-pressed="true">Gráficos</button>
+              <button data-focus-view="table" aria-pressed="false">Tabela</button>
+            </div>
           </div>
-          <div id="focusTable" class="scroll"></div>
+          <div id="focusCharts" class="fcGrid"><p class="empty">Carregando Focus…</p></div>
+          <div id="focusTable" class="scroll" hidden></div>
           <p class="sourceNote focusNote">
             Mediana das projeções de instituições consultadas pelo BCB. ▲▼ e o
             número indicam altas ou quedas semanais seguidas; = indica
