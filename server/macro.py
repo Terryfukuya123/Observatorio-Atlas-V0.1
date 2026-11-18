@@ -14,12 +14,15 @@ from pathlib import Path
 from threading import Lock, Thread
 from time import monotonic
 
-from providers import bcb, ibge, treasury, worldbank
+from providers import bcb, eurostat, ibge, oecd, treasury, worldbank
 
-TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "wb": timedelta(hours=24)}
+TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "rg": timedelta(hours=12), "wb": timedelta(hours=24)}
 RETRY = timedelta(minutes=30)
+# Idade máxima do último dado antes de a série ser marcada como defasada.
+STALE = {"Mensal": timedelta(days=125), "Trimestral": timedelta(days=215)}
 HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30, "Trimestral": 24, "Trimestral móvel": 36}
 LIMIT = 8_000_000
+AGGREGATE_CODES = frozenset({"WLD", "EMU", "EUU", "OECD", "G20", "G7"})
 # O BCB publica em datas de Brasília (sem horário de verão desde 2019).
 BRASILIA = timezone(timedelta(hours=-3))
 RIGHTS = {
@@ -38,6 +41,12 @@ RIGHTS = {
     "ibge": dict(source="IBGE · SIDRA", license="Uso por terceiros com citação do IBGE como fonte",
                  license_url="https://biblioteca.ibge.gov.br/biblioteca-servicos.html",
                  dataset="https://sidra.ibge.gov.br/"),
+    "eurostat": dict(source="Eurostat", license="Reuso comercial com citação (UE, EFTA e candidatos)",
+                     license_url="https://ec.europa.eu/eurostat/help/copyright-notice",
+                     dataset="https://ec.europa.eu/eurostat/data/database"),
+    "oecd": dict(source="OCDE · Data Explorer", license="Uso inclusive comercial com citação da OCDE",
+                 license_url="https://www.oecd.org/en/about/terms-conditions.html",
+                 dataset="https://data-explorer.oecd.org/"),
     "wb": dict(source="Banco Mundial · World Development Indicators", license="CC BY 4.0",
                license_url="https://creativecommons.org/licenses/by/4.0/",
                dataset="https://databank.worldbank.org/source/world-development-indicators"),
@@ -48,9 +57,14 @@ def load_catalog(root):
     catalog = json.loads((Path(root) / "config/macro.json").read_text(encoding="utf8"))
     catalog.setdefault("focus", [])
     catalog.setdefault("ibge", [])
-    ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"]]
+    catalog.setdefault("regional", [])
+    ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"] + catalog["regional"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
+    for series in catalog["regional"]:
+        if (series["source"] not in {"eurostat", "oecd"} or series["frequency"] not in {"Mensal", "Trimestral"}
+                or not series.get("concept")):
+            raise ValueError(f"Fonte ou periodicidade inválida em {series['id']}")
     for series in catalog["brasil"] + catalog["ibge"]:
         if series["frequency"] not in HISTORY:
             raise ValueError(f"Periodicidade desconhecida em {series['id']}")
@@ -59,7 +73,8 @@ def load_catalog(root):
 
 def territories(root):
     world = json.loads((Path(root) / "web/world.json").read_text(encoding="utf8"))
-    return frozenset(row["id"] for row in world) | {"WLD"}
+    # WLD, EMU (zona do euro) e EUU (União Europeia) seguem a codificação do Banco Mundial.
+    return frozenset(row["id"] for row in world) | {"WLD", "EMU", "EUU"}
 
 
 class MacroStore:
@@ -107,6 +122,13 @@ class MacroStore:
                    lambda body, t=today: bcb.normalize_focus(body, t, names))
         for year in (today.year - 1, today.year):
             yield (f"ust:{year}", treasury.url(year), lambda body, t=today: treasury.normalize(body, t))
+        for s in self.catalog["regional"]:
+            if s["source"] == "eurostat":
+                yield (f"rg:{s['id']}", eurostat.url(s["dataset"], s["filters"], s["frequency"]),
+                       lambda body, t=today: eurostat.normalize(body, t))
+            else:
+                yield (f"rg:{s['id']}", oecd.url(s["flow"], s["key"], s["frequency"], today),
+                       lambda body, t=today: oecd.normalize(body, self.territories, t))
         for s in self.catalog["global"]:
             yield (f"wb:{s['code']}", worldbank.url(s["code"]),
                    lambda body, c=s["code"]: worldbank.normalize(body, c, self.territories))
@@ -118,7 +140,11 @@ class MacroStore:
     def downloader(self, key):
         if self.fetch:
             return self.fetch
-        return {"wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}.get(key.split(":")[0], bcb.download)
+        prefix = key.split(":")[0]
+        if prefix == "rg":
+            spec = next(s for s in self.catalog["regional"] if f"rg:{s['id']}" == key)
+            return eurostat.download if spec["source"] == "eurostat" else oecd.download
+        return {"wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}.get(prefix, bcb.download)
 
     def collect(self, now):
         pending = set(self.due(now))
@@ -327,12 +353,46 @@ class MacroStore:
         summary["key"] = [c for c in full.get("curve", []) if c["code"] in {"3M", "2A", "10A", "30A"}]
         return summary
 
+    def latest(self, points, frequency):
+        day, value, label, status = points[-1]
+        today = self.clock().astimezone(BRASILIA).date()
+        item = dict(observed=day, period=label, value=value, status=status,
+                    stale=today - date.fromisoformat(day) > STALE[frequency])
+        if len(points) > 1:
+            before = points[-2]
+            item["previous"] = {"observed": before[0], "period": before[2], "value": before[1],
+                                "delta": str(Decimal(value) - Decimal(before[1]))}
+        return item
+
+    def regional_summary(self):
+        out = []
+        for s in self.catalog["regional"]:
+            key = f"rg:{s['id']}"
+            data = (self.entries.get(key) or {}).get("data") or {}
+            last = max((points[-1][0] for points in data.values()), default=None)
+            out.append(dict({k: s[k] for k in ("id", "name", "unit", "frequency", "group", "decimals", "source")},
+                            coverage=len([k for k in data if k not in AGGREGATE_CODES]), latest=last, collection=self.status(key), **RIGHTS[s["source"]]))
+        return out
+
+    def regional(self, identifier):
+        spec = next((s for s in self.catalog["regional"] if s["id"] == identifier), None)
+        if spec is None:
+            return None
+        self.refresh_if_due()
+        with self.lock:
+            key = f"rg:{spec['id']}"
+            data = (self.entries.get(key) or {}).get("data") or {}
+            areas = {area: dict(self.latest(points, spec["frequency"]), history=[[d, v] for d, v, _, _ in points[-HISTORY[spec["frequency"]]:]])
+                     for area, points in sorted(data.items())}
+            return dict({k: v for k, v in spec.items() if k not in {"filters", "key", "flow", "dataset"}},
+                        areas=areas, collection=self.status(key), **RIGHTS[spec["source"]])
+
     def indicators(self):
         out = []
         for s in self.catalog["global"]:
             key = f"wb:{s['code']}"
             values = (self.entries.get(key) or {}).get("data") or {}
-            out.append(dict(s, coverage=len([k for k in values if k != "WLD"]),
+            out.append(dict(s, coverage=len([k for k in values if k not in AGGREGATE_CODES]),
                             years=sorted({v["year"] for v in values.values()}),
                             collection=self.status(key), **RIGHTS["wb"]))
         return out
@@ -340,7 +400,7 @@ class MacroStore:
     def overview(self):
         self.refresh_if_due()
         with self.lock:
-            return dict(brasil=self.brasil(), ibge=self.ibge_series(), ptax=self.ptax(), focus=self.focus(), us_curve=self.curve_summary(), indicators=self.indicators(),
+            return dict(brasil=self.brasil(), ibge=self.ibge_series(), ptax=self.ptax(), focus=self.focus(), us_curve=self.curve_summary(), regional=self.regional_summary(), indicators=self.indicators(),
                         warning=self.warning, generated=self.clock().isoformat())
 
     def curve_detail(self):
@@ -377,4 +437,16 @@ class MacroStore:
                 rows.append(dict(id=s["id"], name=s["name"], unit=s["unit"], group=s["group"], decimals=s["decimals"],
                                  year=found and found["year"], value=found and found["value"],
                                  world=world, status=self.status(key)["status"]))
-            return dict(iso=iso, indicators=rows, **RIGHTS["wb"])
+            # Um valor por conceito: quando Eurostat e OCDE cobrem o mesmo país, vale a observação mais recente.
+            best = {}
+            for s in self.catalog["regional"]:
+                points = ((self.entries.get(f"rg:{s['id']}") or {}).get("data") or {}).get(iso)
+                if not points:
+                    continue
+                item = dict({k: s[k] for k in ("id", "concept", "name", "unit", "frequency", "group", "decimals")},
+                            **self.latest(points, s["frequency"]), **RIGHTS[s["source"]])
+                current = best.get(s["concept"])
+                if current is None or item["observed"] > current["observed"]:
+                    best[s["concept"]] = item
+            recent = list(best.values())
+            return dict(iso=iso, indicators=rows, recent=recent, **RIGHTS["wb"])

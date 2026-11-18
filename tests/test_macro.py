@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from threading import Thread
 from unittest import TestCase
 
-from providers import bcb, ibge, treasury, worldbank
+from providers import bcb, eurostat, ibge, oecd, treasury, worldbank
 from server.app import Handler, ThreadingHTTPServer, ROOT
 from server.macro import MacroStore, load_catalog
 
@@ -49,6 +49,29 @@ UST = {
 def sidra(variable, values, locality="1"):
     return json.dumps([{"id": str(variable), "resultados": [{"classificacoes": [], "series": [
         {"localidade": {"id": locality}, "serie": values}]}]}]).encode()
+
+
+def jsonstat(geo, time, values, status=None, extra=("freq", "unit")):
+    ids = list(extra) + ["geo", "time"]
+    dims = {k: {"category": {"index": {"X": 0}}} for k in extra}
+    dims["geo"] = {"category": {"index": {g: i for i, g in enumerate(geo)}}}
+    dims["time"] = {"category": {"index": {t: i for i, t in enumerate(time)}}}
+    return json.dumps({"id": ids, "size": [1] * len(extra) + [len(geo), len(time)], "dimension": dims,
+                       "value": values, "status": status or {}}).encode()
+
+
+EUROSTAT = jsonstat(["EA", "DE", "UK", "US", "XK", "TR"], ["2026-09", "2026-10"],
+                    {"0": 3.8, "1": 4.0, "2": 3.3, "3": 2.8, "4": 9, "5": 9, "6": 9, "7": 9, "9": 1, "10": 29.7},
+                    {"1": "e", "3": "p"})
+
+
+def sdmx(*rows, measure="CPI"):
+    head = "DATAFLOW,REF_AREA,MEASURE,TIME_PERIOD,OBS_VALUE,OBS_STATUS"
+    return "\n".join([head] + [f"X,{a},{measure},{t},{v},{st}" for a, t, v, st in rows]).encode()
+
+
+OECD = sdmx(("USA", "2026-09", "3.7", "A"), ("USA", "2026-08", "3.4", "A"), ("JPN", "2026-09", "2.4", "E"),
+            ("G20", "2026-09", "4.3", "A"), ("ZZZ", "2026-09", "1", "A"), ("DEU", "2026-09", "2.7", "A"))
 
 
 def wb(code, *rows):
@@ -140,6 +163,57 @@ class Providers(TestCase):
         with self.assertRaises(ValueError):
             ibge.download("https://example.com/")
 
+    def test_eurostat_rights_filter(self):
+        data = eurostat.normalize(EUROSTAT, TODAY)
+        # Reino Unido, EUA e Kosovo são descartados pela política de reuso do Eurostat.
+        self.assertEqual(set(data), {"EMU", "DEU", "TUR"})
+        self.assertEqual(data["EMU"], [("2026-09-01", "3.8", "set/2026", None), ("2026-10-01", "4.0", "out/2026", "estimado")])
+        self.assertEqual(data["DEU"][-1][3], "provisório")
+        self.assertEqual(data["TUR"], [("2026-09-01", "29.7", "set/2026", None)])
+        self.assertEqual(eurostat.period("2026-Q3"), ("2026-09-01", "3º tri/2026"))
+        self.assertIn("lastTimePeriod=25", eurostat.url("une_rt_m", {"unit": "PC_ACT"}, "Mensal"))
+        for bad in (lambda: eurostat.url("x;y", {}, "Mensal"), lambda: eurostat.url("une", {"a": "b&c=d"}, "Mensal"),
+                    lambda: eurostat.download("https://example.com/")):
+            with self.assertRaises(ValueError):
+                bad()
+        for body in (jsonstat(["DE"], ["2026-12"], {"0": 1}), b'{"error": [{"id": 400}]}',
+                     jsonstat(["DE"], ["2026-09"], {"0": 1}, extra=("freq",)).replace(b'"size": [1', b'"size": [2'),
+                     jsonstat(["US"], ["2026-09"], {"0": 1})):
+            with self.subTest(body=body[:50]), self.assertRaises(ValueError):
+                eurostat.normalize(body, TODAY)
+
+    def test_eurostat_order_beyond_ten_positions(self):
+        # Índices de dimensão com dois dígitos: a ordem precisa ser numérica, não textual.
+        months = [f"2025-{m:02d}" for m in range(1, 13)]
+        geo = ["EA", "BE", "BG", "CZ", "DK", "DE", "EE", "IE", "EL", "ES", "FR", "HR"]
+        values = {str(g * 12 + t): g * 100 + t for g in range(12) for t in range(12)}
+        data = eurostat.normalize(jsonstat(geo, months, values), TODAY)
+        self.assertEqual(data["HRV"][-1][:3], ("2025-12-01", "1111", "dez/2025"))
+        self.assertEqual(data["FRA"][10][:2], ("2025-11-01", "1010"))
+        self.assertEqual([d for d, *_ in data["EMU"]], [f"{m}-01" for m in months])
+
+    def test_eurostat_euro_area_codes(self):
+        only_ea21 = eurostat.normalize(jsonstat(["EU27_2020", "EA21", "DE"], ["2026-09"], {"0": 6.2, "1": 6.3, "2": 4.1}), TODAY)
+        self.assertEqual(only_ea21["EMU"], [("2026-09-01", "6.3", "set/2026", None)])
+        both = eurostat.normalize(jsonstat(["EA", "EA21", "EA20"], ["2026-09"], {"0": 4.0, "1": 9.9, "2": 8.8}), TODAY)
+        self.assertEqual(both["EMU"], [("2026-09-01", "4.0", "set/2026", None)])
+
+    def test_oecd(self):
+        data = oecd.normalize(OECD, {"USA", "JPN"}, TODAY)
+        self.assertEqual(set(data), {"USA", "JPN", "G20"})
+        self.assertEqual([d for d, *_ in data["USA"]], ["2026-08-01", "2026-09-01"])
+        self.assertEqual(data["JPN"][0][3], "estimado")
+        mixed = sdmx(("USA", "2026-09", "3.7", "A")) + b"\nX,USA,HICP,2026-08,3.4,A"
+        for body in (mixed, sdmx(("USA", "2026-09", "x", "A")), sdmx(("USA", "2026-12", "1", "A")),
+                     sdmx(("USA", "2026-09", "1", "A"), ("USA", "2026-09", "2", "A")), b"a,b\n1,2"):
+            with self.subTest(body=body[-40:]), self.assertRaises(ValueError):
+                oecd.normalize(body, {"USA"}, TODAY)
+        address = oecd.url("OECD.SDD.STES,DSD_STES@DF_CLI,", ".M.LI...AA.IX..H", "Mensal", TODAY)
+        self.assertTrue(address.startswith(oecd.BASE))
+        self.assertIn("startPeriod=2024-", address)
+        with self.assertRaises(ValueError):
+            oecd.url("x/../y", "", "Mensal", TODAY)
+
     def test_catalog_matches_map(self):
         catalog = load_catalog(ROOT)
         self.assertGreaterEqual(len(catalog["brasil"]), 10)
@@ -157,6 +231,10 @@ class Fake:
         self.calls.append(url)
         if self.fail:
             raise OSError("rede")
+        if url.startswith(eurostat.BASE):
+            return EUROSTAT
+        if url.startswith(oecd.BASE):
+            return OECD
         if url.startswith(ibge.BASE):
             variable = url.split("/variaveis/")[1].split("?")[0]
             return sidra(variable, {"202608": "5.3", "202609": "5.2"})
@@ -188,7 +266,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + 3
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + len(store.catalog["regional"]) + 3
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
@@ -210,6 +288,10 @@ class Store(TestCase):
         self.assertEqual((unemployment["value"], unemployment["period"], unemployment["previous"]["delta"]), ("5.2", "jul–set/2026", "-0.1"))
         self.assertEqual(unemployment["history"], [["2026-08-01", "5.3"], ["2026-09-01", "5.2"]])
         self.assertIn("IBGE", unemployment["license"])
+        regional = {r["id"]: r for r in data["regional"]}
+        self.assertEqual((regional["eu_inflacao"]["coverage"], regional["eu_inflacao"]["latest"]), (2, "2026-10-01"))
+        self.assertEqual(regional["ocde_cli"]["coverage"], 3)
+        self.assertIn("Eurostat", regional["eu_inflacao"]["source"])
         store.overview()
         self.assertEqual(len(self.fake.calls), total)  # Dentro do TTL não há nova coleta.
         restarted = self.store()
@@ -235,8 +317,10 @@ class Store(TestCase):
         store = MacroStore(ROOT, clock=lambda: NOW, background=False, path=self.path)
         expected = {"sgs": bcb.download, "ptax": bcb.download, "focus": bcb.download,
                     "wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}
+        sources = {f"rg:{s['id']}": s["source"] for s in store.catalog["regional"]}
         for key, _, _ in store.jobs(TODAY):
-            self.assertIs(store.downloader(key), expected[key.split(":")[0]], key)
+            want = (eurostat.download if sources[key] == "eurostat" else oecd.download) if key in sources else expected[key.split(":")[0]]
+            self.assertIs(store.downloader(key), want, key)
 
     def test_failure_keeps_last_valid(self):
         self.store().overview()
@@ -283,7 +367,30 @@ class Store(TestCase):
         self.assertIsNone(store.country("XXX"))
         self.assertIsNone(store.indicator("inexistente"))
         values = store.indicator("inflacao")["values"]
-        self.assertEqual(set(values), {"BRA", "USA", "WLD"})
+        self.assertEqual(set(values), {"BRA", "USA", "WLD", "EUU"})
+
+    def test_regional_and_country_recent(self):
+        store = self.store()
+        detail = store.regional("eu_inflacao")
+        self.assertEqual(detail["areas"]["EMU"]["value"], "4.0")
+        self.assertEqual(detail["areas"]["EMU"]["status"], "estimado")
+        self.assertEqual(detail["areas"]["EMU"]["previous"]["delta"], "0.2")
+        self.assertNotIn("filters", detail)
+        self.assertIsNone(store.regional("x"))
+        self.assertFalse(detail["areas"]["EMU"]["stale"])
+        euro = store.country("EMU")
+        self.assertEqual({r["id"] for r in euro["recent"]}, {"eu_inflacao", "eu_desemprego", "eu_pib_trimestre", "eu_pib_ano"})
+        # Alemanha: Eurostat (out/2026) e OCDE (set/2026) na fixture; prevalece o mais recente por conceito.
+        germany = {r["concept"]: r for r in store.country("DEU")["recent"]}
+        self.assertEqual(germany["inflacao"]["id"], "eu_inflacao")
+        self.assertEqual(germany["cli"]["id"], "ocde_cli")
+        self.assertEqual(len(germany), 5)  # inflação, desemprego, PIB no trimestre, PIB anual e CLI.
+        self.now += timedelta(days=200)
+        self.assertTrue(store.regional("eu_inflacao")["areas"]["EMU"]["stale"])
+        self.now -= timedelta(days=200)
+        usa = store.country("USA")
+        self.assertEqual({r["id"] for r in usa["recent"]}, {"ocde_inflacao", "ocde_desemprego", "ocde_cli"})
+        self.assertIn("OCDE", usa["recent"][0]["source"])
 
 
 class Http(TestCase):
@@ -294,7 +401,7 @@ class Http(TestCase):
             worker.start()
             try:
                 for path, code in [("/api/macro", 200), ("/api/macro/pais?iso=bra", 200), ("/api/macro/pais?iso=ZZZ", 400),
-                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/curva", 200), ("/api/macro/indicador?id=x", 400)]:
+                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/curva", 200), ("/api/macro/regional?id=ocde_cli", 200), ("/api/macro/regional?id=x", 400), ("/api/macro/indicador?id=x", 400)]:
                     with self.subTest(path=path):
                         conn = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
                         conn.request("GET", path)
