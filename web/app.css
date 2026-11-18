@@ -2967,3 +2967,116 @@ footer a {
     font-size: 22px;
   }
 }
+
+/* Fluxo dos fundos */
+.fundCard {
+  margin-top: 15px;
+}
+.fundCard .cardhead {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.c-rf { fill: #6f9fc8; background: #6f9fc8; }
+.c-mm { fill: #d7a24a; background: #d7a24a; }
+.c-ac { fill: #b07cc6; background: #b07cc6; }
+.c-pv { fill: #5fb3a6; background: #5fb3a6; }
+.c-cb { fill: #c97b5a; background: #c97b5a; }
+.c-ou { fill: #8a877c; background: #8a877c; }
+.fundBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: start;
+}
+.fundTotal {
+  margin: 4px 0 10px;
+  color: var(--soft);
+  font-size: 13px;
+}
+.fundTotal strong {
+  font-size: 24px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.fundTotal[data-tone="pos"] strong { color: var(--pos); }
+.fundTotal[data-tone="neg"] strong { color: var(--neg); }
+.fundRows .name .swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 7px;
+}
+.fundRows .track {
+  height: 12px;
+}
+.fundRows .track i,
+.fundRows li[data-tone="neg"] .track i {
+  opacity: 0.9;
+}
+.fundRows .track i.c-rf { background: #6f9fc8; }
+.fundRows .track i.c-mm { background: #d7a24a; }
+.fundRows .track i.c-ac { background: #b07cc6; }
+.fundRows .track i.c-pv { background: #5fb3a6; }
+.fundRows .track i.c-cb { background: #c97b5a; }
+.fundRows .track i.c-ou { background: #8a877c; }
+.fundRows .track u {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  opacity: 0.7;
+}
+.fundSide h3 {
+  margin: 4px 0 6px;
+  font-size: 14px;
+}
+.fundEquityTotal {
+  margin: 0;
+  color: var(--soft);
+  font-size: 12px;
+}
+.fundEquityTotal strong {
+  display: block;
+  font-size: 22px;
+  color: var(--text);
+  font-weight: 600;
+}
+.fundShare {
+  width: 100%;
+  height: 34px;
+  display: block;
+  margin: 10px 0 8px;
+}
+.fundShareList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fundShareList li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  grid-template-areas: "sw name pct" "sw value value";
+  gap: 0 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.fundShareList li:first-child { border-top: 0; }
+.fundShareList .swatch {
+  grid-area: sw;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+.fundShareList span { grid-area: name; }
+.fundShareList em { grid-area: pct; font-style: normal; font-weight: 600; }
+.fundShareList small { grid-area: value; color: var(--muted); font-size: 11px; }
+@media (max-width: 1000px) {
+  .fundBody {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,6 +6,7 @@ import { macroLayer } from "./macro.js";
 import { liveHeat } from "./live-heat.js";
 import { worldIndices } from "./indices.js";
 import { capitalFlows } from "./flows.js";
+import { fundFlows } from "./funds.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -937,3 +938,4 @@ setInterval(() => macro.load(), 1800000);
 liveHeat({ root: $("#aovivo"), read, save });
 worldIndices({ root: $("#indices"), read, save });
 capitalFlows({ root: $("#fluxo"), read, save });
+fundFlows({ root: $(".fundCard"), read, save });

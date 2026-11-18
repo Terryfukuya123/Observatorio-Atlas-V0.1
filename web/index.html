@@ -383,6 +383,46 @@
             <div id="flowBC"></div>
           </section>
         </div>
+        <section class="card fundCard" aria-labelledby="fundTitle">
+          <div class="cardhead">
+            <div class="headtitle">
+              <i data-icon="layers"></i>
+              <h2 id="fundTitle">Fundos: para onde o investidor local levou o dinheiro</h2>
+            </div>
+            <div class="layerTabs" role="group" aria-label="Período do fluxo dos fundos">
+              <button data-fund-view="year" aria-pressed="true">No ano</button>
+              <button data-fund-view="month" aria-pressed="false">Mês a mês</button>
+              <button data-fund-view="day" aria-pressed="false">Dia a dia</button>
+            </div>
+          </div>
+          <p id="fundStamp" class="flowHint">CVM · informe diário</p>
+          <div class="fundBody">
+            <div>
+              <div class="flowLegend fundLegend">
+                <span><b class="swatch c-rf"></b>Renda fixa</span>
+                <span><b class="swatch c-mm"></b>Multimercado</span>
+                <span><b class="swatch c-ac"></b>Ações</span>
+                <span><b class="swatch c-pv"></b>Previdência</span>
+                <span><b class="swatch c-cb"></b>Cambial</span>
+                <span><b class="swatch c-ou"></b>Outros</span>
+              </div>
+              <div id="fundChart"><p class="empty">Carregando informes…</p></div>
+              <p id="fundNote" class="sourceNote"></p>
+            </div>
+            <aside class="fundSide" aria-labelledby="fundEquityTitle">
+              <h3 id="fundEquityTitle">Onde está o patrimônio</h3>
+              <div id="fundEquity"></div>
+            </aside>
+          </div>
+          <p class="sourceNote">
+            Captação menos resgate das classes de fundos que reportam o informe
+            diário à CVM. Fundos de cotas ficam fora para não contar o mesmo
+            dinheiro duas vezes. Categoria pela classificação do cadastro da CVM;
+            previdência pela classificação Anbima do cadastro. Fonte:
+            <a href="https://dados.cvm.gov.br/dataset/fi-doc-inf_diario" target="_blank" rel="noreferrer">CVM, dados abertos</a>
+            · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL 1.0</a>.
+          </p>
+        </section>
         <p id="flowSources" class="sourceNote"></p>
       </section>
       <section id="juros" aria-labelledby="jurosTitle">

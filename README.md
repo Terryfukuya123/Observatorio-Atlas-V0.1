@@ -60,8 +60,9 @@ A seção **Fluxo de capital · Brasil** mostra quanto dinheiro entrou e saiu do
 - **Quem moveu:** capitais estrangeiros, capitais brasileiros, serviços e rendas no câmbio contratado.
 - **Estrangeiros: onde aplicaram:** investimento direto, ações, renda fixa e fundos no balanço de pagamentos.
 - **Banco Central no câmbio:** volume aceito por instrumento no ano (à vista, linhas e swaps) e os últimos leilões.
+- **Fundos:** captação menos resgate das classes de fundos por categoria (renda fixa, multimercado, ações, previdência, cambial e outros), no ano com o mesmo período do ano anterior, mês a mês e dia a dia, e a divisão do patrimônio. Vem do informe diário da CVM; fundos de cotas ficam fora para não contar o mesmo dinheiro duas vezes, e o dia só entra quando ao menos 95% das classes já reportaram. A primeira coleta baixa cerca de 23 arquivos mensais (≈ 12 MB cada) em segundo plano.
 
-Tudo vem do BCB sob ODbL. O câmbio contratado diário sai com cerca de uma semana de defasagem, e as séries por agente são mensais. A participação de estrangeiros, institucionais e pessoa física na B3, e o fluxo por ação, dependem de autorização da B3 e não entram nesta versão.
+Câmbio e balanço de pagamentos vêm do BCB e os fundos da CVM, ambos sob ODbL. O câmbio contratado diário sai com cerca de uma semana de defasagem, e as séries por agente são mensais. A participação de estrangeiros, institucionais e pessoa física na B3, e o fluxo por ação, dependem de autorização da B3 e não entram nesta versão.
 
 ## Camada macro
 
