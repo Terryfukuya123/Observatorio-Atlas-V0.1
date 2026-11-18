@@ -43,9 +43,13 @@ A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatma
 
 [Metodologia e cobertura](docs/heatmaps-mensais.md)
 
+## Índices mundiais
+
+A seção **Índices mundiais** resume a tela de índices globais dos terminais profissionais no que importa para consulta rápida. São quatro regiões: Américas, Europa, Ásia-Pacífico e Referências (DXY, VIX, dólar em reais, ouro, Brent e bitcoin). Cada uma mostra valor, variação do dia e gráfico do índice escolhido, pelo widget público do TradingView. Alguns índices aparecem por contratos que os acompanham, indicados como "contrato". Ao lado, **Pregões agora** informa se cada bolsa da região está aberta, em intervalo ou fechada, quanto falta para fechar ou abrir, e a hora local. Esse cálculo é feito no navegador a partir do horário regular de cada bolsa, sem feriados. P/L, estimativas e dividendos ficaram de fora por falta de fonte gratuita licenciada.
+
 ## Mercados ao vivo
 
-A seção **Mercados ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
+A seção **Mercados ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js` e `web/indices.js`, que dependem de `web/tv-widget.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
 
 ## Camada macro
 

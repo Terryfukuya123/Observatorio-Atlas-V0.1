@@ -4,6 +4,7 @@ import { comparison } from "./comparison.js";
 import { assetHeat } from "./asset-heat.js";
 import { macroLayer } from "./macro.js";
 import { liveHeat } from "./live-heat.js";
+import { worldIndices } from "./indices.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -85,7 +86,7 @@ $("#railToggle").onclick = () => {
 };
 function markSection() {
   const target =
-    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin", "#aovivo"].find(
+    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin", "#aovivo", "#indices"].find(
       (id) => $(id).getBoundingClientRect().top <= 24,
     ) || "#top";
   for (const link of document.querySelectorAll("#sections a")) {
@@ -932,3 +933,4 @@ setInterval(refresh, 300000);
 setInterval(() => macro.load(), 1800000);
 
 liveHeat({ root: $("#aovivo"), read, save });
+worldIndices({ root: $("#indices"), read, save });

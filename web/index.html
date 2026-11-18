@@ -31,6 +31,9 @@
         <a href="#top" title="Panorama" aria-label="Panorama" class="active"
           ><i data-icon="globe"></i><span>Panorama</span></a
         >
+        <a href="#indices" title="Índices mundiais" aria-label="Índices mundiais"
+          ><i data-icon="list"></i><span>Índices mundiais</span></a
+        >
         <a href="#aovivo" title="Mercados ao vivo" aria-label="Mercados ao vivo"
           ><i data-icon="grid"></i><span>Mercados ao vivo</span></a
         >
@@ -203,6 +206,42 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="indices" class="card liveCard" aria-labelledby="indicesTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="list"></i>
+            <h2 id="indicesTitle">Índices mundiais</h2>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Região dos índices">
+            <button data-region="americas" aria-pressed="true">Américas</button>
+            <button data-region="europe" aria-pressed="false">Europa</button>
+            <button data-region="asia" aria-pressed="false">Ásia-Pacífico</button>
+            <button data-region="refs" aria-pressed="false">Referências</button>
+          </div>
+        </div>
+        <div class="indicesBody">
+          <div id="indicesHost" class="liveHost indicesHost" role="region">
+            <div class="liveState"><strong>Role até aqui para carregar as cotações</strong></div>
+          </div>
+          <aside class="sessions" aria-labelledby="sessionsTitle">
+            <div class="sessionsHead">
+              <h3 id="sessionsTitle">Pregões agora</h3>
+              <span id="sessionSummary"></span>
+            </div>
+            <ul id="sessionList" aria-live="polite"></ul>
+            <p class="sourceNote">
+              Horário regular de cada bolsa, sem feriados nem leilões. Aberturas
+              no horário deste dispositivo.
+            </p>
+          </aside>
+        </div>
+        <p class="sourceNote">
+          Clique num índice para ver o gráfico do dia. Cotações do widget
+          público do TradingView, com atraso conforme a bolsa; alguns índices
+          aparecem por contratos que acompanham o índice. Os dados não passam
+          pelo servidor do Observatório.
+        </p>
+      </section>
       <section id="aovivo" class="card liveCard" aria-labelledby="liveTitle">
         <div class="cardhead">
           <div class="headtitle">

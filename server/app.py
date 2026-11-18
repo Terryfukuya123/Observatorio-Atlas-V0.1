@@ -5,6 +5,7 @@ from urllib.parse import parse_qs, urlsplit
 import argparse
 import json
 import mimetypes
+import sys
 
 from server.service import Feed
 from server.editions import MonthlyEdition
@@ -83,7 +84,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)
@@ -108,11 +109,21 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
 
+class Server(ThreadingHTTPServer):
+    # No Windows, SO_REUSEADDR permite que um segundo processo escute na mesma porta e
+    # receba parte das requisições. Sem ele, a segunda instância falha ao iniciar.
+    allow_reuse_address = sys.platform != "win32"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8842)
     args = parser.parse_args()
-    with ThreadingHTTPServer(("127.0.0.1", args.port), Handler) as server:
+    try:
+        server = Server(("127.0.0.1", args.port), Handler)
+    except OSError:
+        sys.exit(f"Porta {args.port} já está em uso. Encerre a outra instância (scripts/stop.ps1) antes de iniciar.")
+    with server:
         server.feed = Feed(ROOT / "data/cache/ecb.json")
         server.editions = MonthlyEdition(ROOT, server.feed)
         server.macro = MacroStore(ROOT)
