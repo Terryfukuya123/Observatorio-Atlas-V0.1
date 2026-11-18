@@ -43,7 +43,7 @@ Abra http://127.0.0.1:8842/. Outros comandos:
 - **Rede:** dentro do container o servidor escuta em `0.0.0.0`, mas a porta é publicada só no `127.0.0.1` da máquina. Assim a plataforma não fica visível na rede, igual à execução direta. O cabeçalho `Host` continua restrito a `127.0.0.1` e `localhost`.
 - **Outra porta:** troque `"127.0.0.1:8842:8842"` por, por exemplo, `"127.0.0.1:9000:8842"` e ponha `OEG_PUBLIC_PORT: "9000"`. Sem isso o servidor recusa o acesso (erro 403).
 - **Dados:** o cache das coletas fica no volume `observatorio-cache` e sobrevive a reinícios e atualizações. A planilha da B3, baixada à mão, vai em `data/b3/` na máquina, que é montada no container. No Linux, se o container não conseguir gravar os retratos, dê permissão à pasta com `sudo chown -R 1000:1000 data/b3`.
-- **Saúde:** o Docker confere a página a cada 30 segundos (`docker ps` mostra `healthy`). A primeira coleta, com o cache vazio, leva de 30 segundos a 1 minuto.
+- **Saúde:** o Docker confere a página a cada 30 segundos (`docker ps` mostra `healthy`). Na primeira subida, com o cache vazio, a coleta completa leva de 1 a 2 minutos. Até lá, algumas seções (Focus, curva dos EUA) aparecem como indisponíveis e a Saúde das fontes mostra as que ainda pedem atenção. Nas próximas vezes o volume já traz o cache.
 - **Variáveis:** `OEG_PORT` (porta interna, 8842), `OEG_HOST` (`0.0.0.0` na imagem) e `OEG_PUBLIC_PORT` (porta vista pelo navegador). As mesmas opções existem na linha de comando: `--port`, `--host` e `--porta-publica`.
 
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
