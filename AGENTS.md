@@ -33,6 +33,7 @@ não é versionado.
 python -m unittest discover -s tests
 node tests/risk.mjs
 node tests/narrator.mjs
+node tests/session-calendar.mjs
 ```
 
 Com o servidor rodando, faça também o roteiro de fumaça. Ele usa o Edge e o pacote
