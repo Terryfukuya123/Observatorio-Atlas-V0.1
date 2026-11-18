@@ -14,6 +14,7 @@ import { agenda } from "./agenda.js";
 import { dossier } from "./dossier.js";
 import { riskMeter } from "./risk.js";
 import { prePost } from "./prepos.js";
+import { pregao } from "./pregao.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
@@ -106,6 +107,7 @@ glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
 riskMeter({ root: $("#termometro") });
 prePost({ root: $("#prepos"), read, save });
+pregao({ root: $("#pregao") });
 dossier({
   info,
   read,

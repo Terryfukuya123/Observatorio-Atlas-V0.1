@@ -270,6 +270,65 @@
           pregão vêm da planilha <i>Dados de Mercado</i> da B3, importada manualmente.
         </p>
       </section>
+      <section id="pregao" data-desk="mercados" aria-labelledby="pgTitle">
+        <div class="sectionTitle">
+          <h2 id="pgTitle">Pregão B3 · volume e origem do dinheiro</h2>
+          <span id="pgStamp">B3 · Dados de Mercado</span>
+        </div>
+        <p class="flowLead">
+          Quanto a bolsa brasileira negociou, quem negociou e se o estrangeiro entrou ou saiu.
+          A B3 divulga o volume no dia seguinte e a origem dos investidores dois dias depois.
+        </p>
+        <div id="pgKpis" class="flowKpis">
+          <p class="empty">Carregando relatório da B3…</p>
+        </div>
+        <section class="card pgReadCard" aria-labelledby="pgReadTitle">
+          <div class="cardhead">
+            <div class="headtitle"><h2 id="pgReadTitle">Leitura do pregão</h2></div>
+            <span class="unit-label">cruze com a <a href="#agenda">agenda</a> e o <a href="#fluxo">fluxo cambial</a></span>
+          </div>
+          <ul id="pgReading" class="pgReading"></ul>
+        </section>
+        <div class="pgGrid">
+          <section class="card" aria-labelledby="pgVolTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="pgVolTitle">Volume médio por pregão</h2></div>
+              <span class="unit-label">R$ bilhões · mês a mês</span>
+            </div>
+            <div id="pgVolume"></div>
+          </section>
+          <section class="card" aria-labelledby="pgForTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="pgForTitle">Saldo dos estrangeiros</h2></div>
+              <span class="unit-label">R$ bilhões · compras − vendas + ofertas</span>
+            </div>
+            <div id="pgForeign"></div>
+            <div id="pgForeignYears"></div>
+          </section>
+          <section class="card" aria-labelledby="pgShareTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="pgShareTitle">Quem negocia na bolsa</h2></div>
+              <span class="unit-label">% do volume</span>
+            </div>
+            <div class="flowLegend">
+              <span><b class="swatch inv0"></b>Estrangeiros</span>
+              <span><b class="swatch inv1"></b>Institucionais</span>
+              <span><b class="swatch inv2"></b>Pessoas físicas</span>
+              <span><b class="swatch inv3"></b>Inst. financeiras</span>
+              <span><b class="swatch inv4"></b>Outros</span>
+            </div>
+            <div id="pgShare"></div>
+          </section>
+          <section class="card" aria-labelledby="pgDaysTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="pgDaysTitle">Pregão a pregão</h2></div>
+              <span class="unit-label">derivado das importações</span>
+            </div>
+            <div id="pgDays"></div>
+          </section>
+        </div>
+        <p id="pgNote" class="sourceNote"></p>
+      </section>
       <section id="indices" data-desk="mercados" class="card liveCard" aria-labelledby="indicesTitle">
         <div class="cardhead">
           <div class="headtitle">

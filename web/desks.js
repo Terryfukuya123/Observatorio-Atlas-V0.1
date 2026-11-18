@@ -27,6 +27,7 @@ export const DESKS = {
     lead: "Como o mundo chega ao pregão, como ele fecha e como estão bolsas, setores e moedas.",
     parts: [
       ["prepos", "Pré e pós-mercado"],
+      ["pregao", "Pregão B3"],
       ["indices", "Índices mundiais"],
       ["aovivo", "Mapas de calor"],
       ["moedas", "Força das moedas"],

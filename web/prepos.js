@@ -9,6 +9,7 @@ import { EVENTS } from "./agenda.js";
 import { scoreboard, zone } from "./risk.js";
 import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 import { flag, round } from "./symbols.js";
+import { brl, digest, monthName, shortDay } from "./pregao.js";
 
 const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 2) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
@@ -142,7 +143,17 @@ function b3Block(b3) {
       "A B3 publica o volume em D+1 e a participação por investidor em D+2, e não permite coleta automática. A planilha é baixada à mão e importada na plataforma.</p></div>"
     );
   }
-  return d.html || "";
+  const g = digest(d);
+  const rows = [];
+  if (g.lastVolume) rows.push(["Volume · " + shortDay(g.lastVolume.to), brl(g.lastVolume.total), "média do mês " + brl(g.avg), "flat"]);
+  else if (g.avg) rows.push(["Volume médio · " + monthName(g.volMonth), brl(g.avg), "por pregão, até " + shortDay(g.volCut), "flat"]);
+  const f = g.lastForeign || g.foreign;
+  if (f) rows.push(["Estrangeiros · " + (g.lastForeign ? shortDay(g.lastForeign.to) : "no mês"), brl(f.balance, true), (f.balance >= 0 ? "compra" : "venda") + " líquida até " + shortDay(g.lastForeign?.to || g.invCut), tone(f.balance)]);
+  if (g.share) rows.push(["Fatia estrangeira", nf(1).format(g.share.foreign) + "%", "do volume em " + monthName(g.invMonth), "flat"]);
+  return (
+    '<dl class="ppNums">' + rows.map(([k, v, s, t]) => "<div><dt>" + esc(k) + "</dt><dd><b>" + esc(v) + '</b><small data-tone="' + t + '">' + esc(s) + "</small></dd></div>").join("") + "</dl>" +
+    '<p class="ppMuted">B3 · licença de exibição pendente.</p>'
+  );
 }
 
 export function prePost({ root, read, save }) {
@@ -190,7 +201,7 @@ export function prePost({ root, read, save }) {
     const blocks =
       m === "post"
         ? [
-            block("Pregão B3", b3Block(data.b3), "#fluxo"),
+            block("Pregão B3", b3Block(data.b3), "#pregao"),
             block("Dólar e juros", money(data.macro, data.curve), "#juros"),
             block("Fluxo cambial", flowDay(data.flows), "#fluxo"),
             block("Amanhã e próximos dias", agendaToday(new Date(now.getTime() + 864e5), "Sem divulgações de peso amanhã."), "#agenda"),

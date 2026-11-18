@@ -47,7 +47,7 @@ Em telas a partir de 851 px a ficha acompanha a altura do mapa e rola por dentro
 | `/api/macro/indicador?id=inflacao` | Valor por território (ISO3) para colorir o mapa |
 | `/api/fluxo` | Fluxo de capital no Brasil: acumulado no ano e mesmo período do ano anterior, meses, dias, câmbio por natureza, investimento de não residentes, posição dos bancos, interbancário e atuações do BC |
 | `/api/fundos` | Fluxo dos fundos (CVM): captação líquida por categoria no ano e no mesmo período do ano anterior, meses, dias com cobertura completa, patrimônio por categoria, cobertura do cadastro e situação da coleta |
-| `/api/b3` | Pregão da B3 a partir da planilha "Dados de Mercado" importada manualmente em `data/b3/`: situação ("Aguardando importação", "Importado", falha), arquivo lido e direitos (propriedade da B3, licença pendente) |
+| `/api/b3` | Pregão da B3 a partir da planilha "Dados de Mercado" importada manualmente em `data/b3/`: situação ("Aguardando importação", "Importado", falha), arquivo lido, direitos (propriedade da B3, licença pendente) e, em `data`: volume total e por mercado, volume médio diário, negócios, participação por investidor e movimentação dos estrangeiros por mês e ano, datas de corte e `days` (pregões derivados da diferença entre retratos) |
 | `/api/macro/pais?iso=BRA` | Indicadores anuais do Banco Mundial com a referência Mundo e, em `recent`, o dado mensal ou trimestral mais recente por conceito (Eurostat ou OCDE). Aceita também `EMU` (zona do euro) e `EUU` (UE) |
 
 Cada resposta identifica fonte, licença, conjunto de dados e estado da coleta.

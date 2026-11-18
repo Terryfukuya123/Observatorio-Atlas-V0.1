@@ -5420,3 +5420,121 @@ dialog.dossier {
     flex-wrap: wrap;
   }
 }
+
+/* Pregão B3: volume, origem e estrangeiros */
+.pgReadCard {
+  margin-bottom: 15px;
+}
+.pgReading {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+.pgReading b {
+  color: var(--text);
+}
+.pgGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+.pgChart,
+.pgStack {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pgChart text,
+.pgStack text {
+  font-size: 11px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+.pgChart path.zero {
+  stroke: var(--border);
+}
+.pgChart path.ref {
+  stroke: var(--text);
+  stroke-dasharray: 4 4;
+  opacity: 0.55;
+}
+.pgChart text.ref {
+  text-anchor: start;
+  fill: var(--soft);
+}
+.pgChart rect.hit {
+  fill: transparent;
+}
+.pgChart .pgSlot:hover rect.hit {
+  fill: color-mix(in srgb, var(--text) 6%, transparent);
+}
+.pgChart rect.bar {
+  fill: var(--accent);
+}
+.pgChart rect.bar[data-tone="pos"] {
+  fill: var(--pos, #5fae8b);
+}
+.pgChart rect.bar[data-tone="neg"] {
+  fill: var(--neg, #c9785c);
+}
+.pgChart .partial rect.bar,
+.pgStack .partial rect {
+  opacity: 0.5;
+}
+.pgStack text.lab {
+  text-anchor: start;
+  dominant-baseline: middle;
+}
+.pgStack text.in {
+  fill: #fff;
+  font-size: 9px;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+.pgStack .inv0, .swatch.inv0 { fill: var(--accent); background: var(--accent); }
+.pgStack .inv1, .swatch.inv1 { fill: #6f9fc8; background: #6f9fc8; }
+.pgStack .inv2, .swatch.inv2 { fill: #b48ac9; background: #b48ac9; }
+.pgStack .inv3, .swatch.inv3 { fill: #7f8a96; background: #7f8a96; }
+.pgStack .inv4, .swatch.inv4 { fill: #4f5862; background: #4f5862; }
+.pgYears,
+.pgDays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.pgYears span,
+.pgDays time,
+.pgDays span {
+  color: var(--muted);
+  margin-right: 6px;
+}
+.pgYears li[data-tone="pos"] b,
+.pgDays b[data-tone="pos"] {
+  color: var(--pos);
+}
+.pgYears li[data-tone="neg"] b,
+.pgDays b[data-tone="neg"] {
+  color: var(--neg);
+}
+.pgDays {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.pgDays li {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+}
+@media (max-width: 900px) {
+  .pgGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
