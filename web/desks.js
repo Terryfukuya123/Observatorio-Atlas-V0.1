@@ -12,6 +12,7 @@ export const DESKS = {
     parts: [
       ["pulse", "Pulso do dia"],
       ["atlas", "Atlas de mercados"],
+      ["narrador", "Narrador"],
       ["noticias", "Ao vivo"],
       ["termometro", "Termômetro de risco"],
       ["semana", "Próximos eventos"],

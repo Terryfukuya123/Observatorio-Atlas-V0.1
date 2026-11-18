@@ -22,6 +22,7 @@ import { sourceHealth } from "./health.js";
 import { about } from "./about.js";
 import { tourGuide } from "./tour.js";
 import { liveNews } from "./news.js";
+import { narrator } from "./narrator.js";
 import { marketPricing } from "./tesouro.js";
 import { inflationQuality } from "./inflation.js";
 import { surpriseBoard } from "./surprises.js";
@@ -44,6 +45,7 @@ function whenShown(root, start) {
   watch.observe(owner, { attributes: true, attributeFilter: ["hidden"] });
 }
 pulse({ root: $("#pulse") });
+narrator({ root: $("#narrador"), read, save });
 liveNews({ root: $("#noticias"), flash: $("#ultima"), read, save });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });

@@ -18,6 +18,7 @@ from server.b3 import B3Store
 from server.news import NewsStore
 from server.tesouro import TesouroStore
 from server.health import health
+from server.narrator import narrate
 from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
 
@@ -129,6 +130,11 @@ class Handler(BaseHTTPRequestHandler):
             mime = "application/json"
         elif path == "/api/surpresas":
             body = json.dumps(self.server.macro.surprises(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
+        elif path == "/api/narrador":
+            macro = self.server.macro
+            result = narrate(macro.overview(), macro.surprises(), macro.flows(), self.server.news.read())
+            body = json.dumps(result, ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
         elif path == "/api/fluxo":
             self.server.macro.refresh_if_due()

@@ -211,6 +211,35 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="narrador" class="card nrCard" data-desk="panorama" aria-labelledby="nrTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="voice"></i>
+            <h2 id="nrTitle">Narrador do mercado</h2>
+          </div>
+          <span class="nrStamp unit-label">Montando a leitura…</span>
+        </div>
+        <p class="nwLead">
+          O que mudou, em frases curtas com número e fonte: dólar, Copom, dados contra o consenso, revisões do Focus,
+          fluxo cambial e notícias de alto impacto. Toque em ouvir para a leitura em voz alta.
+        </p>
+        <div class="nrSummary">
+          <h3 class="nwDay">Resumo agora</h3>
+          <div class="nrLead" aria-live="polite"><p class="empty">Carregando…</p></div>
+        </div>
+        <div class="nwControls">
+          <div class="nwOptions">
+            <button type="button" class="nwToggle nrPlay" data-play aria-pressed="false" disabled>Ouvir resumo</button>
+            <button type="button" class="nwToggle" data-auto aria-pressed="false" disabled>Narrar novidades em voz</button>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Período do narrador">
+            <button type="button" data-window="1" aria-pressed="false">24 horas</button>
+            <button type="button" data-window="7" aria-pressed="true">7 dias</button>
+          </div>
+        </div>
+        <div class="nrList"></div>
+        <p class="sourceNote"><span class="nrVoiceNote"></span> As frases saem de regras fixas sobre os dados da própria plataforma, sem modelo de linguagem: nada é estimado pelo narrador. Não é recomendação de investimento.</p>
+      </section>
       <section id="noticias" class="card nwCard" data-desk="panorama" aria-labelledby="nwTitle">
         <div class="cardhead">
           <div class="headtitle">

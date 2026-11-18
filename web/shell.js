@@ -3,6 +3,7 @@ const $ = (s) => document.querySelector(s);
 
 export function shell({ read, save }) {
   const icons = {
+    voice: '<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
     news: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M6 8h5v5H6zM14 8h4m-4 4h4M6 16h12"/>',
     calendar:
       '<rect x="3" y="6" width="18" height="15" rx="2"/><path d="M7 3v5m10-5v5M3 11h18m-14 4h3m3 0h3"/>',

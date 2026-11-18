@@ -8,7 +8,7 @@ const { chromium } = require("playwright-core");
 
 const BASE = process.argv[2] || process.env.OEG_URL || "http://127.0.0.1:8842";
 const DESKS = {
-  panorama: ["pulse", "noticias", "termometro", "semana", "relogio", "atlas"],
+  panorama: ["pulse", "narrador", "noticias", "termometro", "semana", "relogio", "atlas"],
   mercados: ["bolsas", "pregao", "aovivo", "moedas", "comparison"],
   brasil: ["brasil", "bussola", "tesouro", "inflacao", "surpresas", "fluxo", "fundos"],
   global: ["ciclo", "juros", "agenda", "bulletin"],
