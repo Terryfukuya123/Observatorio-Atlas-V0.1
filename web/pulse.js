@@ -1,6 +1,7 @@
 // Pulso do dia: os números que abrem a conversa, cada um com uma leitura em uma frase
 // e o caminho para a análise completa. Lê as mesmas APIs das seções detalhadas.
 import { MARKETS, session } from "./indices.js";
+import { flag, pair, round } from "./symbols.js";
 
 const nf = (digits) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const n1 = nf(1);
@@ -49,9 +50,9 @@ function mini(values, bars = false) {
   return '<svg class="pulseMini" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><path d="' + d + '"/></svg>';
 }
 
-function tile({ href, label, value, delta, deltaTone = "flat", read, chart = "", go }) {
+function tile({ href, label, icon = "", value, delta, deltaTone = "flat", read, chart = "", go }) {
   return (
-    '<a class="pulseTile" href="' + href + '"><span class="pulseLabel">' + esc(label) + "</span>" +
+    '<a class="pulseTile" href="' + href + '"><span class="pulseLabel">' + icon + esc(label) + "</span>" +
     '<strong class="pulseValue">' + esc(value) + "</strong>" +
     (delta ? '<span class="pulseDelta" data-tone="' + deltaTone + '">' + esc(delta) + "</span>" : "") +
     chart + '<span class="pulseRead">' + esc(read) + "</span>" +
@@ -70,6 +71,7 @@ const builders = {
     return tile({
       href: "#fluxo",
       label: "Dólar · PTAX",
+      icon: pair("USD", "BRL"),
       value: "R$ " + n4.format(num(p.value)),
       delta: change == null ? "" : sign(change) + n2.format(Math.abs(change)) + "% no dia",
       deltaTone: tone(change),
@@ -87,6 +89,7 @@ const builders = {
     return tile({
       href: "#brasil",
       label: "Selic meta",
+      icon: flag("BRA"),
       value: n2.format(num(s.value)) + "%",
       delta: moved ? sign(moved) + n2.format(Math.abs(moved)) + " p.p. desde " + monthName(start[0]) : "Estável no ano",
       chart: mini(hist.map(([, v]) => v)),
@@ -103,6 +106,7 @@ const builders = {
     return tile({
       href: "#focus",
       label: "IPCA em 12 meses",
+      icon: flag("BRA"),
       value: n2.format(num(i.value)) + "%",
       delta: "até " + monthName(i.observed) + "/" + i.observed.slice(2, 4),
       chart: mini((i.history || []).map(([, v]) => v)),
@@ -119,6 +123,7 @@ const builders = {
     return tile({
       href: "#fluxo",
       label: "Fluxo cambial no ano",
+      icon: pair("USD", "BRL"),
       value: money(v, "US$", 1000),
       delta: "até " + day(d.through),
       deltaTone: tone(v),
@@ -136,6 +141,7 @@ const builders = {
     return tile({
       href: "#fundos",
       label: "Fundos no ano",
+      icon: flag("BRA"),
       value: money(total, "R$", 1000),
       delta: "captação líquida até " + day(d.through),
       deltaTone: tone(total),
@@ -151,6 +157,7 @@ const builders = {
     return tile({
       href: "#juros",
       label: "Juros EUA · 10 anos",
+      icon: flag("USA"),
       value: n2.format(num(ten.value)) + "%",
       delta: spread == null ? "" : "10A − 2A: " + sign(spread) + n2.format(Math.abs(spread)) + " p.p.",
       deltaTone: spread < 0 ? "neg" : "flat",
@@ -168,6 +175,7 @@ const builders = {
     return tile({
       href: "#brasil",
       label: "Reservas internacionais",
+      icon: flag("BRA"),
       value: "US$ " + n1.format(num(r.value) / 1000) + " bi",
       delta: moved == null ? "" : sign(moved) + "US$ " + n1.format(Math.abs(moved) / 1000) + " bi no período",
       deltaTone: tone(moved),
@@ -181,7 +189,7 @@ const builders = {
     const list = Object.values(MARKETS).map((m) => ({ m, s: session(m, now) }));
     const open = list.filter((x) => x.s.state === "open");
     const next = list.filter((x) => x.s.state !== "open").sort((a, b) => a.s.wait - b.s.wait)[0];
-    const dots = '<span class="pulseDots" aria-hidden="true">' + list.map((x) => '<i data-state="' + x.s.state + '"></i>').join("") + "</span>";
+    const dots = '<span class="pulseDots" aria-hidden="true">' + list.map((x) => '<i data-state="' + x.s.state + '" title="' + esc(x.m.name) + '">' + round(x.m.country) + "</i>").join("") + "</span>";
     return tile({
       href: "#indices",
       label: "Bolsas abertas agora",
@@ -195,8 +203,36 @@ const builders = {
   },
 };
 
+// Manchete: os números do pulso numa frase corrida, com o sinal de cada um.
+function headline({ macro, flows, funds }) {
+  const b = (text, t = "") => "<b" + (t ? ' data-tone="' + t + '"' : "") + ">" + esc(text) + "</b>";
+  const parts = [];
+  const p = macro?.ptax?.USD;
+  const selic = macro?.brasil?.find((x) => x.id === "selic_meta");
+  const ipca = macro?.brasil?.find((x) => x.id === "ipca_12m");
+  const first = [];
+  if (p?.value) {
+    const c = num(p.change_percent);
+    first.push("dólar a " + b("R$ " + n2.format(num(p.value))) + (c == null ? "" : " (" + b(sign(c) + n2.format(Math.abs(c)) + "%", tone(c)) + ")"));
+  }
+  if (selic?.value) first.push("Selic em " + b(n2.format(num(selic.value)) + "%"));
+  if (ipca?.value) first.push("IPCA de " + b(n2.format(num(ipca.value)) + "%") + " em 12 meses");
+  if (first.length) parts.push(first.join(", ").replace(/^./, (c) => c.toUpperCase()) + ".");
+  const flow = num(flows?.data?.ytd?.cambio_total?.value);
+  const fund = funds?.data ? funds.data.ytd.reduce((s, i) => s + num(i.value), 0) : null;
+  const second = [];
+  if (flow != null) second.push((flow >= 0 ? "entraram " : "saíram ") + b("US$ " + n1.format(Math.abs(flow) / 1000) + " bi", tone(flow)) + " pelo câmbio");
+  if (fund != null) second.push((fund >= 0 ? "os fundos captaram " : "os fundos perderam ") + b("R$ " + n1.format(Math.abs(fund) / 1000) + " bi", tone(fund)));
+  if (second.length) parts.push("No ano, " + second.join(" e ") + ".");
+  const now = new Date();
+  const open = Object.values(MARKETS).filter((m) => session(m, now).state === "open").length;
+  parts.push("Agora, " + b(open + " de " + Object.keys(MARKETS).length) + " bolsas estão abertas.");
+  return parts.join(" ");
+}
+
 export function pulse({ root }) {
   const grid = root.querySelector(".pulseGrid");
+  const lead = root.querySelector(".pulseHeadline");
   const stamp = root.querySelector(".pulseStamp");
   let sources = {};
 
@@ -212,6 +248,7 @@ export function pulse({ root }) {
       builders.sessions(),
     ].filter(Boolean);
     grid.innerHTML = tiles.join("") || '<p class="empty">Carregando indicadores…</p>';
+    if (lead && sources.macro) lead.innerHTML = headline(sources);
   }
 
   async function load() {

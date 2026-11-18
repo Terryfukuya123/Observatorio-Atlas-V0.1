@@ -1,22 +1,23 @@
 // Índices mundiais por região (cotações do widget público do TradingView) e
 // "Pregões agora", calculado localmente a partir do horário regular de cada bolsa.
 import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
+import { round } from "./symbols.js";
 
 // Horário regular, no fuso da bolsa. `lunch` marca o intervalo de almoço, quando existe.
 export const MARKETS = {
-  nyse: { name: "Nova York", venue: "NYSE · Nasdaq", tz: "America/New_York", open: "09:30", close: "16:00" },
-  tsx: { name: "Toronto", venue: "TSX", tz: "America/Toronto", open: "09:30", close: "16:00" },
-  b3: { name: "São Paulo", venue: "B3", tz: "America/Sao_Paulo", open: "10:00", close: "17:00" },
-  bcs: { name: "Santiago", venue: "Bolsa de Santiago", tz: "America/Santiago", open: "09:30", close: "16:00" },
-  lse: { name: "Londres", venue: "LSE", tz: "Europe/London", open: "08:00", close: "16:30" },
-  xetra: { name: "Frankfurt", venue: "Xetra", tz: "Europe/Berlin", open: "09:00", close: "17:30" },
-  epa: { name: "Paris", venue: "Euronext", tz: "Europe/Paris", open: "09:00", close: "17:30" },
-  bme: { name: "Madri", venue: "BME", tz: "Europe/Madrid", open: "09:00", close: "17:30" },
-  tse: { name: "Tóquio", venue: "TSE", tz: "Asia/Tokyo", open: "09:00", close: "15:30", lunch: ["11:30", "12:30"] },
-  hkex: { name: "Hong Kong", venue: "HKEX", tz: "Asia/Hong_Kong", open: "09:30", close: "16:00", lunch: ["12:00", "13:00"] },
-  sse: { name: "Xangai", venue: "SSE", tz: "Asia/Shanghai", open: "09:30", close: "15:00", lunch: ["11:30", "13:00"] },
-  nse: { name: "Mumbai", venue: "BSE · NSE", tz: "Asia/Kolkata", open: "09:15", close: "15:30" },
-  asx: { name: "Sydney", venue: "ASX", tz: "Australia/Sydney", open: "10:00", close: "16:00" },
+  nyse: { country: "USA", name: "Nova York", venue: "NYSE · Nasdaq", tz: "America/New_York", open: "09:30", close: "16:00" },
+  tsx: { country: "CAN", name: "Toronto", venue: "TSX", tz: "America/Toronto", open: "09:30", close: "16:00" },
+  b3: { country: "BRA", name: "São Paulo", venue: "B3", tz: "America/Sao_Paulo", open: "10:00", close: "17:00" },
+  bcs: { country: "CHL", name: "Santiago", venue: "Bolsa de Santiago", tz: "America/Santiago", open: "09:30", close: "16:00" },
+  lse: { country: "GBR", name: "Londres", venue: "LSE", tz: "Europe/London", open: "08:00", close: "16:30" },
+  xetra: { country: "DEU", name: "Frankfurt", venue: "Xetra", tz: "Europe/Berlin", open: "09:00", close: "17:30" },
+  epa: { country: "FRA", name: "Paris", venue: "Euronext", tz: "Europe/Paris", open: "09:00", close: "17:30" },
+  bme: { country: "ESP", name: "Madri", venue: "BME", tz: "Europe/Madrid", open: "09:00", close: "17:30" },
+  tse: { country: "JPN", name: "Tóquio", venue: "TSE", tz: "Asia/Tokyo", open: "09:00", close: "15:30", lunch: ["11:30", "12:30"] },
+  hkex: { country: "HKG", name: "Hong Kong", venue: "HKEX", tz: "Asia/Hong_Kong", open: "09:30", close: "16:00", lunch: ["12:00", "13:00"] },
+  sse: { country: "CHN", name: "Xangai", venue: "SSE", tz: "Asia/Shanghai", open: "09:30", close: "15:00", lunch: ["11:30", "13:00"] },
+  nse: { country: "IND", name: "Mumbai", venue: "BSE · NSE", tz: "Asia/Kolkata", open: "09:15", close: "15:30" },
+  asx: { country: "AUS", name: "Sydney", venue: "ASX", tz: "Australia/Sydney", open: "10:00", close: "16:00" },
 };
 
 export const REGIONS = {
@@ -165,7 +166,7 @@ export function worldIndices({ root, read, save }) {
     list.innerHTML = rows
       .map(
         ({ m, s, label, detail }) =>
-          '<li data-state="' + s.state + '"><b class="dot"></b><span><strong>' + esc(m.name) + "</strong><small>" +
+          '<li data-state="' + s.state + '"><b class="dot"></b>' + round(m.country) + '<span><strong>' + esc(m.name) + "</strong><small>" +
           esc(m.venue) + " · " + esc(s.local) + ' local</small></span><span class="sessionState"><em>' + label +
           "</em><small>" + esc(detail) + "</small></span></li>",
       )

@@ -25,10 +25,12 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 
 A plataforma se divide em quatro espaços, escolhidos na barra lateral. Cada um abre com uma frase sobre o que responde e tem uma barra fixa com atalhos para as suas partes. No fim, **Continue a análise** leva aos assuntos relacionados:
 
-- **Panorama:** o **Pulso do dia** reúne dólar, Selic, IPCA, fluxo cambial, fundos, juros dos EUA, reservas e bolsas abertas. Cada número traz uma leitura em uma frase e abre a análise completa. Abaixo ficam o mapa e a ficha do país.
+- **Panorama:** abre com a **manchete do dia**, uma frase com os números que importam (dólar, Selic, IPCA, fluxo e fundos no ano, bolsas abertas). Em seguida vem o **Pulso do dia**: dólar, Selic, IPCA, fluxo cambial, fundos, juros dos EUA, reservas e bolsas abertas, cada número com uma leitura em uma frase e um link para a análise completa. Depois aparece o **Relógio dos pregões**, com as 24 horas do seu dia, a janela de cada bolsa, o almoço das asiáticas e a linha do agora. Por fim, o mapa e a ficha do país.
 - **Mercados:** índices mundiais, mapas de calor ao vivo, comparador de câmbio e mercados acompanhados.
 - **Brasil:** indicadores, expectativas do Focus, fluxo cambial e fundos.
 - **Global:** curva de juros dos EUA, indicador antecedente da OCDE, notícias e agenda.
+
+Países aparecem com bandeira e moedas com o selo do emissor em círculo; um par cambial mostra os dois selos sobrepostos, como nas plataformas de mercado. As bandeiras são desenhos simplificados do próprio Observatório, em `web/symbols.js`, sem pacote externo; territórios sem desenho mostram o código ISO.
 
 O endereço guarda o espaço (`#/brasil`) ou a parte (`#fluxo`), então os links diretos abrem no lugar certo. Sem endereço, a página volta ao último espaço usado. Os módulos são `web/desks.js` (espaços) e `web/pulse.js` (pulso).
 

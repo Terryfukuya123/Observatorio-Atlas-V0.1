@@ -10,6 +10,7 @@ export const DESKS = {
     lead: "O essencial do dia num só olhar. Cada indicador abre a análise completa.",
     parts: [
       ["pulse", "Pulso do dia"],
+      ["relogio", "Relógio dos pregões"],
       ["atlas", "Mapa e ficha do país"],
     ],
     next: [

@@ -1,6 +1,7 @@
 // Camada macro: painel Brasil, expectativas Focus, curva dos EUA, ciclo OCDE,
 // bloco macro da ficha do país e camada de indicadores do mapa.
 import { svg } from "./map.js";
+import { round } from "./symbols.js";
 
 const esc = (v) =>
   String(v ?? "").replace(
@@ -284,7 +285,7 @@ export function macroLayer({ onIndicator }) {
             const phase = v >= 100 ? (dir >= 0 ? "Expansão" : "Desaceleração") : dir >= 0 ? "Recuperação" : "Contração";
             const offset = Math.max(-3, Math.min(3, v - 100));
             return (
-              '<li><span class="cliName">' + esc(names[k] || k) + '</span><span class="cliBar" aria-hidden="true"><i data-side="' + (offset >= 0 ? "up" : "down") + '" data-w="' + Math.round(Math.abs(offset) * 33) + '"></i></span><b>' + nf(v, 1) + "</b><small data-phase=\"" + phase + '">' + phase + "</small></li>"
+              '<li><span class="cliName">' + round(k, "") + esc(names[k] || k) + '</span><span class="cliBar" aria-hidden="true"><i data-side="' + (offset >= 0 ? "up" : "down") + '" data-w="' + Math.round(Math.abs(offset) * 33) + '"></i></span><b>' + nf(v, 1) + "</b><small data-phase=\"" + phase + '">' + phase + "</small></li>"
             );
           })
           .join("") +

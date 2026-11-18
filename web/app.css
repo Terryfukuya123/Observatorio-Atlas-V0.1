@@ -3344,3 +3344,255 @@ main > .hero[data-desk] {
     font-size: 22px;
   }
 }
+
+/* Bandeiras e moedas */
+.flag {
+  display: inline-block;
+  flex: none;
+  width: 21px;
+  height: 14px;
+  border-radius: 2px;
+  vertical-align: -2px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 18%, transparent);
+}
+.coin {
+  display: inline-block;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  clip-path: circle(50%);
+  vertical-align: -4px;
+}
+.flagCode,
+.coinCode {
+  display: inline-grid;
+  place-items: center;
+  background: var(--light);
+  color: var(--link);
+  font: 600 7px/1 monospace;
+  letter-spacing: 0;
+}
+.coinCode {
+  border-radius: 50%;
+  clip-path: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.coinGroup {
+  font-size: 6.5px;
+}
+.pairIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 7px;
+  vertical-align: -4px;
+}
+.pairIcon .coin + .coin {
+  margin-left: -6px;
+  box-shadow: 0 0 0 2px var(--panel);
+  border-radius: 50%;
+  clip-path: none;
+  overflow: hidden;
+}
+.pairIcon .coin:first-child {
+  position: relative;
+  z-index: 1;
+}
+.codeFlag {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 7px 8px 5px;
+}
+.codeFlag .flag {
+  width: 36px;
+  height: 24px;
+}
+.codeFlag small {
+  font: 600 9px monospace;
+  color: var(--soft);
+}
+.tablecode .flag {
+  vertical-align: -3px;
+}
+.result {
+  justify-content: flex-start;
+}
+.result small {
+  margin-left: auto;
+}
+.cliName {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.cliName .coin {
+  width: 16px;
+  height: 16px;
+}
+.sessions li {
+  grid-template-columns: 10px 18px minmax(0, 1fr) auto;
+}
+
+/* Manchete do dia */
+.pulseHeadline {
+  font: 400 clamp(18px, 1.6vw, 22px)/1.45 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--soft);
+  max-width: 78ch;
+  margin: -2px 0 16px;
+}
+.pulseHeadline:empty {
+  display: none;
+}
+.pulseHeadline b {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.pulseHeadline b[data-tone="pos"] {
+  color: var(--pos);
+}
+.pulseHeadline b[data-tone="neg"] {
+  color: var(--neg);
+}
+.pulseLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pulseLabel .flag {
+  width: 18px;
+  height: 12px;
+}
+.pulseLabel .pairIcon {
+  margin-right: 0;
+}
+.pulseDots i {
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 50%;
+  opacity: 0.35;
+  filter: grayscale(0.8);
+}
+.pulseDots i[data-state="open"] {
+  background: none;
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 0 0 2px var(--pos);
+}
+.pulseDots i[data-state="lunch"] {
+  background: none;
+  opacity: 0.85;
+  filter: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.pulseDots i .coin {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* Relógio dos pregões */
+.clockCard {
+  margin-top: 22px;
+}
+.clockBody {
+  padding: 4px 16px 6px;
+}
+.clockScale,
+.clockRows li {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+.clockScale > div {
+  position: relative;
+  height: 18px;
+  color: var(--soft);
+  font: 10px Consolas, monospace;
+}
+.clockScale > div span {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-1px);
+  padding-left: 3px;
+  border-left: 1px solid var(--border);
+}
+.clockRows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.clockRows li {
+  padding: 4px 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+.clockName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+}
+.clockName small {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clockTrack {
+  position: relative;
+  height: 16px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(12.5% - 1px), color-mix(in srgb, var(--border) 60%, transparent) calc(12.5% - 1px) 12.5%);
+}
+.clockTrack b {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--steady) 70%, transparent);
+}
+.clockRows li[data-state="open"] .clockTrack b {
+  background: color-mix(in srgb, var(--pos) 70%, transparent);
+}
+.clockRows li[data-state="lunch"] .clockTrack b {
+  background: color-mix(in srgb, var(--accent) 65%, transparent);
+}
+.clockRows li[data-state="closed"] .clockName {
+  color: var(--soft);
+}
+.clockNow {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--selected);
+  z-index: 1;
+}
+.clockScale .clockNow {
+  top: 12px;
+  bottom: -4px;
+}
+@media (max-width: 670px) {
+  .clockBody {
+    padding-inline: 10px;
+  }
+  .clockScale,
+  .clockRows li {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 8px;
+  }
+  .clockName small {
+    display: none;
+  }
+  .clockName strong {
+    font-size: 12px;
+    font-weight: 500;
+  }
+}

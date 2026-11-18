@@ -9,6 +9,8 @@ import { capitalFlows } from "./flows.js";
 import { fundFlows } from "./funds.js";
 import { desks } from "./desks.js";
 import { pulse } from "./pulse.js";
+import { flag, pair } from "./symbols.js";
+import { sessionClock } from "./clock.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -91,6 +93,7 @@ $("#railToggle").onclick = () => {
 };
 const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
 pulse({ root: $("#pulse") });
+sessionClock({ root: $("#relogio") });
 const state = {
   id: read("country", "BRA"),
   layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))
@@ -260,6 +263,7 @@ function renderTicker() {
         '<button class="tick" data-pick="' +
         id +
         '"><div class="ticktop"><span class="pair">' +
+        pair(state.base, code) +
         state.base +
         " / " +
         code +
@@ -277,7 +281,7 @@ function renderTicker() {
     .join("");
   document.querySelectorAll(".tick").forEach((btn) => {
     const s = state.series[state.markets[btn.dataset.pick]?.series];
-    if (s) plot(btn.querySelector("svg"), s.history.slice(-18));
+    if (s) plot(btn.querySelector("svg.spark"), s.history.slice(-18));
   });
 }
 function renderTable() {
@@ -295,12 +299,13 @@ function renderTable() {
             '"><td><button data-pick="' +
             id +
             '"><span class="tablecode">' +
-            id +
+            flag(id) +
             "</span>" +
             escape(m.name) +
             "</button></td><td>" +
             escape(m.index) +
             "</td><td>" +
+            pair(state.base, m.series) +
             state.base +
             "/" +
             m.series +
@@ -364,9 +369,11 @@ function detail() {
     escape(v) +
     "</span></div>";
   let html =
-    '<div class="countryhead"><span class="code">' +
+    '<div class="countryhead"><span class="code codeFlag">' +
+    flag(id) +
+    '<small>' +
     escape(id) +
-    "</span><div><h2>" +
+    "</small></span><div><h2>" +
     escape(m.name) +
     '</h2><div class="minor">' +
     escape(m.region) +
@@ -763,7 +770,9 @@ function results() {
           (k) =>
             '<button class="result" data-pick="' +
             escape(k) +
-            '"><strong>' +
+            '">' +
+            flag(k) +
+            "<strong>" +
             escape(info(k).name) +
             "</strong><small>" +
             escape(info(k).index || info(k).region) +
