@@ -1,0 +1,98 @@
+"""Séries do SGS e PTAX do Banco Central do Brasil (dados abertos, ODbL)."""
+from datetime import date, datetime, timedelta
+from decimal import Decimal, InvalidOperation
+import json
+from urllib.parse import quote
+from urllib.request import Request, urlopen
+
+SGS = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{code}/dados?formato=json&dataInicial={start}&dataFinal={end}"
+PTAX = ("https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/"
+        "CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)"
+        "?@moeda='{currency}'&@dataInicial='{start}'&@dataFinalCotacao='{end}'&$format=json"
+        "&$filter=" + quote("tipoBoletim eq 'Fechamento'") + "&$select=cotacaoVenda,dataHoraCotacao")
+HOSTS = ("https://api.bcb.gov.br/", "https://olinda.bcb.gov.br/")
+MAX_BYTES = 2_000_000
+# Janela de coleta por periodicidade. O SGS limita consultas diárias a dez anos.
+WINDOW = {"Diária": timedelta(days=3 * 366), "Mensal": timedelta(days=10 * 366), "Anual": timedelta(days=30 * 366)}
+
+
+def download(url):
+    if not url.startswith(HOSTS):
+        raise ValueError("Endereço fora da lista autorizada")
+    request = Request(url, headers={"Accept": "application/json", "User-Agent": "ObservatorioEconomico/1.0"})
+    with urlopen(request, timeout=20) as response:
+        if not response.url.startswith(HOSTS):
+            raise ValueError("Redirecionamento inesperado")
+        body = response.read(MAX_BYTES + 1)
+    if len(body) > MAX_BYTES:
+        raise ValueError("Resposta excede o limite")
+    return body
+
+
+def sgs_url(code, frequency, today):
+    start = today - WINDOW[frequency]
+    return SGS.format(code=int(code), start=start.strftime("%d/%m/%Y"), end=today.strftime("%d/%m/%Y"))
+
+
+def ptax_url(currency, today):
+    if currency not in {"USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "DKK", "NOK", "SEK"}:
+        raise ValueError("Moeda fora do catálogo PTAX")
+    start = today - timedelta(days=400)
+    return PTAX.format(currency=currency, start=start.strftime("%m-%d-%Y"), end=today.strftime("%m-%d-%Y"))
+
+
+def _number(raw):
+    raw = str(raw).strip()
+    try:
+        value = Decimal(raw)
+    except InvalidOperation as error:
+        raise ValueError("Valor inválido") from error
+    if not value.is_finite() or abs(value) >= 10**15 or len(raw) > 24:
+        raise ValueError("Valor fora do domínio")
+    return raw
+
+
+def normalize_sgs(body, today):
+    """Retorna [(data ISO, valor textual)] em ordem crescente, descartando datas futuras.
+
+    A meta Selic é publicada com vigência até a próxima reunião, por isso o SGS
+    devolve datas posteriores ao dia corrente. Elas não são observações.
+    """
+    rows = json.loads(body)
+    if not isinstance(rows, list):
+        raise ValueError("Formato inesperado do SGS")
+    series = {}
+    for row in rows:
+        day = datetime.strptime(row["data"], "%d/%m/%Y").date()
+        if day > today:
+            continue
+        if day in series:
+            raise ValueError("Observação duplicada")
+        if row.get("valor") in (None, ""):
+            continue
+        series[day] = _number(row["valor"])
+    if not series:
+        raise ValueError("Série sem observações")
+    return sorted((d.isoformat(), v) for d, v in series.items())
+
+
+def normalize_ptax(body, today):
+    """Cotação de venda do boletim de fechamento, com a precisão publicada."""
+    rows = json.loads(body, parse_float=str).get("value")
+    if not isinstance(rows, list):
+        raise ValueError("Formato inesperado da PTAX")
+    series = {}
+    for row in rows:
+        stamp = datetime.fromisoformat(row["dataHoraCotacao"][:19])
+        day = stamp.date()
+        if day > today:
+            raise ValueError("Data futura")
+        if day in series:
+            raise ValueError("Boletim duplicado")
+        value = _number(row["cotacaoVenda"])
+        if Decimal(value) <= 0:
+            raise ValueError("Cotação não positiva")
+        series[day] = value
+    if not series:
+        raise ValueError("PTAX sem boletins")
+    return sorted((d.isoformat(), v) for d, v in series.items())

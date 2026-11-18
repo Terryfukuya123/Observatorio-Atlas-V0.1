@@ -8,6 +8,7 @@ import mimetypes
 
 from server.service import Feed
 from server.editions import MonthlyEdition
+from server.macro import MacroStore
 from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
 
@@ -57,6 +58,19 @@ class Handler(BaseHTTPRequestHandler):
             result = compare_rates(in_base(self.server.feed.read(), base), first, second, int(period))
             body = json.dumps(result, allow_nan=False).encode()
             mime = "application/json"
+        elif path in {"/api/macro", "/api/macro/indicador", "/api/macro/pais"}:
+            store = self.server.macro
+            if path == "/api/macro":
+                result = store.overview()
+            elif path == "/api/macro/indicador":
+                result = store.indicator(params.get("id", [""])[0])
+            else:
+                result = store.country(params.get("iso", [""])[0].upper())
+            if result is None:
+                self.send_error(400, "Parametros invalidos")
+                return
+            body = json.dumps(result, ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
         elif path == "/api/heatmaps":
             body = self.server.editions.read()
             if body is None:
@@ -94,6 +108,7 @@ def main():
     with ThreadingHTTPServer(("127.0.0.1", args.port), Handler) as server:
         server.feed = Feed(ROOT / "data/cache/ecb.json")
         server.editions = MonthlyEdition(ROOT, server.feed)
+        server.macro = MacroStore(ROOT)
         print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
         try:
             server.serve_forever()

@@ -43,6 +43,12 @@ A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatma
 
 [Metodologia e cobertura](docs/heatmaps-mensais.md)
 
+## Camada macro
+
+A API `/api/macro` reúne 13 séries brasileiras do BCB, a PTAX de USD e EUR e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`. A interface será integrada após o heatmap.
+
+[Camada macro: fontes, cache e rotas](docs/camada-macro.md)
+
 ## Estrutura
 
 | Diretório | Responsabilidade |

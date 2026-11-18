@@ -1,0 +1,29 @@
+{
+  "brasil": [
+    {"id": "selic_meta", "code": 432, "name": "Meta Selic", "unit": "% a.a.", "frequency": "Diária", "group": "Juros", "decimals": 2},
+    {"id": "selic_efetiva", "code": 1178, "name": "Selic efetiva anualizada", "unit": "% a.a.", "frequency": "Diária", "group": "Juros", "decimals": 2},
+    {"id": "ipca_mes", "code": 433, "name": "IPCA no mês", "unit": "%", "frequency": "Mensal", "group": "Inflação", "decimals": 2},
+    {"id": "ipca_12m", "code": 13522, "name": "IPCA em 12 meses", "unit": "%", "frequency": "Mensal", "group": "Inflação", "decimals": 2},
+    {"id": "igpm_mes", "code": 189, "name": "IGP-M no mês", "unit": "%", "frequency": "Mensal", "group": "Inflação", "decimals": 2},
+    {"id": "ibcbr", "code": 24364, "name": "IBC-Br dessazonalizado", "unit": "índice (2002=100)", "frequency": "Mensal", "group": "Atividade", "decimals": 2},
+    {"id": "pib_mensal", "code": 4380, "name": "PIB mensal em valores correntes", "unit": "R$ milhões", "frequency": "Mensal", "group": "Atividade", "decimals": 0},
+    {"id": "pib_anual", "code": 7326, "name": "PIB, variação real anual", "unit": "%", "frequency": "Anual", "group": "Atividade", "decimals": 2},
+    {"id": "dbgg", "code": 13762, "name": "Dívida bruta do governo geral", "unit": "% do PIB", "frequency": "Mensal", "group": "Fiscal", "decimals": 2},
+    {"id": "dlsp", "code": 4513, "name": "Dívida líquida do setor público", "unit": "% do PIB", "frequency": "Mensal", "group": "Fiscal", "decimals": 2},
+    {"id": "reservas", "code": 13621, "name": "Reservas internacionais", "unit": "US$ milhões", "frequency": "Diária", "group": "Setor externo", "decimals": 0},
+    {"id": "credito", "code": 20539, "name": "Saldo da carteira de crédito", "unit": "R$ milhões", "frequency": "Mensal", "group": "Crédito", "decimals": 0},
+    {"id": "inadimplencia", "code": 21082, "name": "Inadimplência da carteira de crédito", "unit": "%", "frequency": "Mensal", "group": "Crédito", "decimals": 2}
+  ],
+  "ptax": ["USD", "EUR"],
+  "global": [
+    {"id": "pib_crescimento", "code": "NY.GDP.MKTP.KD.ZG", "name": "Crescimento real do PIB", "unit": "% a.a.", "group": "Atividade", "decimals": 1},
+    {"id": "pib_usd", "code": "NY.GDP.MKTP.CD", "name": "PIB em dólares correntes", "unit": "US$", "group": "Atividade", "decimals": 0},
+    {"id": "pib_per_capita", "code": "NY.GDP.PCAP.CD", "name": "PIB per capita", "unit": "US$", "group": "Atividade", "decimals": 0},
+    {"id": "inflacao", "code": "FP.CPI.TOTL.ZG", "name": "Inflação ao consumidor", "unit": "% a.a.", "group": "Inflação", "decimals": 1},
+    {"id": "desemprego", "code": "SL.UEM.TOTL.ZS", "name": "Desemprego (estimativa OIT)", "unit": "% da força de trabalho", "group": "Trabalho", "decimals": 1},
+    {"id": "divida_governo", "code": "GC.DOD.TOTL.GD.ZS", "name": "Dívida do governo central", "unit": "% do PIB", "group": "Fiscal", "decimals": 1},
+    {"id": "conta_corrente", "code": "BN.CAB.XOKA.GD.ZS", "name": "Saldo em conta corrente", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
+    {"id": "comercio", "code": "NE.TRD.GNFS.ZS", "name": "Comércio exterior", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
+    {"id": "populacao", "code": "SP.POP.TOTL", "name": "População", "unit": "habitantes", "group": "Demografia", "decimals": 0}
+  ]
+}
