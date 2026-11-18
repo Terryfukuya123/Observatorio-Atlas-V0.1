@@ -5122,3 +5122,147 @@ dialog.dossier {
   color: var(--accent);
   font-size: 12px;
 }
+
+/* Termômetro de risco */
+.rkBody {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 24px;
+  padding: 16px;
+}
+.rkMain {
+  text-align: center;
+}
+.rkGauge {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.rkGauge path {
+  fill: none;
+  stroke-width: 18;
+}
+.rkGauge .z1 { stroke: #b4553f; }
+.rkGauge .z2 { stroke: #c9875c; }
+.rkGauge .z3 { stroke: #8f8c80; }
+.rkGauge .z4 { stroke: #6fa88a; }
+.rkGauge .z5 { stroke: #3f9a6e; }
+.rkGauge .needle {
+  stroke: var(--text);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.rkGauge .hub {
+  fill: var(--text);
+}
+.rkGauge text {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.rkValue {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 0;
+}
+.rkValue b {
+  font-family: var(--serif, inherit);
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+}
+.rkValue span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.rkZone {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rkDiff {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.rkRead {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+}
+.rkParts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.rkGroup h3 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.rkRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 14px;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+}
+.rkRow:hover .rkName b {
+  color: var(--accent);
+}
+.rkName {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rkName b {
+  font-size: 13px;
+  font-weight: 600;
+}
+.rkName small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.rkWhy {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.rkDots {
+  display: inline-flex;
+  gap: 3px;
+}
+.rkDots i {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.rkDots i.on[data-s="-2"] { background: #b4553f; border-color: #b4553f; }
+.rkDots i.on[data-s="-1"] { background: #c9875c; border-color: #c9875c; }
+.rkDots i.on[data-s="0"] { background: #8f8c80; border-color: #8f8c80; }
+.rkDots i.on[data-s="1"] { background: #6fa88a; border-color: #6fa88a; }
+.rkDots i.on[data-s="2"] { background: #3f9a6e; border-color: #3f9a6e; }
+.rkMove {
+  font-size: 10px;
+}
+.rkMove[data-dir="up"] { color: #3f9a6e; }
+.rkMove[data-dir="down"] { color: #b4553f; }
+@media (max-width: 900px) {
+  .rkBody,
+  .rkParts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

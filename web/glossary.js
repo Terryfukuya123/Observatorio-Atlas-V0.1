@@ -168,6 +168,11 @@ export const GLOSSARY = {
     what: "Quanto cada moeda subiu ou caiu, em média, contra as outras nove no período.",
     why: "Separa o movimento da própria moeda do movimento do dólar: mostra quem de fato ganhou ou perdeu valor.",
   },
+  termometro: {
+    term: "Termômetro de risco",
+    what: "Placar do Observatório que junta nove sinais (juros e dólar no mundo, ciclo, real, fluxo, estrangeiros e inflação) numa nota de 0 a 100.",
+    why: "Resume se o ambiente favorece ou afasta o investidor de ativos brasileiros. Cada sinal mostra a própria nota e o porquê.",
+  },
   comparador: {
     term: "Base 100",
     what: "Os dois pares começam em 100 no início do período, e a linha mostra a variação a partir daí.",
@@ -192,6 +197,7 @@ const SECTIONS = {
   cliTitle: "cli",
   fxTitle: "forca",
   compareTitle: "comparador",
+  rkTitle: "termometro",
   curveTitle: "curva",
 };
 

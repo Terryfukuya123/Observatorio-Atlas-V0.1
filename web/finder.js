@@ -4,6 +4,7 @@
 
 export const DESTINATIONS = [
   ["#pulse", "Pulso do dia", "Panorama", "Os números do dia com leitura em uma frase", "resumo hoje manchete destaques dolar selic ipca reservas"],
+  ["#termometro", "Termômetro de risco", "Panorama", "Apetite ou aversão a risco para o Brasil, de 0 a 100", "risco apetite aversao termometro placar sentimento mercado emergentes estrangeiros"],
   ["#semana", "Próximos eventos", "Panorama", "Eventos de peso das próximas duas semanas", "agenda semana eventos divulgacao hoje amanha calendario"],
   ["#relogio", "Relógio dos pregões", "Panorama", "Quais bolsas estão abertas agora", "bolsas abertas pregao horario abertura fechamento sessao asia europa"],
   ["#atlas", "Mapa e ficha do país", "Panorama", "Indicadores e câmbio por país no mapa", "mapa pais paises pib per capita inflacao crescimento heatmap mensal ativos"],
