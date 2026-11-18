@@ -3080,3 +3080,267 @@ footer a {
     grid-template-columns: 1fr;
   }
 }
+
+/* Espaços de análise */
+.deskHead {
+  padding: 28px 0 14px;
+}
+.deskHead .crumb {
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1;
+}
+.deskHead h1 {
+  font: 420 clamp(34px, 3.2vw, 48px)/1 var(--display);
+  letter-spacing: -0.045em;
+  margin: 8px 0 8px;
+}
+.deskLead {
+  color: var(--soft);
+  font-size: 15px;
+  max-width: 62ch;
+}
+.deskBar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(-1 * clamp(18px, 2.7vw, 46px)) 6px;
+  padding: 9px clamp(18px, 2.7vw, 46px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.deskBar a {
+  flex: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--soft);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.deskBar a:hover {
+  color: var(--link);
+  background: var(--alt);
+}
+.deskBar a.active {
+  color: var(--link);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+}
+main > [data-desk] {
+  scroll-margin-top: 64px;
+}
+main > section[data-desk]:not(.hero),
+main > .workspace[data-desk] {
+  margin-top: 22px;
+}
+main > .deskBar + [data-desk],
+main > .deskBar + section[data-desk]:not(.hero) {
+  margin-top: 10px;
+}
+#focus,
+#fundos {
+  scroll-margin-top: 64px;
+}
+main > .hero[data-desk] {
+  justify-content: flex-end;
+  padding: 18px 0 10px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  main > [data-desk]:not([hidden]),
+  .deskNext:not([hidden]) {
+    animation: deskIn 0.28s ease-out both;
+  }
+  @keyframes deskIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+}
+
+/* Continue a análise */
+.deskNext {
+  margin: 34px 0 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.deskNext h2 {
+  font: 420 22px/1.1 var(--display);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.deskNext > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.deskNext a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "space go" "text go";
+  gap: 3px 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.deskNext a:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  transform: translateY(-1px);
+}
+.deskNext small {
+  grid-area: space;
+  color: var(--link);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.deskNext span {
+  grid-area: text;
+  font-size: 14px;
+}
+.deskNext b {
+  grid-area: go;
+  color: var(--accent);
+  font-size: 18px;
+}
+
+/* Pulso do dia */
+#pulse .sectionTitle {
+  margin-top: 4px;
+}
+.pulseStamp {
+  margin-left: auto;
+}
+.pulseGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.pulseTile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 186px;
+  padding: 14px 16px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.pulseTile:hover,
+.pulseTile:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  transform: translateY(-1px);
+}
+.pulseLabel {
+  color: var(--soft);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.pulseValue {
+  font: 500 28px/1.1 var(--display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.pulseDelta {
+  font-size: 12px;
+  color: var(--soft);
+  font-variant-numeric: tabular-nums;
+}
+.pulseDelta[data-tone="pos"] {
+  color: var(--pos);
+}
+.pulseDelta[data-tone="neg"] {
+  color: var(--neg);
+}
+.pulseMini {
+  width: 100%;
+  height: 30px;
+  margin: 4px 0 2px;
+}
+.pulseMini path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+.pulseMini path.zero {
+  stroke: var(--border);
+  stroke-dasharray: 3 3;
+}
+.pulseMini rect.pos {
+  fill: var(--pos);
+}
+.pulseMini rect.neg {
+  fill: var(--neg);
+}
+.pulseMini rect.flat {
+  fill: var(--steady);
+}
+.pulseDots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0 8px;
+}
+.pulseDots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.pulseDots i[data-state="open"] {
+  background: var(--pos);
+}
+.pulseDots i[data-state="lunch"] {
+  background: var(--accent);
+}
+.pulseRead {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.35;
+}
+.pulseGo {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--link);
+  font-size: 12px;
+}
+@media (max-width: 1150px) {
+  .pulseGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 850px) {
+  .deskNext > div {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 670px) {
+  .deskHead {
+    padding-top: 18px;
+  }
+  .deskBar {
+    margin-inline: -13px;
+    padding-inline: 13px;
+  }
+  .pulseTile {
+    min-height: 0;
+    padding: 12px;
+  }
+  .pulseValue {
+    font-size: 22px;
+  }
+}

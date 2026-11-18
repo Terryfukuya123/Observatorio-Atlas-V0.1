@@ -7,6 +7,8 @@ import { liveHeat } from "./live-heat.js";
 import { worldIndices } from "./indices.js";
 import { capitalFlows } from "./flows.js";
 import { fundFlows } from "./funds.js";
+import { desks } from "./desks.js";
+import { pulse } from "./pulse.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -87,21 +89,8 @@ $("#railToggle").onclick = () => {
   setRail(expanded);
   save("rail", expanded ? "wide" : "compact");
 };
-function markSection() {
-  const target =
-    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin", "#aovivo", "#indices", "#fluxo"].find(
-      (id) => $(id).getBoundingClientRect().top <= 24,
-    ) || "#top";
-  for (const link of document.querySelectorAll("#sections a")) {
-    const active = link.hash === target;
-    link.classList.toggle("active", active);
-    if (active) link.setAttribute("aria-current", "location");
-    else link.removeAttribute("aria-current");
-  }
-}
-window.addEventListener("scroll", markSection, { passive: true });
-window.addEventListener("hashchange", markSection);
-markSection();
+const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
+pulse({ root: $("#pulse") });
 const state = {
   id: read("country", "BRA"),
   layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))
@@ -343,7 +332,10 @@ function select(id, scroll = false) {
     map?.region("");
   }
   renderAll();
-  if (scroll) $(".context").scrollIntoView({ block: "nearest" });
+  if (scroll) {
+    if (spaces.current() !== "panorama") location.hash = "#atlas";
+    else $(".context").scrollIntoView({ block: "nearest" });
+  }
 }
 function chooseRegion(name) {
   state.region = name;
@@ -938,4 +930,4 @@ setInterval(() => macro.load(), 1800000);
 liveHeat({ root: $("#aovivo"), read, save });
 worldIndices({ root: $("#indices"), read, save });
 capitalFlows({ root: $("#fluxo"), read, save });
-fundFlows({ root: $(".fundCard"), read, save });
+fundFlows({ root: $("#fundos"), read, save });

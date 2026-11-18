@@ -43,15 +43,10 @@ const path = require("node:path");
         .evaluate((el) => getComputedStyle(el).backgroundColor),
       "rgb(16, 19, 22)",
     );
-    assert.ok(
-      await page
-        .locator("#map")
-        .evaluate(
-          (el) =>
-            el.getBoundingClientRect().top <
-            document.querySelector("#ticker").getBoundingClientRect().top,
-        ),
-    );
+    // Espaços: o Panorama abre com o pulso do dia e o mapa; o resto fica nos outros espaços.
+    assert.equal(await page.locator(".deskHead h1:visible").textContent(), "Panorama");
+    assert.ok((await page.locator(".pulseTile").count()) >= 1);
+    assert.equal(await page.locator("#ticker").isVisible(), false);
     await page.screenshot({ path: media + "/panorama.png" });
     await page.click("#railToggle");
     assert.equal(
@@ -149,6 +144,7 @@ const path = require("node:path");
       .getByText("Selecione dois pares distintos.", { exact: true })
       .waitFor();
     await page.selectOption("#compareB", "EUR");
+    await page.evaluate(() => (location.hash = "#/panorama"));
     await page.locator('#pins [data-id="CAN"] circle').click();
     assert.equal(await page.locator("#detail h2").textContent(), "Canadá");
     const initial = await page.locator("#map").getAttribute("viewBox");
@@ -240,6 +236,7 @@ const path = require("node:path");
       path: media + "/mobile-heatmap.png",
       fullPage: true,
     });
+    await page.evaluate(() => (location.hash = "#/panorama"));
     await page.click('[data-layer="daily"]');
     await page.locator("#compareMarket").click();
     assert.equal(await page.locator("#compareA").inputValue(), "BRL");

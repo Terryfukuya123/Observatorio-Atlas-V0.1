@@ -21,6 +21,17 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
 
+## Espaços de análise
+
+A plataforma se divide em quatro espaços, escolhidos na barra lateral. Cada um abre com uma frase sobre o que responde e tem uma barra fixa com atalhos para as suas partes. No fim, **Continue a análise** leva aos assuntos relacionados:
+
+- **Panorama:** o **Pulso do dia** reúne dólar, Selic, IPCA, fluxo cambial, fundos, juros dos EUA, reservas e bolsas abertas. Cada número traz uma leitura em uma frase e abre a análise completa. Abaixo ficam o mapa e a ficha do país.
+- **Mercados:** índices mundiais, mapas de calor ao vivo, comparador de câmbio e mercados acompanhados.
+- **Brasil:** indicadores, expectativas do Focus, fluxo cambial e fundos.
+- **Global:** curva de juros dos EUA, indicador antecedente da OCDE, notícias e agenda.
+
+O endereço guarda o espaço (`#/brasil`) ou a parte (`#fluxo`), então os links diretos abrem no lugar certo. Sem endereço, a página volta ao último espaço usado. Os módulos são `web/desks.js` (espaços) e `web/pulse.js` (pulso).
+
 ## Usar o atlas
 
 - Clique em um território, um marcador, um cartão de câmbio ou um nome na tabela. A ficha indica mercado, par, nível, variação do par, histórico e cobertura.

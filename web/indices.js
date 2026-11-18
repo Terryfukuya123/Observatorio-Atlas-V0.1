@@ -3,7 +3,7 @@
 import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 
 // Horário regular, no fuso da bolsa. `lunch` marca o intervalo de almoço, quando existe.
-const MARKETS = {
+export const MARKETS = {
   nyse: { name: "Nova York", venue: "NYSE · Nasdaq", tz: "America/New_York", open: "09:30", close: "16:00" },
   tsx: { name: "Toronto", venue: "TSX", tz: "America/Toronto", open: "09:30", close: "16:00" },
   b3: { name: "São Paulo", venue: "B3", tz: "America/Sao_Paulo", open: "10:00", close: "17:00" },

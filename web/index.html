@@ -10,11 +10,11 @@
     <script type="module" src="/app.js"></script>
   </head>
   <body>
-    <a class="skip" href="#top">Pular para o atlas</a>
+    <a class="skip" href="#top">Pular para o conteúdo</a>
     <aside class="rail" aria-label="Área de navegação">
       <a
         class="railBrand"
-        href="#top"
+        href="#/panorama"
         aria-label="Observatório Econômico Global"
         ><img src="/mark.svg" alt="" width="34" height="34"
       /></a>
@@ -27,43 +27,25 @@
       >
         <i data-icon="rail"></i>
       </button>
-      <nav id="sections" aria-label="Navegação principal">
-        <a href="#top" title="Panorama" aria-label="Panorama" class="active"
+      <nav id="sections" aria-label="Espaços de análise">
+        <a href="#/panorama" data-desk="panorama" title="Panorama" aria-label="Panorama"
           ><i data-icon="globe"></i><span>Panorama</span></a
         >
-        <a href="#indices" title="Índices mundiais" aria-label="Índices mundiais"
-          ><i data-icon="list"></i><span>Índices mundiais</span></a
+        <a href="#/mercados" data-desk="mercados" title="Mercados" aria-label="Mercados"
+          ><i data-icon="grid"></i><span>Mercados</span></a
         >
-        <a href="#aovivo" title="Mercados ao vivo" aria-label="Mercados ao vivo"
-          ><i data-icon="grid"></i><span>Mercados ao vivo</span></a
+        <a href="#/brasil" data-desk="brasil" title="Brasil" aria-label="Brasil"
+          ><i data-icon="flow"></i><span>Brasil</span></a
         >
-        <a href="#bulletin" title="Informativo" aria-label="Informativo"
-          ><i data-icon="news"></i><span>Informativo</span></a
-        >
-        <a href="#brasil" title="Painel Brasil" aria-label="Painel Brasil"
-          ><i data-icon="chart"></i><span>Painel Brasil</span></a
-        >
-        <a href="#fluxo" title="Fluxo de capital" aria-label="Fluxo de capital"
-          ><i data-icon="flow"></i><span>Fluxo de capital</span></a
-        >
-        <a href="#juros" title="Juros e ciclo" aria-label="Juros e ciclo"
-          ><i data-icon="layers"></i><span>Juros e ciclo</span></a
-        >
-        <a
-          href="#comparison"
-          title="Comparar câmbio"
-          aria-label="Comparar câmbio"
-          ><i data-icon="chart"></i><span>Comparar câmbio</span></a
-        >
-        <a href="#markets" title="Mercados" aria-label="Mercados"
-          ><i data-icon="list"></i><span>Mercados</span></a
+        <a href="#/global" data-desk="global" title="Global" aria-label="Global"
+          ><i data-icon="layers"></i><span>Global</span></a
         >
         <button
           id="sources"
           title="Fontes e metodologia"
           aria-label="Fontes e metodologia"
         >
-          <i data-icon="layers"></i><span>Fontes e método</span>
+          <i data-icon="news"></i><span>Fontes e método</span>
         </button>
       </nav>
       <button id="theme" title="Alternar tema" aria-label="Alternar tema">
@@ -72,7 +54,7 @@
     </aside>
     <header class="mast">
       <div class="shell topbar">
-        <a class="wordmark" href="#top"
+        <a class="wordmark" href="#/panorama"
           ><strong>Observatório</strong><span>Econômico Global</span></a
         >
         <button id="health" class="health">
@@ -85,11 +67,14 @@
       </div>
     </header>
     <main id="top" class="shell">
-      <section class="hero">
-        <div>
-          <p class="crumb">Mercados <span>/</span> Panorama</p>
-          <h1>Atlas de mercados</h1>
+      <section id="pulse" data-desk="panorama" aria-labelledby="pulseTitle">
+        <div class="sectionTitle">
+          <h2 id="pulseTitle">Pulso do dia</h2>
+          <span class="pulseStamp">Consultando fontes…</span>
         </div>
+        <div class="pulseGrid"><p class="empty">Carregando indicadores…</p></div>
+      </section>
+      <section class="hero" data-desk="panorama">
         <div class="atlasSettings">
           <p id="edition">Referências diárias do Banco Central Europeu</p>
           <label class="basePick"
@@ -101,7 +86,7 @@
           >
         </div>
       </section>
-      <div class="workspace">
+      <div id="atlas" class="workspace" data-desk="panorama">
         <section class="mapcard card" aria-labelledby="mapTitle">
           <div class="cardhead">
             <div class="headtitle">
@@ -209,7 +194,7 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
-      <section id="indices" class="card liveCard" aria-labelledby="indicesTitle">
+      <section id="indices" data-desk="mercados" class="card liveCard" aria-labelledby="indicesTitle">
         <div class="cardhead">
           <div class="headtitle">
             <i data-icon="list"></i>
@@ -245,7 +230,7 @@
           pelo servidor do Observatório.
         </p>
       </section>
-      <section id="aovivo" class="card liveCard" aria-labelledby="liveTitle">
+      <section id="aovivo" data-desk="mercados" class="card liveCard" aria-labelledby="liveTitle">
         <div class="cardhead">
           <div class="headtitle">
             <i data-icon="grid"></i>
@@ -268,41 +253,54 @@
           heatmap mensal calculado a partir da CVM fica na aba Heatmap do mapa.
         </p>
       </section>
-      <section id="bulletin" aria-labelledby="bulletinTitle">
-        <div class="sectionTitle">
-          <h2 id="bulletinTitle">Informativo global</h2>
-          <span>Referências cambiais · BCE</span>
+      <section id="comparison" data-desk="mercados" class="card" aria-labelledby="compareTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="compareTitle">Comparador de câmbio</h2>
+          </div>
+          <span class="unit-label">BASE 100</span>
         </div>
-        <section
-          id="ticker"
-          aria-label="Referências cambiais globais"
-        ></section>
-        <div class="publicationGrid">
-          <section class="card">
-            <div class="cardhead">
-              <div class="headtitle">
-                <i data-icon="news"></i>
-                <h2>Notícias oficiais</h2>
-              </div>
-            </div>
-            <div id="globalNews"></div>
-          </section>
-          <section class="card">
-            <div class="cardhead">
-              <div class="headtitle">
-                <i data-icon="calendar"></i>
-                <h2>Calendário econômico</h2>
-              </div>
-            </div>
-            <div id="globalCalendar"></div>
-          </section>
+        <div class="comparebody">
+          <div class="parameters">
+            <label>Primeiro par<select id="compareA"></select></label>
+            <label>Segundo par<select id="compareB"></select></label>
+            <label
+              >Janela<select id="compareDays">
+                <option value="7">7 dias</option>
+                <option value="30" selected>30 dias</option>
+                <option value="90">90 dias</option>
+              </select></label
+            >
+          </div>
+          <div id="compareResult" aria-live="polite">Carregando séries…</div>
         </div>
-        <p class="editorialDate">
-          Seleção editorial de 17/11/2026 · Fontes oficiais · Datas dos eventos
-          no horário local de cada instituição.
-        </p>
       </section>
-      <section id="brasil" aria-labelledby="brasilTitle">
+      <section id="markets" data-desk="mercados" class="card">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="list"></i>
+            <h2>Mercados acompanhados</h2>
+          </div>
+          <span id="count" class="muted"></span>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Mercado</th>
+                <th>Índice de referência</th>
+                <th>Par cambial</th>
+                <th>Referência BCE</th>
+                <th>Var. diária¹</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+      <section id="brasil" data-desk="brasil" aria-labelledby="brasilTitle">
         <div class="sectionTitle">
           <h2 id="brasilTitle">Painel Brasil</h2>
           <span id="brasilStamp">BCB e IBGE</span>
@@ -310,7 +308,7 @@
         <div id="brasilGroups" class="macroGroups">
           <p class="empty">Carregando indicadores…</p>
         </div>
-        <section class="card focusCard" aria-labelledby="focusTitle">
+        <section id="focus" class="card focusCard" aria-labelledby="focusTitle">
           <div class="cardhead">
             <div class="headtitle">
               <i data-icon="calendar"></i>
@@ -327,7 +325,7 @@
         </section>
         <p id="brasilSources" class="sourceNote"></p>
       </section>
-      <section id="fluxo" aria-labelledby="fluxoTitle">
+      <section id="fluxo" data-desk="brasil" aria-labelledby="fluxoTitle">
         <div class="sectionTitle">
           <h2 id="fluxoTitle">Fluxo de capital · Brasil</h2>
           <span id="fluxoStamp">Banco Central do Brasil</span>
@@ -383,7 +381,7 @@
             <div id="flowBC"></div>
           </section>
         </div>
-        <section class="card fundCard" aria-labelledby="fundTitle">
+        <section id="fundos" class="card fundCard" aria-labelledby="fundTitle">
           <div class="cardhead">
             <div class="headtitle">
               <i data-icon="layers"></i>
@@ -425,7 +423,7 @@
         </section>
         <p id="flowSources" class="sourceNote"></p>
       </section>
-      <section id="juros" aria-labelledby="jurosTitle">
+      <section id="juros" data-desk="global" aria-labelledby="jurosTitle">
         <div class="sectionTitle">
           <h2 id="jurosTitle">Juros e ciclo global</h2>
           <span>Tesouro dos EUA · OCDE</span>
@@ -453,52 +451,39 @@
           </section>
         </div>
       </section>
-      <section id="comparison" class="card" aria-labelledby="compareTitle">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="chart"></i>
-            <h2 id="compareTitle">Comparador de câmbio</h2>
-          </div>
-          <span class="unit-label">BASE 100</span>
+      <section id="bulletin" data-desk="global" aria-labelledby="bulletinTitle">
+        <div class="sectionTitle">
+          <h2 id="bulletinTitle">Informativo global</h2>
+          <span>Referências cambiais · BCE</span>
         </div>
-        <div class="comparebody">
-          <div class="parameters">
-            <label>Primeiro par<select id="compareA"></select></label>
-            <label>Segundo par<select id="compareB"></select></label>
-            <label
-              >Janela<select id="compareDays">
-                <option value="7">7 dias</option>
-                <option value="30" selected>30 dias</option>
-                <option value="90">90 dias</option>
-              </select></label
-            >
-          </div>
-          <div id="compareResult" aria-live="polite">Carregando séries…</div>
+        <section
+          id="ticker"
+          aria-label="Referências cambiais globais"
+        ></section>
+        <div class="publicationGrid">
+          <section class="card">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="news"></i>
+                <h2>Notícias oficiais</h2>
+              </div>
+            </div>
+            <div id="globalNews"></div>
+          </section>
+          <section class="card">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="calendar"></i>
+                <h2>Calendário econômico</h2>
+              </div>
+            </div>
+            <div id="globalCalendar"></div>
+          </section>
         </div>
-      </section>
-      <section id="markets" class="card">
-        <div class="cardhead">
-          <div class="headtitle">
-            <i data-icon="list"></i>
-            <h2>Mercados acompanhados</h2>
-          </div>
-          <span id="count" class="muted"></span>
-        </div>
-        <div class="scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Mercado</th>
-                <th>Índice de referência</th>
-                <th>Par cambial</th>
-                <th>Referência BCE</th>
-                <th>Var. diária¹</th>
-                <th>Observação</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
+        <p class="editorialDate">
+          Seleção editorial de 17/11/2026 · Fontes oficiais · Datas dos eventos
+          no horário local de cada instituição.
+        </p>
       </section>
       <footer>
         <span
