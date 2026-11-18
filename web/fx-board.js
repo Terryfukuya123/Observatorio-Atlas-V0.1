@@ -3,7 +3,7 @@
 // a força é a média dessas variações. Um clique na matriz abre o par no comparador.
 import { coin } from "./symbols.js";
 import { cachedFetch } from "./data.js";
-import { esc, dayMonth as day } from "./format.js";
+import { esc, dayMonth as day, failure } from "./format.js";
 
 const PERIODS = { day: [1, "no dia", 7], week: [5, "na semana", 7], month: [21, "no mês", 30], quarter: [Infinity, "em 3 meses", 90] };
 const NAMES = {
@@ -161,7 +161,7 @@ export function fxBoard({ root, read, save }) {
       $("#fxStamp").textContent = last ? "BCE · referência de " + day(last) + "/" + last.slice(0, 4) : "BCE";
       draw();
     } catch {
-      $("#fxRank").innerHTML = '<p class="empty">Referências cambiais indisponíveis no momento.</p>';
+      $("#fxRank").innerHTML = failure("Referências cambiais");
     }
   }
   draw();

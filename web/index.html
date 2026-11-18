@@ -58,7 +58,7 @@
           ><strong>Observatório</strong><span>Econômico Global</span></a
         >
         <button id="health" class="health">
-          <b class="dot"></b><span id="healthText">Consultando fonte</span
+          <b class="dot"></b><span id="healthText">Consultando fontes</span
           ><i data-icon="chevron"></i>
         </button>
         <button id="searchOpen" class="search" aria-label="Buscar na plataforma">
@@ -746,6 +746,19 @@
         <button class="close" aria-label="Fechar">×</button>
       </div>
       <div id="metaBody"></div>
+    </dialog>
+    <dialog id="saude" class="hsDialog" aria-labelledby="hsTitle">
+      <div class="modalhead">
+        <h2 id="hsTitle">Saúde das fontes</h2>
+        <button class="close" aria-label="Fechar">×</button>
+      </div>
+      <p class="hsSummary"></p>
+      <div class="hsTools">
+        <label><input id="hsIssues" type="checkbox"> Só o que pede atenção</label>
+        <button type="button" class="hsMeta" data-go="meta">Detalhes do câmbio BCE</button>
+      </div>
+      <p class="hsLegend">Cada linha é uma série coletada: situação, última observação publicada pela fonte e quando o Observatório coletou.</p>
+      <div class="hsBody"><p class="hsEmpty">Consultando…</p></div>
     </dialog>
   </body>
 </html>

@@ -96,6 +96,17 @@ Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões p
 
 [Camada macro: fontes, cache e rotas](docs/camada-macro.md)
 
+## Saúde das fontes
+
+O botão no topo da página resume todas as coletas: "Fontes em dia", quantas pedem atenção ou quantas falharam. Ao clicar, abre o painel com cada série (BCE, Banco Central, IBGE, Tesouro dos EUA, OCDE e Eurostat, Banco Mundial, CVM e B3), com:
+
+- a situação;
+- a última observação publicada pela fonte;
+- quando o Observatório coletou;
+- o erro, se houver.
+
+Uma coleta parada há mais de 6 horas aparece como atrasada. O relatório da B3 importado há mais de 4 dias também aparece como atrasado e pede nova importação. Quando uma seção não consegue dados, mostra o mesmo aviso padrão com um atalho para esse painel.
+
 ## Desempenho
 
 - **Dados compartilhados:** `web/data.js` busca cada endereço da API uma vez por minuto e entrega uma cópia a cada seção que pede o mesmo dado.
@@ -148,6 +159,21 @@ $env:NODE_PATH = (Resolve-Path .\data\run\browser\node_modules).Path
 $env:OEG_SCREENSHOTS = Join-Path (Get-Location) 'data/run/capturas'
 node tests/browser.cjs
 ```
+
+Roteiro de fumaça, mais curto, para rodar a cada mudança com o servidor ativo:
+
+```powershell
+node tests/smoke.cjs http://127.0.0.1:8842
+```
+
+Ele abre os quatro espaços no tamanho de computador e de celular. Falha se encontrar:
+
+- erro de script ou de CSP;
+- resposta HTTP com erro;
+- seção ausente, vazia ou em estado de falha;
+- página mais larga que a tela.
+
+Também confere o painel de saúde das fontes.
 
 O teste de navegador requer pelo menos uma captura válida do BCE e verifica também uma falha simulada isolada na página de teste. O navegador alternativo pode ser definido em `OEG_BROWSER`. A bateria Python é offline.
 

@@ -15,6 +15,7 @@ from server.editions import MonthlyEdition
 from server.macro import MacroStore
 from server.funds import FundFlows
 from server.b3 import B3Store
+from server.health import health
 from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
 
@@ -108,6 +109,9 @@ class Handler(BaseHTTPRequestHandler):
             mime = "application/json"
         elif path == "/api/fundos":
             body = json.dumps(self.server.funds.read(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
+        elif path == "/api/saude":
+            body = json.dumps(health(self.server), ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
         elif path == "/api/b3":
             body = json.dumps(self.server.b3.read(), ensure_ascii=False, allow_nan=False).encode()

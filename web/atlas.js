@@ -9,7 +9,7 @@ import { flag, pair } from "./symbols.js";
 import { NAMES as CYCLE } from "./cycle-clock.js";
 import { findDestinations } from "./finder.js";
 import { cachedFetch } from "./data.js";
-import { esc as escape, fullDay } from "./format.js";
+import { esc as escape, fullDay, failure } from "./format.js";
 
 const $ = (s) => document.querySelector(s);
 export const fmt = (s) => (s ? fullDay(s) : "Sem observação");
@@ -401,11 +401,6 @@ export function atlas({ read, save, compare, spaces }) {
       $("#compareMarket").onclick = () => compare.pick(m.series);
   }
   function renderAll() {
-    $("#healthText").textContent =
-      state.source.status === "Atualizado"
-        ? "BCE atualizado"
-        : state.source.status;
-    $("#health").dataset.ok = state.source.status === "Atualizado" ? "yes" : "no";
     renderTicker();
     detail();
     renderLocalBulletin(
@@ -782,7 +777,7 @@ export function atlas({ read, save, compare, spaces }) {
     }
   };
   $("#region").onchange = (e) => chooseRegion(e.target.value);
-  for (const id of ["sources", "health", "method"])
+  for (const id of ["sources", "method"])
     $("#" + id).onclick = openMeta;
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
@@ -930,7 +925,7 @@ export function atlas({ read, save, compare, spaces }) {
   } catch {
     $(".canvas").insertAdjacentHTML(
       "afterbegin",
-      '<p class="empty">Cartografia indisponível. Use a busca de mercados.</p>',
+      failure("Cartografia", "Use a busca de mercados enquanto isso."),
     );
   }
     await refresh();

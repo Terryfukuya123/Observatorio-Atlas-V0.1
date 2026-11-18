@@ -1,7 +1,7 @@
 // Bússola dos juros: Selic e IPCA realizados, a meta de inflação com o intervalo de
 // tolerância e o caminho esperado pelo Focus, num só gráfico. Mais o Focus em gráficos.
 import { cachedFetch } from "./data.js";
-import { esc, num, monthShort as monthLabel } from "./format.js";
+import { esc, num, monthShort as monthLabel, failure } from "./format.js";
 const n2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // Meta de inflação do CMN por ano-calendário; tolerância de 1,5 p.p.
@@ -127,7 +127,7 @@ export function compass({ root }) {
       });
       root.querySelector(".cpStamp").textContent = "IPCA até " + monthLabel(ipcaItem.observed) + " · Selic em " + selicItem.observed.split("-").reverse().join("/");
     } catch {
-      root.querySelector(".cpPlot").innerHTML = '<p class="empty">Juros e inflação indisponíveis no momento.</p>';
+      root.querySelector(".cpPlot").innerHTML = failure("Juros e inflação");
     }
   }
   load();
@@ -193,7 +193,7 @@ export function focusCharts({ root, read, save }) {
         })
         .join("");
     } catch {
-      host.innerHTML = '<p class="empty">Focus indisponível no momento.</p>';
+      host.innerHTML = failure("Focus");
     }
   }
   load();

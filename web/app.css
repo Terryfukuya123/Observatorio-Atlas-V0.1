@@ -5538,3 +5538,155 @@ dialog.dossier {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Saúde das fontes */
+.health[data-level="fail"] .dot {
+  background: var(--neg, #c9785c);
+}
+.hsDialog {
+  width: min(860px, calc(100vw - 24px));
+}
+.hsSummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin: 4px 0 10px;
+  font-size: 13px;
+  color: var(--soft);
+}
+.hsSummary b {
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 4px;
+}
+.hsSummary [data-level="ok"] b {
+  color: var(--pos);
+}
+.hsSummary [data-level="warn"] b {
+  color: #e6ad71;
+}
+.hsSummary [data-level="fail"] b {
+  color: var(--neg, #c9785c);
+}
+.hsSummary small {
+  margin-left: auto;
+  color: var(--muted);
+}
+.hsTools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+.hsTools label {
+  display: inline-flex;
+  flex-direction: row;
+  grid-auto-flow: column;
+  white-space: nowrap;
+  width: auto;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.hsMeta {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--accent);
+}
+.hsLegend,
+.hsEmpty {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 8px 0;
+}
+.hsGroup h3 {
+  margin: 14px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsGroup h3 small {
+  margin-left: 4px;
+  font-weight: 400;
+}
+.hsGroup ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hsGroup li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) 130px 76px 70px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.hsGroup li .dot {
+  background: var(--pos);
+}
+.hsGroup li[data-level="warn"] .dot {
+  background: #e6ad71;
+}
+.hsGroup li[data-level="fail"] .dot {
+  background: var(--neg, #c9785c);
+}
+.hsName small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.hsStatus {
+  color: var(--soft);
+}
+.hsObs,
+.hsWhen {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+@media (max-width: 640px) {
+  .hsGroup li {
+    grid-template-columns: 10px minmax(0, 1fr) auto;
+  }
+  .hsGroup li .hsObs,
+  .hsGroup li .hsWhen {
+    display: none;
+  }
+}
+.stateFail {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  color: var(--soft);
+  font-size: 13px;
+}
+.stateFail b {
+  color: var(--text);
+  font-weight: 600;
+}
+.stateFail span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.linkish {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

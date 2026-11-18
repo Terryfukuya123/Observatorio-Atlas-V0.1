@@ -3,7 +3,7 @@
 // são as quatro fases do ciclo. Também o histórico do sinal de recessão da curva dos EUA.
 import { flagAt, round } from "./symbols.js";
 import { cachedFetch } from "./data.js";
-import { esc, monthShort as month } from "./format.js";
+import { esc, monthShort as month, failure } from "./format.js";
 
 export const NAMES = {
   G20: "G20", G7: "G7", USA: "Estados Unidos", CHN: "China", DEU: "Alemanha", JPN: "Japão", GBR: "Reino Unido", IND: "Índia", FRA: "França",
@@ -161,7 +161,7 @@ export function cycleClock({ root, read, save }) {
       root.querySelector(".ccStamp").textContent = last ? "OCDE · referência " + month(last) : "OCDE";
       draw();
     } catch {
-      plot.innerHTML = '<p class="empty">Indicador antecedente indisponível no momento.</p>';
+      plot.innerHTML = failure("Indicador antecedente");
     }
   }
   load();

@@ -4,7 +4,7 @@
 // D-2. Cada importação vira um retrato; a diferença entre dois retratos dá o pregão.
 // Exibição a terceiros pendente de licença de Market Data da B3.
 import { cachedFetch } from "./data.js";
-import { esc, nf, sign, tone, monthShort as monthName, dayMonth as shortDay } from "./format.js";
+import { esc, nf, sign, tone, monthShort as monthName, dayMonth as shortDay, failure } from "./format.js";
 
 export const INVESTORS = [
   ["foreign", "Estrangeiros"],
@@ -252,6 +252,6 @@ export function pregao({ root }) {
       render(root, { ...b3.data, file: b3.file });
     })
     .catch(() => {
-      root.querySelector("#pgKpis").innerHTML = '<p class="empty">Não foi possível ler o relatório da B3.</p>';
+      root.querySelector("#pgKpis").innerHTML = failure("Relatório da B3");
     });
 }

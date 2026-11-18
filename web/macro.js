@@ -4,7 +4,7 @@ import { svg } from "./map.js";
 import { round } from "./symbols.js";
 import { keyOf, pinButton } from "./panel-store.js";
 import { cachedFetch } from "./data.js";
-import { esc } from "./format.js";
+import { esc, failure } from "./format.js";
 
 const nf = (value, digits = 2) =>
   Number(value).toLocaleString("pt-BR", {
@@ -140,7 +140,7 @@ export function macroLayer({ onIndicator }) {
     const root = document.querySelector("#brasilGroups");
     if (!root) return;
     if (!overview) {
-      root.innerHTML = '<p class="empty">Painel macro indisponível no momento.</p>';
+      root.innerHTML = failure("Painel macro");
       return;
     }
     const items = brazilItems();
@@ -211,7 +211,7 @@ export function macroLayer({ onIndicator }) {
     const el = document.querySelector("#usCurve");
     if (!el) return;
     if (!detail?.curve) {
-      el.innerHTML = '<p class="empty">Curva indisponível no momento.</p>';
+      el.innerHTML = failure("Curva de juros");
       return;
     }
     document.querySelector("#curveDate").textContent = "Fechamento de " + day(detail.observed);
@@ -294,7 +294,7 @@ export function macroLayer({ onIndicator }) {
       note.innerHTML = "Índice 100 = tendência de longo prazo. Fase pela posição frente a 100 e pela direção no último mês, leitura do Observatório. " + credit(cli) + ", uso com citação da OCDE.";
       el.append(note);
     } catch {
-      el.innerHTML = '<p class="empty">Indicador antecedente indisponível no momento.</p>';
+      el.innerHTML = failure("Indicador antecedente");
     }
   }
 
