@@ -11,6 +11,7 @@ import { desks } from "./desks.js";
 import { pulse } from "./pulse.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
+import { fxBoard } from "./fx-board.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -94,6 +95,7 @@ $("#railToggle").onclick = () => {
 const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
 pulse({ root: $("#pulse") });
 sessionClock({ root: $("#relogio") });
+fxBoard({ root: $("#moedas"), read, save });
 const state = {
   id: read("country", "BRA"),
   layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))

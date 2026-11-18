@@ -26,6 +26,7 @@ export const DESKS = {
     parts: [
       ["indices", "Índices mundiais"],
       ["aovivo", "Mapas de calor"],
+      ["moedas", "Força das moedas"],
       ["comparison", "Comparador de câmbio"],
       ["markets", "Mercados acompanhados"],
     ],

@@ -269,6 +269,36 @@
           heatmap mensal calculado a partir da CVM fica na aba Heatmap do mapa.
         </p>
       </section>
+      <section id="moedas" class="card fxCard" data-desk="mercados" aria-labelledby="fxTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="fxTitle">Força das moedas</h2>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Período da força das moedas">
+            <button data-fx-period="day" aria-pressed="false">Dia</button>
+            <button data-fx-period="week" aria-pressed="true">Semana</button>
+            <button data-fx-period="month" aria-pressed="false">Mês</button>
+            <button data-fx-period="quarter" aria-pressed="false">3 meses</button>
+          </div>
+        </div>
+        <p id="fxRead" class="fxRead"></p>
+        <div class="fxBody">
+          <div>
+            <h3 class="fxSub">Ranking contra a cesta das outras nove</h3>
+            <div id="fxRank"><p class="empty">Carregando referências…</p></div>
+          </div>
+          <div>
+            <h3 class="fxSub">Matriz cruzada · toque num par para comparar</h3>
+            <div id="fxMatrix" class="scroll"></div>
+          </div>
+        </div>
+        <p class="sourceNote">
+          <span id="fxStamp">BCE</span> · Força: média da variação de cada moeda contra as outras
+          nove no período, calculada pelo Observatório a partir das taxas de referência do
+          Banco Central Europeu (cruzamentos pelo euro). Positivo indica valorização.
+        </p>
+      </section>
       <section id="comparison" data-desk="mercados" class="card" aria-labelledby="compareTitle">
         <div class="cardhead">
           <div class="headtitle">
