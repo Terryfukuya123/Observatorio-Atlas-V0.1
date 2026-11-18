@@ -1,4 +1,5 @@
 import { svg } from "./map.js";
+import { cachedFetch } from "./data.js";
 
 export function comparison({ read, save, fmt, timestamp }) {
   const a = document.querySelector("#compareA"),
@@ -150,7 +151,7 @@ export function comparison({ read, save, fmt, timestamp }) {
       dias: days.value,
     });
     try {
-      const response = await fetch("/api/comparacao?" + params);
+      const response = await cachedFetch("/api/comparacao?" + params);
       if (!response.ok) throw Error();
       const data = await response.json();
       if (version === requestNumber) display(data);

@@ -2,6 +2,7 @@
 // da OCDE (acima ou abaixo da tendência, 100) e a variação no último mês. Os quadrantes
 // são as quatro fases do ciclo. Também o histórico do sinal de recessão da curva dos EUA.
 import { flagAt, round } from "./symbols.js";
+import { cachedFetch } from "./data.js";
 
 export const NAMES = {
   G20: "G20", G7: "G7", USA: "Estados Unidos", CHN: "China", DEU: "Alemanha", JPN: "Japão", GBR: "Reino Unido", IND: "Índia", FRA: "França",
@@ -41,7 +42,7 @@ export function streak(points) {
 }
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

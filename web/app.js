@@ -21,6 +21,7 @@ import { fxBoard } from "./fx-board.js";
 import { compass, focusCharts } from "./compass.js";
 import { cycleClock, recessionSignal, NAMES as CYCLE } from "./cycle-clock.js";
 import { findDestinations } from "./finder.js";
+import { cachedFetch } from "./data.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -102,12 +103,23 @@ $("#railToggle").onclick = () => {
   save("rail", expanded ? "wide" : "compact");
 };
 const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Observatório Econômico Global" });
+// Seções de outros espaços só buscam dados e se desenham quando o espaço é aberto.
+function whenShown(root, start) {
+  const owner = root?.closest("[data-desk]");
+  if (!owner || !owner.hidden) return start();
+  const watch = new MutationObserver(() => {
+    if (owner.hidden) return;
+    watch.disconnect();
+    start();
+  });
+  watch.observe(owner, { attributes: true, attributeFilter: ["hidden"] });
+}
 pulse({ root: $("#pulse") });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
 riskMeter({ root: $("#termometro") });
-prePost({ root: $("#prepos"), read, save });
-pregao({ root: $("#pregao") });
+whenShown($("#prepos"), () => prePost({ root: $("#prepos"), read, save }));
+whenShown($("#pregao"), () => pregao({ root: $("#pregao") }));
 dossier({
   info,
   read,
@@ -123,9 +135,9 @@ dossier({
   },
 });
 sessionClock({ root: $("#relogio") });
-fxBoard({ root: $("#moedas"), read, save });
-compass({ root: $("#bussola") });
-focusCharts({ root: $("#focus"), read, save });
+whenShown($("#moedas"), () => fxBoard({ root: $("#moedas"), read, save }));
+whenShown($("#bussola"), () => compass({ root: $("#bussola") }));
+whenShown($("#focus"), () => focusCharts({ root: $("#focus"), read, save }));
 cycleClock({ root: $("#ciclo"), read, save });
 recessionSignal({ root: $("#recessionSignal") });
 const state = {
@@ -972,7 +984,7 @@ for (const btn of document.querySelectorAll("button[data-sheet]")) {
   };
 }
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }
@@ -1041,7 +1053,7 @@ macro.load().then(() => state.layer === "macro" && renderMap());
 setInterval(refresh, 300000);
 setInterval(() => macro.load(), 1800000);
 
-liveHeat({ root: $("#aovivo"), read, save });
-worldIndices({ root: $("#indices"), read, save });
-capitalFlows({ root: $("#fluxo"), read, save });
-fundFlows({ root: $("#fundos"), read, save });
+whenShown($("#aovivo"), () => liveHeat({ root: $("#aovivo"), read, save }));
+whenShown($("#indices"), () => worldIndices({ root: $("#indices"), read, save }));
+whenShown($("#fluxo"), () => capitalFlows({ root: $("#fluxo"), read, save }));
+whenShown($("#fundos"), () => fundFlows({ root: $("#fundos"), read, save }));

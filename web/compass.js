@@ -1,5 +1,6 @@
 // Bússola dos juros: Selic e IPCA realizados, a meta de inflação com o intervalo de
 // tolerância e o caminho esperado pelo Focus, num só gráfico. Mais o Focus em gráficos.
+import { cachedFetch } from "./data.js";
 const n2 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const esc = (text) =>
   String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -13,7 +14,7 @@ export const target = (year) => TARGET[year] ?? 3;
 export const TOLERANCE = 1.5;
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

@@ -1,5 +1,6 @@
 // Fluxo dos fundos de investimento (CVM, ODbL): captação líquida por categoria no ano,
 // mês a mês e dia a dia, e onde está o patrimônio. Valores chegam em R$ milhões.
+import { cachedFetch } from "./data.js";
 
 const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
@@ -213,7 +214,7 @@ export function fundFlows({ root, read, save }) {
 
   async function load() {
     try {
-      const response = await fetch("/api/fundos");
+      const response = await cachedFetch("/api/fundos");
       if (!response.ok) throw Error();
       render(await response.json());
     } catch {

@@ -96,6 +96,13 @@ Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões p
 
 [Camada macro: fontes, cache e rotas](docs/camada-macro.md)
 
+## Desempenho
+
+- **Dados compartilhados:** `web/data.js` busca cada endereço da API uma vez por minuto e entrega uma cópia a cada seção que pede o mesmo dado.
+- **Carga por espaço:** as seções de Mercados e Brasil só buscam dados e se desenham quando o espaço é aberto.
+- **Compressão e cache:** o servidor comprime em gzip textos, scripts, estilos e JSON acima de 1 KB. Cada resposta leva um `ETag`; se o conteúdo não mudou, o navegador recebe `304` sem corpo.
+- **Arquivos estáticos:** o servidor entrega qualquer `.html`, `.css`, `.js`, `.json`, `.svg` ou `.ttf` que esteja direto em `web/`, e nada fora dessa pasta.
+
 ## Estrutura
 
 | Diretório | Responsabilidade |

@@ -3,6 +3,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 import argparse
+import gzip
+import hashlib
 import json
 import mimetypes
 import sys
@@ -17,6 +19,23 @@ from providers.ecb import CURRENCIES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
+STATIC = {p.name for p in WEB.iterdir() if p.suffix in {".html", ".css", ".js", ".json", ".svg", ".ttf"}}
+COMPRESSIBLE = ("text/", "application/json", "application/javascript", "image/svg+xml")
+_static_cache = {}
+
+
+def static_file(file):
+    """Bytes, ETag e versão gzip de um arquivo estático, guardados até o arquivo mudar."""
+    stamp = file.stat().st_mtime_ns
+    hit = _static_cache.get(file)
+    if hit and hit[0] == stamp:
+        return hit[1]
+    body = file.read_bytes()
+    entry = (body, '"' + hashlib.sha1(body).hexdigest()[:20] + '"', gzip.compress(body, 6))
+    _static_cache[file] = (stamp, entry)
+    return entry
+
+
 MARKETS = json.loads((ROOT / "config/markets.json").read_text(encoding="utf8"))
 
 
@@ -96,20 +115,38 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/funds.js", "/desks.js", "/pulse.js", "/symbols.js", "/clock.js", "/fx-board.js", "/compass.js", "/cycle-clock.js", "/finder.js", "/panel-store.js", "/glossary.js", "/agenda.js", "/dossier.js", "/risk.js", "/prepos.js", "/pregao.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path == "/" or path[1:] in STATIC:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)
                 return
-            body = file.read_bytes()
+            body, etag, packed = static_file(file)
             mime = mimetypes.guess_type(file)[0] or "application/octet-stream"
         else:
             self.send_error(404)
             return
+        if path.startswith("/api/"):
+            etag = '"' + hashlib.sha1(body).hexdigest()[:20] + '"'
+            packed = None
+        if etag in {tag.strip() for tag in self.headers.get("If-None-Match", "").split(",")}:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            return
+        if "gzip" in self.headers.get("Accept-Encoding", "") and len(body) > 1024 and mime.startswith(COMPRESSIBLE):
+            body = packed or gzip.compress(body, 5)
+            encoded = True
+        else:
+            encoded = False
         self.send_response(200)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store" if path.startswith("/api") else "no-cache")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("ETag", etag)
+        self.send_header("Vary", "Accept-Encoding")
+        if encoded:
+            self.send_header("Content-Encoding", "gzip")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'sha256-JyHF32z4Ou/Ujas95CX3WgBqlTt7Dxzo/fQG5/5oBo8='; script-src 'self' https://s3.tradingview.com; "

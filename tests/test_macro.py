@@ -439,7 +439,8 @@ class Http(TestCase):
                         body = response.read()
                         self.assertEqual(response.status, code)
                         if code == 200:
-                            self.assertEqual(response.getheader("Cache-Control"), "no-store")
+                            self.assertEqual(response.getheader("Cache-Control"), "no-cache")
+                            self.assertTrue(response.getheader("ETag"))
                             json.loads(body)
                         conn.close()
             finally:

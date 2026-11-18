@@ -3,6 +3,7 @@
 import { svg } from "./map.js";
 import { round } from "./symbols.js";
 import { keyOf, pinButton } from "./panel-store.js";
+import { cachedFetch } from "./data.js";
 
 const esc = (v) =>
   String(v ?? "").replace(
@@ -99,7 +100,7 @@ export function macroLayer({ onIndicator }) {
   const countryCache = new Map();
 
   async function json(url) {
-    const r = await fetch(url);
+    const r = await cachedFetch(url);
     if (!r.ok) throw Error("Falha de leitura");
     return r.json();
   }

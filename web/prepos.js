@@ -10,6 +10,7 @@ import { scoreboard, zone } from "./risk.js";
 import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 import { flag, round } from "./symbols.js";
 import { brl, digest, monthName, shortDay } from "./pregao.js";
+import { cachedFetch } from "./data.js";
 
 const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 2) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
@@ -57,7 +58,7 @@ export function moment(now = new Date()) {
 }
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

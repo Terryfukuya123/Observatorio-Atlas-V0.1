@@ -1,3 +1,4 @@
+import { cachedFetch } from "./data.js";
 const titles = {
   crypto: "Criptomoedas",
   us: "Ações americanas",
@@ -36,7 +37,7 @@ export function assetHeat({ $, fmt, timestamp, render }) {
   const tiles = $("#heatTiles");
   async function load() {
     try {
-      const response = await fetch("/api/heatmaps");
+      const response = await cachedFetch("/api/heatmaps");
       if (!response.ok) throw Error();
       const data = await response.json();
       if (!data.groups || !data.fx?.length) throw Error();

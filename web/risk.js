@@ -4,6 +4,7 @@
 // placar de um mês atrás, para mostrar a direção. Não é recomendação de investimento.
 import { usdValues, strength } from "./fx-board.js";
 import { phase, track } from "./cycle-clock.js";
+import { cachedFetch } from "./data.js";
 
 const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
@@ -226,7 +227,7 @@ function dots(score) {
 }
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

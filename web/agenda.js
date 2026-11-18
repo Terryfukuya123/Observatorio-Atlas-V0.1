@@ -3,6 +3,7 @@
 // acima ou abaixo. Datas conferidas nas fontes oficiais em 18/11/2026; horários com fuso,
 // mostrados no horário deste dispositivo.
 import { flag } from "./symbols.js";
+import { cachedFetch } from "./data.js";
 
 export const CHECKED = "18/11/2026";
 
@@ -218,7 +219,7 @@ export function agenda({ week, full, read, save }) {
     draw();
   });
 
-  fetch("/api/macro")
+  cachedFetch("/api/macro")
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
       macro = data;

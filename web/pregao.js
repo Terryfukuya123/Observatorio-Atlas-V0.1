@@ -3,6 +3,7 @@
 // coleta automática). O relatório é acumulado no mês: volume até D-1 e investidores até
 // D-2. Cada importação vira um retrato; a diferença entre dois retratos dá o pregão.
 // Exibição a terceiros pendente de licença de Market Data da B3.
+import { cachedFetch } from "./data.js";
 
 const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 export const INVESTORS = [
@@ -246,7 +247,7 @@ function render(root, d) {
 }
 
 export function pregao({ root }) {
-  fetch("/api/b3")
+  cachedFetch("/api/b3")
     .then((r) => (r.ok ? r.json() : null))
     .then((b3) => {
       if (!b3?.data) {

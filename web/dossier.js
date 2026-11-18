@@ -9,6 +9,7 @@ import { phase, track, streak, NAMES } from "./cycle-clock.js";
 import { EVENTS } from "./agenda.js";
 import { items as NEWS } from "./bulletin.js";
 import { euro } from "./map.js";
+import { cachedFetch } from "./data.js";
 
 const nf = (d) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const signed = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
@@ -26,7 +27,7 @@ const PHASE_HINT = {
 };
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

@@ -3,6 +3,7 @@
 import { MARKETS, session } from "./indices.js";
 import { flag, pair, round } from "./symbols.js";
 import { ALIAS, DEFAULT_PANEL, isDefault, keyOf, panel, setPanel } from "./panel-store.js";
+import { cachedFetch } from "./data.js";
 
 const nf = (digits) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 const n1 = nf(1);
@@ -23,7 +24,7 @@ function money(value, unit, scale) {
 }
 
 async function json(url) {
-  const r = await fetch(url);
+  const r = await cachedFetch(url);
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }

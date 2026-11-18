@@ -1,5 +1,6 @@
 // Fluxo de capital no Brasil (BCB, ODbL): acumulado no ano, mês a mês, dia a dia,
 // quem moveu o dinheiro, onde os estrangeiros aplicaram e atuações do BC no câmbio.
+import { cachedFetch } from "./data.js";
 
 const nf1 = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
@@ -216,7 +217,7 @@ export function capitalFlows({ root, read, save }) {
 
   async function load() {
     try {
-      const response = await fetch("/api/fluxo");
+      const response = await cachedFetch("/api/fluxo");
       if (!response.ok) throw Error();
       render(await response.json());
     } catch {

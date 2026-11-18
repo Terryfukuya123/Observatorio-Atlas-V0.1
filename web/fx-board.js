@@ -2,6 +2,7 @@
 // diárias do BCE. Cada moeda é comparada com todas as outras no período escolhido;
 // a força é a média dessas variações. Um clique na matriz abre o par no comparador.
 import { coin } from "./symbols.js";
+import { cachedFetch } from "./data.js";
 
 const PERIODS = { day: [1, "no dia", 7], week: [5, "na semana", 7], month: [21, "no mês", 30], quarter: [Infinity, "em 3 meses", 90] };
 const NAMES = {
@@ -154,7 +155,7 @@ export function fxBoard({ root, read, save }) {
 
   async function load() {
     try {
-      const r = await fetch("/api/atlas?base=USD");
+      const r = await cachedFetch("/api/atlas?base=USD");
       if (!r.ok) throw Error();
       const body = await r.json();
       data = usdValues(body.series);
