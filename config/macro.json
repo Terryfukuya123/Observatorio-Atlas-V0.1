@@ -25,5 +25,15 @@
     {"id": "conta_corrente", "code": "BN.CAB.XOKA.GD.ZS", "name": "Saldo em conta corrente", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
     {"id": "comercio", "code": "NE.TRD.GNFS.ZS", "name": "Comércio exterior", "unit": "% do PIB", "group": "Setor externo", "decimals": 1},
     {"id": "populacao", "code": "SP.POP.TOTL", "name": "População", "unit": "habitantes", "group": "Demografia", "decimals": 0}
+  ],
+  "focus": [
+    {"id": "focus_ipca", "indicator": "IPCA", "name": "IPCA", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_pib", "indicator": "PIB Total", "name": "PIB", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_cambio", "indicator": "Câmbio", "name": "Câmbio", "unit": "R$/US$ no fim do ano", "decimals": 2},
+    {"id": "focus_selic", "indicator": "Selic", "name": "Selic", "unit": "% a.a. no fim do ano", "decimals": 2},
+    {"id": "focus_igpm", "indicator": "IGP-M", "name": "IGP-M", "unit": "% no ano", "decimals": 2},
+    {"id": "focus_primario", "indicator": "Resultado primário", "name": "Resultado primário", "unit": "% do PIB", "decimals": 2},
+    {"id": "focus_dlsp", "indicator": "Dívida líquida do setor público", "name": "Dívida líquida do setor público", "unit": "% do PIB", "decimals": 2},
+    {"id": "focus_conta_corrente", "indicator": "Conta corrente", "name": "Conta corrente", "unit": "US$ bilhões", "decimals": 2}
   ]
 }

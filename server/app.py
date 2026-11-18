@@ -58,10 +58,12 @@ class Handler(BaseHTTPRequestHandler):
             result = compare_rates(in_base(self.server.feed.read(), base), first, second, int(period))
             body = json.dumps(result, allow_nan=False).encode()
             mime = "application/json"
-        elif path in {"/api/macro", "/api/macro/indicador", "/api/macro/pais"}:
+        elif path in {"/api/macro", "/api/macro/indicador", "/api/macro/pais", "/api/macro/focus"}:
             store = self.server.macro
             if path == "/api/macro":
                 result = store.overview()
+            elif path == "/api/macro/focus":
+                result = store.focus_detail()
             elif path == "/api/macro/indicador":
                 result = store.indicator(params.get("id", [""])[0])
             else:

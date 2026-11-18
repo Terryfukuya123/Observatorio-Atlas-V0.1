@@ -96,3 +96,57 @@ def normalize_ptax(body, today):
     if not series:
         raise ValueError("PTAX sem boletins")
     return sorted((d.isoformat(), v) for d, v in series.items())
+
+
+FOCUS = ("https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais"
+         "?$format=json&$top=20000&$select=Indicador,IndicadorDetalhe,Data,DataReferencia,Mediana,numeroRespondentes"
+         "&$filter={filter}")
+FOCUS_DAYS = 120
+FOCUS_YEARS = 4
+
+
+def focus_url(indicators, today):
+    names = sorted(indicators)
+    if not names or any("'" in name or len(name) > 60 for name in names):
+        raise ValueError("Indicador Focus inválido")
+    start = today - timedelta(days=FOCUS_DAYS)
+    clause = " or ".join(f"Indicador eq '{name}'" for name in names)
+    expression = f"({clause}) and baseCalculo eq 0 and Data ge '{start.isoformat()}'"
+    return FOCUS.format(filter=quote(expression, safe=""))
+
+
+def normalize_focus(body, today, indicators):
+    """Medianas do Focus por indicador e ano: {indicador: {ano: [(data, mediana, respondentes)]}}.
+
+    Considera somente a base de cálculo de 30 dias (baseCalculo 0, filtrada na consulta),
+    linhas sem detalhamento e anos do corrente até três à frente.
+    """
+    rows = json.loads(body, parse_float=str).get("value")
+    if not isinstance(rows, list):
+        raise ValueError("Formato inesperado do Focus")
+    years = {str(today.year + i) for i in range(FOCUS_YEARS)}
+    out, seen = {}, set()
+    for row in rows:
+        name = row.get("Indicador")
+        if name not in indicators:
+            raise ValueError("Indicador Focus não solicitado")
+        if row.get("IndicadorDetalhe") is not None or row.get("DataReferencia") not in years:
+            continue
+        day = date.fromisoformat(row["Data"])
+        if day > today:
+            raise ValueError("Data futura")
+        key = (name, row["DataReferencia"], day)
+        if key in seen:
+            raise ValueError("Expectativa duplicada")
+        seen.add(key)
+        respondents = int(row.get("numeroRespondentes") or 0)
+        if respondents <= 0:
+            continue
+        out.setdefault(name, {}).setdefault(row["DataReferencia"], []).append(
+            (day.isoformat(), _number(row["Mediana"]), respondents))
+    if not out:
+        raise ValueError("Focus sem expectativas")
+    for refs in out.values():
+        for points in refs.values():
+            points.sort()
+    return out

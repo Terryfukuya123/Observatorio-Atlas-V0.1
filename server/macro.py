@@ -16,7 +16,7 @@ from time import monotonic
 
 from providers import bcb, worldbank
 
-TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "wb": timedelta(hours=24)}
+TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "wb": timedelta(hours=24)}
 RETRY = timedelta(minutes=30)
 HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30}
 LIMIT = 8_000_000
@@ -29,6 +29,9 @@ RIGHTS = {
     "ptax": dict(source="Banco Central do Brasil · PTAX", license="ODbL 1.0",
                  license_url="https://opendatacommons.org/licenses/odbl/1-0/",
                  dataset="https://dadosabertos.bcb.gov.br/dataset/taxas-de-cambio-todos-os-boletins-diarios"),
+    "focus": dict(source="Banco Central do Brasil · Focus, expectativas de mercado", license="ODbL 1.0",
+                  license_url="https://opendatacommons.org/licenses/odbl/1-0/",
+                  dataset="https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado"),
     "wb": dict(source="Banco Mundial · World Development Indicators", license="CC BY 4.0",
                license_url="https://creativecommons.org/licenses/by/4.0/",
                dataset="https://databank.worldbank.org/source/world-development-indicators"),
@@ -37,7 +40,8 @@ RIGHTS = {
 
 def load_catalog(root):
     catalog = json.loads((Path(root) / "config/macro.json").read_text(encoding="utf8"))
-    ids = [s["id"] for s in catalog["brasil"] + catalog["global"]]
+    catalog.setdefault("focus", [])
+    ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
     for series in catalog["brasil"]:
@@ -87,6 +91,10 @@ class MacroStore:
         for currency in self.catalog["ptax"]:
             yield (f"ptax:{currency}", bcb.ptax_url(currency, today),
                    lambda body, t=today: bcb.normalize_ptax(body, t))
+        names = frozenset(s["indicator"] for s in self.catalog["focus"])
+        if names:
+            yield ("focus:anuais", bcb.focus_url(names, today),
+                   lambda body, t=today: bcb.normalize_focus(body, t, names))
         for s in self.catalog["global"]:
             yield (f"wb:{s['code']}", worldbank.url(s["code"]),
                    lambda body, c=s["code"]: worldbank.normalize(body, c, self.territories))
@@ -199,6 +207,46 @@ class MacroStore:
             out[currency] = item
         return out
 
+    def focus(self, history=False):
+        entry = self.entries.get("focus:anuais") or {}
+        data = entry.get("data") or {}
+        out = []
+        for s in self.catalog["focus"]:
+            years = []
+            for year, points in sorted((data.get(s["indicator"]) or {}).items()):
+                day, median, respondents = points[-1]
+                item = dict(year=year, observed=day, median=median, respondents=respondents)
+                for label, days in (("week_ago", 7), ("four_weeks_ago", 28)):
+                    limit = (date.fromisoformat(day) - timedelta(days=days)).isoformat()
+                    earlier = [p for p in points if p[0] <= limit]
+                    if earlier:
+                        item[label] = {"observed": earlier[-1][0], "median": earlier[-1][1]}
+                item["trend"] = self.trend(points)
+                if history:
+                    item["history"] = [[d, m] for d, m, _ in points]
+                years.append(item)
+            out.append(dict(s, years=years))
+        return dict(indicators=out, collection=self.status("focus:anuais"), **RIGHTS["focus"])
+
+    @staticmethod
+    def trend(points):
+        """Sequência de altas ou quedas entre divulgações semanais, como no relatório Focus."""
+        weekly, last_week = [], None
+        for day, median, _ in points:
+            week = date.fromisoformat(day).isocalendar()[:2]
+            if week != last_week:
+                weekly.append(Decimal(median))
+                last_week = week
+            else:
+                weekly[-1] = Decimal(median)
+        count, direction = 0, 0
+        for before, after in zip(reversed(weekly[:-1]), reversed(weekly)):
+            step = (after > before) - (after < before)
+            if step == 0 or (direction and step != direction):
+                break
+            direction, count = step, count + 1
+        return {"direction": {1: "alta", -1: "queda", 0: "estável"}[direction], "weeks": count}
+
     def indicators(self):
         out = []
         for s in self.catalog["global"]:
@@ -212,8 +260,13 @@ class MacroStore:
     def overview(self):
         self.refresh_if_due()
         with self.lock:
-            return dict(brasil=self.brasil(), ptax=self.ptax(), indicators=self.indicators(),
+            return dict(brasil=self.brasil(), ptax=self.ptax(), focus=self.focus(), indicators=self.indicators(),
                         warning=self.warning, generated=self.clock().isoformat())
+
+    def focus_detail(self):
+        self.refresh_if_due()
+        with self.lock:
+            return self.focus(history=True)
 
     def indicator(self, identifier):
         spec = next((s for s in self.catalog["global"] if s["id"] == identifier), None)

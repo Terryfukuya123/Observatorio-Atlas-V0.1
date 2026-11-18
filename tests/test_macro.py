@@ -23,6 +23,17 @@ def ptax(*rows):
     return json.dumps({"value": [{"cotacaoVenda": float(v), "dataHoraCotacao": f"{d} 13:05:00.000"} for d, v in rows]}).encode()
 
 
+def focus(*rows):
+    keys = ("Indicador", "Data", "DataReferencia", "Mediana", "numeroRespondentes")
+    return json.dumps({"value": [dict(zip(keys, r), IndicadorDetalhe=None) for r in rows]}).encode()
+
+
+FOCUS = focus(*[("IPCA", d, "2026", m, 140) for d, m in [("2026-10-13", 5.0), ("2026-10-20", 5.05), ("2026-10-27", 5.08),
+                                                       ("2026-11-03", 5.1), ("2026-11-12", 5.1082), ("2026-11-13", 5.1082)]],
+              ("IPCA", "2026-11-13", "2027", 5.0, 146), ("IPCA", "2026-11-13", "2035", 3.0, 20),
+              ("Selic", "2026-11-13", "2026", 13.75, 144))
+
+
 def wb(code, *rows):
     data = [{"indicator": {"id": code}, "countryiso3code": iso, "date": year, "value": value} for iso, year, value in rows]
     return json.dumps([{"page": 1, "pages": 1}, data]).encode()
@@ -66,6 +77,21 @@ class Providers(TestCase):
         with self.assertRaises(ValueError):
             worldbank.normalize(b'[{"message": [{"key": "Invalid value"}]}]', "FP.CPI.TOTL.ZG", {"BRA"})
 
+    def test_focus(self):
+        url = bcb.focus_url({"IPCA", "Câmbio"}, TODAY)
+        self.assertTrue(url.startswith(bcb.HOSTS[1]))
+        self.assertIn("C%C3%A2mbio", url)
+        self.assertIn("baseCalculo%20eq%200", url)
+        data = bcb.normalize_focus(FOCUS, TODAY, {"IPCA", "Selic"})
+        self.assertEqual(set(data["IPCA"]), {"2026", "2027"})  # 2035 fica fora do horizonte.
+        self.assertEqual(data["IPCA"]["2026"][-1], ("2026-11-13", "5.1082", 140))
+        with self.assertRaises(ValueError):
+            bcb.normalize_focus(FOCUS, TODAY, {"IPCA"})  # Indicador não solicitado.
+        with self.assertRaises(ValueError):
+            bcb.normalize_focus(focus(("IPCA", "2026-11-13", "2026", 5, 1), ("IPCA", "2026-11-13", "2026", 5, 1)), TODAY, {"IPCA"})
+        with self.assertRaises(ValueError):
+            bcb.focus_url({"x' or 1 eq 1"}, TODAY)
+
     def test_catalog_matches_map(self):
         catalog = load_catalog(ROOT)
         self.assertGreaterEqual(len(catalog["brasil"]), 10)
@@ -83,6 +109,8 @@ class Fake:
         self.calls.append(url)
         if self.fail:
             raise OSError("rede")
+        if "Expectativas" in url:
+            return FOCUS
         if "olinda" in url:
             return ptax(("2026-11-16", "5.70"), ("2026-11-17", "5.757"))
         if "bcdata.sgs" in url:
@@ -107,7 +135,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"])
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + 1
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
@@ -116,6 +144,13 @@ class Store(TestCase):
         self.assertEqual(data["ptax"]["USD"]["value"], "5.757")
         self.assertAlmostEqual(data["ptax"]["USD"]["change_percent"], 1.0, places=6)
         self.assertEqual(data["indicators"][0]["coverage"], 2)
+        ipca = next(f for f in data["focus"]["indicators"] if f["indicator"] == "IPCA")["years"][0]
+        self.assertEqual((ipca["year"], ipca["median"], ipca["respondents"]), ("2026", "5.1082", 140))
+        self.assertEqual(ipca["week_ago"], {"observed": "2026-11-03", "median": "5.1"})
+        self.assertEqual(ipca["four_weeks_ago"]["observed"], "2026-10-13")
+        self.assertEqual(ipca["trend"], {"direction": "alta", "weeks": 4})
+        self.assertNotIn("history", ipca)
+        self.assertEqual(data["focus"]["license"], "ODbL 1.0")
         store.overview()
         self.assertEqual(len(self.fake.calls), total)  # Dentro do TTL não há nova coleta.
         restarted = self.store()
@@ -178,7 +213,7 @@ class Http(TestCase):
             worker.start()
             try:
                 for path, code in [("/api/macro", 200), ("/api/macro/pais?iso=bra", 200), ("/api/macro/pais?iso=ZZZ", 400),
-                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/indicador?id=x", 400)]:
+                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/indicador?id=x", 400)]:
                     with self.subTest(path=path):
                         conn = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
                         conn.request("GET", path)
