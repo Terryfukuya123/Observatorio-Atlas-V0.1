@@ -3108,8 +3108,8 @@ footer a {
   gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
-  margin: 0 calc(-1 * clamp(18px, 2.7vw, 46px)) 6px;
-  padding: 9px clamp(18px, 2.7vw, 46px);
+  margin: 0 0 6px;
+  padding: 9px 0;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -3331,10 +3331,6 @@ main > .hero[data-desk] {
 @media (max-width: 670px) {
   .deskHead {
     padding-top: 18px;
-  }
-  .deskBar {
-    margin-inline: -13px;
-    padding-inline: 13px;
   }
   .pulseTile {
     min-height: 0;
@@ -4089,5 +4085,246 @@ main > .hero[data-desk] {
   }
   .cpLine.cpFuture {
     stroke-width: 3.4;
+  }
+}
+
+/* Relógio do ciclo */
+.ccRead {
+  padding: 4px 16px 0;
+  font: 400 17px/1.5 var(--display);
+  color: var(--soft);
+}
+.ccRead b {
+  color: var(--text);
+  font-weight: 600;
+}
+.ccBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  padding: 10px 16px 4px;
+  align-items: start;
+}
+.ccChart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.ccQ {
+  opacity: 0.09;
+}
+.ccQ.ccExp { fill: var(--pos); }
+.ccQ.ccDes { fill: var(--accent); }
+.ccQ.ccCon { fill: var(--neg); }
+.ccQ.ccRec { fill: var(--second); }
+.ccAxis {
+  stroke: var(--border);
+  stroke-width: 1.2;
+}
+.ccLabel {
+  font: 500 15px var(--display);
+  letter-spacing: 0.02em;
+}
+.ccLabel.ccExp { fill: var(--pos); }
+.ccLabel.ccDes { fill: var(--accent); }
+.ccLabel.ccCon { fill: var(--neg); }
+.ccLabel.ccRec { fill: var(--second); }
+.ccTick {
+  fill: var(--muted);
+  font: 10px Consolas, monospace;
+}
+.ccTrail {
+  fill: none;
+  stroke: var(--selected);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 3;
+}
+.ccStep {
+  fill: var(--selected);
+  opacity: 0.7;
+}
+.ccStepLabel {
+  fill: var(--selected);
+  font: 10px Consolas, monospace;
+}
+.ccFlag {
+  cursor: pointer;
+  outline: none;
+}
+.flagRing {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text) 35%, transparent);
+  stroke-width: 1;
+}
+.ccFlag.on .flagRing,
+.ccFlag:focus-visible .flagRing {
+  stroke: var(--selected);
+  stroke-width: 2.5;
+}
+.ccFlag:hover .flagRing {
+  stroke: var(--text);
+}
+.flagGroup circle {
+  fill: var(--light);
+  stroke: var(--accent);
+}
+.flagGroup text {
+  fill: var(--link);
+  font: 700 8px Consolas, monospace;
+  text-anchor: middle;
+}
+.ccPick {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.ccPick .coin {
+  width: 34px;
+  height: 34px;
+}
+.ccPick div {
+  display: grid;
+}
+.ccPick strong {
+  font: 500 22px/1.1 var(--display);
+}
+.ccPick span,
+.ccRead b[data-phase] {
+  font-size: 13px;
+}
+[data-phase="Expansão"] { color: var(--pos); }
+[data-phase="Desaceleração"] { color: var(--accent); }
+[data-phase="Contração"] { color: var(--neg); }
+[data-phase="Recuperação"] { color: var(--second); }
+.ccNums {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 10px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.ccNums div {
+  padding: 6px 10px;
+  border-left: 1px solid var(--border);
+}
+.ccNums div:first-child { border-left: 0; }
+.ccNums dt {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.ccNums dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ccGroup {
+  padding: 8px 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.ccGroup h3 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ccGroup h3 small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.ccGroup p {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+.ccChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ccChips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--alt);
+  color: var(--text);
+  font-size: 11px;
+}
+.ccChips button[aria-pressed="true"] {
+  border-color: var(--selected);
+}
+.ccChips .coin {
+  width: 14px;
+  height: 14px;
+}
+.ccChips em {
+  color: var(--muted);
+  font-size: 11px;
+}
+/* Sinal de recessão */
+.rsBox {
+  padding: 4px 16px 0;
+}
+.rsHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0 4px;
+}
+.rsHead h3 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.rsHead span {
+  color: var(--soft);
+  font-size: 11px;
+}
+.rsChart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.rsArea.up { fill: color-mix(in srgb, var(--pos) 22%, transparent); }
+.rsArea.down { fill: color-mix(in srgb, var(--neg) 35%, transparent); }
+.rsLine {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.2;
+}
+.rsZero {
+  stroke: var(--border);
+  stroke-dasharray: 3 3;
+}
+.rsAxis,
+.rsYear {
+  fill: var(--muted);
+  font: 9px Consolas, monospace;
+}
+.rsAxis { text-anchor: end; }
+@media (max-width: 1150px) {
+  .ccBody {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 670px) {
+  .ccBody,
+  .ccRead,
+  .rsBox {
+    padding-inline: 10px;
+  }
+  .ccRead {
+    font-size: 15px;
+  }
+  .ccLabel {
+    font-size: 26px;
+  }
+  .ccTick,
+  .ccStepLabel {
+    font-size: 17px;
   }
 }

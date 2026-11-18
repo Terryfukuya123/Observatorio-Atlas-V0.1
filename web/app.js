@@ -13,6 +13,7 @@ import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
 import { compass, focusCharts } from "./compass.js";
+import { cycleClock, recessionSignal } from "./cycle-clock.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -99,6 +100,8 @@ sessionClock({ root: $("#relogio") });
 fxBoard({ root: $("#moedas"), read, save });
 compass({ root: $("#bussola") });
 focusCharts({ root: $("#focus"), read, save });
+cycleClock({ root: $("#ciclo"), read, save });
+recessionSignal({ root: $("#recessionSignal") });
 const state = {
   id: read("country", "BRA"),
   layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))

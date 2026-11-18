@@ -125,3 +125,17 @@ export function round(iso, name = "") {
 export function pair(base, quote) {
   return '<span class="pairIcon" aria-hidden="true">' + coin(base) + coin(quote) + "</span>";
 }
+
+// Bandeira circular dentro de outro SVG (gráficos): centro e tamanho em unidades do SVG pai.
+// `key` deixa o recorte com identificador único no documento.
+export function flagAt(iso, cx, cy, size, key = "") {
+  const r = (size / 2).toFixed(1);
+  const c = cx.toFixed(1) + '" cy="' + cy.toFixed(1);
+  if (!has(iso))
+    return '<g class="flagAt flagGroup"><circle cx="' + c + '" r="' + r + '"/><text x="' + cx.toFixed(1) + '" y="' + (cy + size * 0.13).toFixed(1) + '">' +
+      String(iso).slice(0, 3) + "</text></g>";
+  const id = "fc-" + key + iso;
+  return '<g class="flagAt"><clipPath id="' + id + '"><circle cx="' + c + '" r="' + r + '"/></clipPath><g clip-path="url(#' + id + ')"><svg x="' +
+    (cx - size / 2).toFixed(1) + '" y="' + (cy - size / 2).toFixed(1) + '" width="' + size + '" height="' + size + '" viewBox="' + view(iso) + '">' +
+    FLAGS[iso]() + '</svg></g><circle class="flagRing" cx="' + c + '" r="' + r + '"/></g>';
+}

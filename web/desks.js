@@ -58,6 +58,7 @@ export const DESKS = {
     icon: "layers",
     lead: "Juros, ciclo econômico e a agenda que move os mercados.",
     parts: [
+      ["ciclo", "Relógio do ciclo"],
       ["juros", "Juros e ciclo"],
       ["bulletin", "Notícias e agenda"],
     ],
