@@ -3,6 +3,7 @@ import { renderBulletin, renderLocalBulletin } from "./bulletin.js";
 import { comparison } from "./comparison.js";
 import { assetHeat } from "./asset-heat.js";
 import { macroLayer } from "./macro.js";
+import { liveHeat } from "./live-heat.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -56,6 +57,7 @@ const icons = {
   fit: '<path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/>',
   chevron: '<path d="m9 6 6 6-6 6"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h1M3 12h1M3 18h1"/>',
+  grid: '<rect x="3" y="3" width="8" height="11" rx="1"/><rect x="13" y="3" width="8" height="6" rx="1"/><rect x="13" y="11" width="8" height="10" rx="1"/><rect x="3" y="16" width="8" height="5" rx="1"/>',
 };
 $("html").dataset.theme = read("theme", "dark");
 for (const i of document.querySelectorAll("[data-icon]"))
@@ -83,7 +85,7 @@ $("#railToggle").onclick = () => {
 };
 function markSection() {
   const target =
-    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin"].find(
+    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin", "#aovivo"].find(
       (id) => $(id).getBoundingClientRect().top <= 24,
     ) || "#top";
   for (const link of document.querySelectorAll("#sections a")) {
@@ -928,3 +930,5 @@ await refresh();
 macro.load().then(() => state.layer === "macro" && renderMap());
 setInterval(refresh, 300000);
 setInterval(() => macro.load(), 1800000);
+
+liveHeat({ root: $("#aovivo"), read, save });

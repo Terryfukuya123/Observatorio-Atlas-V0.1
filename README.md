@@ -43,6 +43,10 @@ A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatma
 
 [Metodologia e cobertura](docs/heatmaps-mensais.md)
 
+## Mercados ao vivo
+
+A seção **Mercados ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
+
 ## Camada macro
 
 A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`.

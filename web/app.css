@@ -2567,3 +2567,47 @@ footer a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Mercados ao vivo · widget do TradingView */
+.liveCard .cardhead {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.liveDesc {
+  margin: 0 0 12px;
+  color: var(--soft);
+  font-size: 13px;
+}
+.liveHost {
+  position: relative;
+  height: 640px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--alt);
+}
+.liveHost .tradingview-widget-container,
+.liveHost .tradingview-widget-container__widget,
+.liveHost iframe {
+  width: 100%;
+  height: 100%;
+}
+.liveState {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--soft);
+  padding: 20px;
+}
+.liveState strong {
+  color: var(--text);
+  font-weight: 600;
+}
+@media (max-width: 670px) {
+  .liveHost {
+    height: 520px;
+  }
+}

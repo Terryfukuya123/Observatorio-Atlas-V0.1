@@ -31,6 +31,9 @@
         <a href="#top" title="Panorama" aria-label="Panorama" class="active"
           ><i data-icon="globe"></i><span>Panorama</span></a
         >
+        <a href="#aovivo" title="Mercados ao vivo" aria-label="Mercados ao vivo"
+          ><i data-icon="grid"></i><span>Mercados ao vivo</span></a
+        >
         <a href="#bulletin" title="Informativo" aria-label="Informativo"
           ><i data-icon="news"></i><span>Informativo</span></a
         >
@@ -200,6 +203,29 @@
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="aovivo" class="card liveCard" aria-labelledby="liveTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="grid"></i>
+            <h2 id="liveTitle">Mercados ao vivo</h2>
+          </div>
+          <div class="layerTabs" role="group" aria-label="Mercado do mapa ao vivo">
+            <button data-live="crypto" aria-pressed="true">Cripto</button>
+            <button data-live="us" aria-pressed="false">Ações EUA</button>
+            <button data-live="br" aria-pressed="false">Ações Brasil</button>
+          </div>
+        </div>
+        <p id="liveDesc" class="liveDesc"></p>
+        <div id="liveHost" class="liveHost" role="region">
+          <div class="liveState"><strong>Role até aqui para carregar o mapa</strong></div>
+        </div>
+        <p class="sourceNote">
+          Widget público do TradingView, exibido com a atribuição original e
+          atualizado pela própria fonte. As cotações podem ter atraso. Os dados
+          não passam pelo servidor do Observatório nem são armazenados. O
+          heatmap mensal calculado a partir da CVM fica na aba Heatmap do mapa.
+        </p>
+      </section>
       <section id="bulletin" aria-labelledby="bulletinTitle">
         <div class="sectionTitle">
           <h2 id="bulletinTitle">Informativo global</h2>

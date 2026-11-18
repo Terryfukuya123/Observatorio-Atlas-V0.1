@@ -83,7 +83,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)
@@ -99,7 +99,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store" if path.startswith("/api") else "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
+        self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'sha256-JyHF32z4Ou/Ujas95CX3WgBqlTt7Dxzo/fQG5/5oBo8='; script-src 'self' https://s3.tradingview.com; "
+                         "frame-src https://www.tradingview-widget.com https://s.tradingview.com; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
         self.end_headers()
         try:
             self.wfile.write(body)
