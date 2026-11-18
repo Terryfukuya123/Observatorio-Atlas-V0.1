@@ -1,5 +1,5 @@
 // Edição editorial, conferida em 17/11/2026. Cada entrada aponta para seu documento primário.
-const items = [
+export const items = [
   {
     group: "BRA",
     market: "Brasil",

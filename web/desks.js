@@ -146,6 +146,11 @@ export function desks({ main, rail, read, save, base = document.title }) {
   }
 
   function route() {
+    // A ficha do país (#ficha/BRA) abre por cima do espaço atual, sem trocar de espaço.
+    if (location.hash.startsWith("#ficha/")) {
+      if (!current) show(DESKS[read("desk", "panorama")] ? read("desk", "panorama") : "panorama");
+      return;
+    }
     const found = deskOf(location.hash) || { desk: location.hash ? "panorama" : read("desk", "panorama"), target: null };
     if (!DESKS[found.desk]) found.desk = "panorama";
     const changed = show(found.desk);

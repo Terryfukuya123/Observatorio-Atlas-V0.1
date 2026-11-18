@@ -111,6 +111,7 @@ export function cycleClock({ root, read, save }) {
       (months > 1 ? " há " + months + " meses" : " desde " + month(p.date)) + "</span></div></div>" +
       '<dl class="ccNums"><div><dt>Nível</dt><dd>' + nf1.format(p.level) + "</dd></div><div><dt>No mês</dt><dd>" + nf2.format(p.change) +
       "</dd></div><div><dt>Referência</dt><dd>" + esc(month(p.date)) + "</dd></div></dl>" +
+      (picked.length === 3 && !["G20", "G7"].includes(picked) ? '<button type="button" class="ccDossier" data-dossier="' + picked + '">Ficha completa de ' + esc(NAMES[picked] || picked) + " →</button>" : "") +
       groups
         .map(([name, hint, list]) =>
           '<div class="ccGroup" data-phase="' + name + '"><h3>' + name + " <small>" + list.length + "</small></h3><p>" + hint + '</p><div class="ccChips">' +

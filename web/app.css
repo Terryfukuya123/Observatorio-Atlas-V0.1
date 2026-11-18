@@ -4785,3 +4785,330 @@ h2 > .gloss.inline {
     flex-wrap: wrap;
   }
 }
+
+/* Ficha completa do país */
+dialog.dossier {
+  width: min(1080px, 96vw);
+  max-height: 92vh;
+  padding: 0;
+  background: var(--bg, var(--panel));
+}
+.dsInner {
+  padding: 22px 24px 18px;
+}
+.dsHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+.dsFlag .flag {
+  width: 66px;
+  height: 44px;
+  border-radius: 3px;
+}
+.dsHead h2 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.1;
+}
+.dsHead .crumb {
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dsMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.dsTools {
+  display: flex;
+  gap: 8px;
+  align-self: start;
+}
+.dsCopy,
+.dsFoot button,
+.ccDossier {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.dsCopy:hover,
+.dsFoot button:hover,
+.ccDossier:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.dsClose {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+}
+.dsLead {
+  margin: 16px 0;
+  font-family: var(--serif, inherit);
+  font-size: 19px;
+  line-height: 1.45;
+}
+.dsKpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.dsKpi {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 -1px -1px 0;
+  padding: 12px 14px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.dsKpi span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.dsKpi b {
+  font-family: var(--serif, inherit);
+  font-size: 24px;
+  font-weight: 500;
+}
+.dsKpi small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.dsKpi small[data-tone="pos"],
+.dsBig b[data-tone="pos"] {
+  color: var(--pos, #5fae8b);
+}
+.dsKpi small[data-tone="neg"],
+.dsBig b[data-tone="neg"] {
+  color: var(--neg, #c9785c);
+}
+.dsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.dsCard {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+}
+.dsCard.wide {
+  grid-column: 1 / -1;
+}
+.dsCard h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dsLine {
+  display: block;
+  width: 100%;
+  height: 110px;
+}
+.dsLine path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+.dsLine path.ref {
+  stroke: var(--muted);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+.dsNote {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dsNote a,
+.dsNews a {
+  color: var(--accent);
+}
+.dsBig {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.dsBig b {
+  font-size: 16px;
+}
+.dsLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+.dsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.dsTable th,
+.dsTable td {
+  padding: 6px 8px 6px 0;
+  border-top: 1px solid var(--border);
+  text-align: left;
+  font-weight: 400;
+}
+.dsTable th {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.dsTable th small {
+  color: var(--muted);
+}
+.dsTable td:nth-child(2) {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+.dsTable td.muted {
+  color: var(--muted);
+}
+.dsVs {
+  color: var(--muted);
+  font-size: 12px;
+}
+.dsTable td {
+  background: none;
+}
+.dsEvents {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dsEvents li {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.dsEvents time {
+  color: var(--muted);
+}
+.dsEvents small {
+  color: var(--muted);
+}
+.dsNews {
+  display: grid;
+  gap: 2px;
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.dsNews small {
+  color: var(--muted);
+}
+.dsFoot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.ccDossier {
+  margin: 10px 0 4px;
+}
+.detailActions .primary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@media (max-width: 720px) {
+  dialog.dossier {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+  }
+  .dsInner {
+    padding: 16px 14px;
+  }
+  .dsHead {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .dsTools {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    order: -1;
+  }
+  .dsHead h2 {
+    font-size: 26px;
+  }
+  .dsFlag .flag {
+    width: 48px;
+    height: 32px;
+  }
+  .dsLead {
+    font-size: 16px;
+  }
+  .dsKpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dsKpi b {
+    font-size: 20px;
+  }
+  .dsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dsTable,
+  .dsTable tbody {
+    display: block;
+  }
+  .dsTable tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .dsTable th,
+  .dsTable td {
+    border-top: 0;
+    white-space: normal;
+    min-width: 0;
+  }
+  .dsTable td:nth-child(4) {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+  .dsTable td:nth-child(4):empty {
+    display: none;
+  }
+}

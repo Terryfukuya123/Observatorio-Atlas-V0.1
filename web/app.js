@@ -11,6 +11,7 @@ import { desks } from "./desks.js";
 import { pulse } from "./pulse.js";
 import { glossary } from "./glossary.js";
 import { agenda } from "./agenda.js";
+import { dossier } from "./dossier.js";
 import { flag, pair } from "./symbols.js";
 import { sessionClock } from "./clock.js";
 import { fxBoard } from "./fx-board.js";
@@ -101,6 +102,20 @@ const spaces = desks({ main: $("main"), rail: $(".rail"), read, save, base: "Obs
 pulse({ root: $("#pulse") });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
+dossier({
+  info,
+  read,
+  save,
+  onMap: (id) => select(id, true),
+  onCompare: (code) => {
+    compare.pick(code);
+    location.hash = "#comparison";
+  },
+  onCycle: (id) => {
+    window.dispatchEvent(new CustomEvent("oeg:cycle", { detail: id }));
+    location.hash = "#ciclo";
+  },
+});
 sessionClock({ root: $("#relogio") });
 fxBoard({ root: $("#moedas"), read, save });
 compass({ root: $("#bussola") });
@@ -467,6 +482,7 @@ function detail() {
       (["BRA", "USA"].includes(id)
         ? '<button id="openEquities">Heatmap de ações →</button>'
         : "") +
+      '<button class="primary" data-dossier="' + escape(id) + '">Ficha completa →</button>' +
       (s ? '<button id="compareMarket">Comparar este par →</button>' : "") +
       '<button class="contextlink" id="record">Origem e método</button></div>' +
       '<div id="macroFacts" class="macroFacts" aria-live="polite"></div>',
@@ -780,7 +796,20 @@ function results() {
   const raw = $("#query").value.trim();
   const goes = findDestinations(raw).slice(0, raw ? 6 : 6);
   const cycleHits = raw ? hits.filter((k) => CYCLE[k]).slice(0, 3) : [];
+  const dossierHits = raw ? hits.slice(0, 3) : [];
   const destinations =
+    dossierHits
+      .map(
+        (k) =>
+          '<button class="result go" data-dossier="' +
+          escape(k) +
+          '"><span class="goSpace">Ficha</span>' +
+          flag(k) +
+          "<strong>" +
+          escape(info(k).name) +
+          "</strong><small>Moeda, ciclo, inflação, juros, PIB, bolsa e agenda</small></button>",
+      )
+      .join("") +
     goes
       .map(
         ([hash, title, space, hint]) =>
@@ -860,6 +889,7 @@ document.addEventListener("click", (e) => {
     btn.closest("dialog").close();
     return;
   }
+  if (btn.dataset.dossier && $("#finder").open) $("#finder").close();
   if (btn.dataset.go) {
     if ($("#finder").open) $("#finder").close();
     if (btn.dataset.go === "meta") openMeta();
