@@ -17,6 +17,7 @@ LEVEL = {
     "Aguardando coleta": WARN,
     "Aguardando importação": WARN,
     "Coletando": WARN,
+    "Última coleta falhou": WARN,
     "Fonte indisponível": FAIL,
 }
 PROVIDERS = {
@@ -149,6 +150,25 @@ def b3_items(b3, now):
                  None if result.get("data") else result.get("status"), result.get("dataset"), note)]
 
 
+def news_items(store, now):
+    data = store.read()
+    out = []
+    for s in data["sources"]:
+        # Notícias complementam os dados: canal fora do ar é atenção, não falha da plataforma.
+        if s["error"]:
+            status = "Última coleta falhou"
+        elif not s["received"]:
+            status = "Aguardando coleta"
+        elif s["next"] and now - datetime.fromisoformat(s["next"]) > OVERDUE:
+            status = "Atrasado"
+        else:
+            status = "Atualizado"
+        out.append(item(s["short"] if s["short"] != "Agência Brasil" else "Agência Brasil (EBC)", "news:" + s["id"],
+                        "Ao vivo · " + s["name"], status, (s["latest"] or "")[:10] or None, s["received"], s["next"],
+                        s["error"], s["url"], s["note"]))
+    return out
+
+
 def health(server, now=None):
     now = now or datetime.now(UTC)
     items = []
@@ -158,6 +178,7 @@ def health(server, now=None):
         ("funds", "CVM", lambda: funds_items(server.funds)),
         ("editions", "CVM", lambda: heatmap_items(server.editions, now)),
         ("b3", "B3", lambda: b3_items(server.b3, now)),
+        ("news", "Ao vivo", lambda: news_items(server.news, now)),
     ]:
         if getattr(server, store, None) is None:
             continue

@@ -26,6 +26,7 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 A plataforma se divide em quatro espaços, escolhidos na barra lateral. Cada um abre com uma frase sobre o que responde e tem uma barra fixa com atalhos para as suas partes. No fim, **Continue a análise** leva aos assuntos relacionados:
 
 - **Panorama:** abre com a **manchete do dia**, uma frase com os números que importam (dólar, Selic, IPCA, fluxo e fundos no ano, bolsas abertas). Em seguida vem o **Pulso do dia**: dólar, Selic, IPCA, fluxo cambial, fundos, juros dos EUA, reservas e bolsas abertas, cada número com uma leitura em uma frase e um link para a análise completa. O Pulso vira o **Meu painel**: em **Personalizar** você escolhe entre os destaques e mais de 20 séries do Brasil (atividade, inflação, crédito, emprego, fiscal, PTAX do euro). Nos cartões do Painel Brasil, o alfinete fixa o indicador. A escolha fica salva no navegador, sem conta. Em todos os espaços, o botão **?** ao lado de um indicador ou título abre o glossário **O que é isso?**: o que o número mede e por que ele importa, em duas frases (34 termos, do IBC-Br ao spread 10A−2A). Depois aparece o **Relógio dos pregões**, com as 24 horas do seu dia, a janela de cada bolsa, o almoço das asiáticas e a linha do agora. Por fim, o mapa e a ficha do país.
+- **Ao vivo · o que acabou de sair (Panorama):** linha do tempo dos canais oficiais, minutos depois de publicados: notas à imprensa do Banco Central (leilões de swap e outras intervenções no câmbio, Copom), notícias do BC, Agência Brasil (Economia e, filtrada, Política), IBGE, fatos relevantes das companhias na CVM, Fed e BCE. Cada item mostra hora, fonte, tema (câmbio e intervenção, juros e bancos centrais, governo e contas públicas, dados divulgados, regras, empresas, mundo), impacto provável (alto, médio, baixo), um resumo curto, o link para a fonte e o atalho para a análise na plataforma. Há filtros por tema, por período (24 horas ou 7 dias) e "só alto impacto", o destaque do período no topo e a marca **novo** no que chegou desde a última visita. Em todos os espaços, a faixa **Última hora** abaixo do topo mostra o item de alto impacto mais recente das últimas 12 horas. No roteiro do pregão (Bolsas agora), o bloco **Última hora** traz os três itens de peso mais recentes. Opcionalmente, o navegador avisa quando sai algo de alto impacto, com a página aberta.
 - **Termômetro de risco · Brasil (Panorama):** é um placar de 0 (aversão) a 100 (apetite), com medidor e regras fixas e públicas. Nove sinais recebem nota de −2 a +2 cada um:
   - Mundo: curva de juros dos EUA, variação mensal do Treasury de 10 anos, força do dólar e ciclo do G20;
   - Brasil: força do real, fluxo cambial dos últimos 3 meses, estrangeiros em ações e títulos, ciclo do Brasil e IPCA contra o teto da meta.
@@ -66,6 +67,14 @@ Em **Heatmap**, escolha Cripto, Ações EUA ou Ações Brasil. Cada bloco abre a
 A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatmap, o servidor verifica a última competência encerrada. Enquanto a nova edição é preparada, serve a edição disponível com suas datas. Uma falha permite nova tentativa após 24 horas. Para republicar uma competência após revisão dos dados de origem, execute `python -m scripts.heatmaps 2026-10` na pasta do projeto. As duas competências precisam estar no histórico cambial disponível. O comando utiliza dois arquivos oficiais da CVM e o cache cambial compartilhado em disco.
 
 [Metodologia e cobertura](docs/heatmaps-mensais.md)
+
+## Ao vivo
+
+O servidor consulta cada canal no seu intervalo (5 minutos para as notas do BC e a Agência Brasil, 15 para BC, IBGE, Fed e BCE, 3 horas para o arquivo de fatos relevantes da CVM, que chega com alguns dias de atraso). A coleta roda em segundo plano quando alguém abre a página e há canal vencido; a página pede a lista a cada minuto. Ficam em `data/cache/noticias.json` só título, resumo de até 240 caracteres, link, hora, tema e impacto, por 7 dias.
+
+Tema e impacto vêm de regras fixas de palavras-chave (`providers/news.py`), iguais para todas as fontes, sem modelo de IA. Alto impacto: decisão de juros, leilão ou intervenção no câmbio, medida fiscal (IOF, bloqueio, meta, reforma) e dados de peso (IPCA, PIB, desemprego, CPI, payroll). Palavra só no resumo vale um nível a menos; rotinas como rolagem de swaps, estudos e relatórios também. Cada canal aparece na Saúde das fontes; canal fora do ar é atenção, não falha.
+
+Ficaram de fora: as notícias do Planalto e dos ministérios, cujos feeds estão parados ou exigem login, e agências privadas (Reuters, Bloomberg, Valor), que exigem licença.
 
 ## Bolsas agora
 
@@ -160,7 +169,7 @@ Uma coleta parada há mais de 6 horas aparece como atrasada. O relatório da B3 
 | `data.js` | Busca compartilhada da API (uma vez por minuto por endereço) |
 | `desks.js` | Espaços (Panorama, Mercados, Brasil, Global) e roteamento por endereço |
 | `atlas.js` | Mapa, cotações, tabela, painel do país, busca e folhas de fontes do Panorama |
-| demais | Uma seção cada: `pulse`, `risk`, `agenda`, `clock`, `prepos` (Bolsas agora), `pregao`, `indices` (horários das bolsas), `live-heat`, `fx-board`, `comparison`, `compass`, `flows`, `funds`, `cycle-clock`, `macro`, `bulletin`, `dossier`, `glossary`, `finder` |
+| demais | Uma seção cada: `pulse`, `risk`, `agenda`, `clock`, `news` (Ao vivo), `prepos` (Bolsas agora), `pregao`, `indices` (horários das bolsas), `live-heat`, `fx-board`, `comparison`, `compass`, `flows`, `funds`, `cycle-clock`, `macro`, `bulletin`, `dossier`, `glossary`, `finder` |
 
 Uma seção nova é um módulo em `web/` com uma função de montagem chamada em `app.js`. O servidor entrega o arquivo sem cadastro.
 

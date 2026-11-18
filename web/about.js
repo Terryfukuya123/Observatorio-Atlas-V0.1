@@ -4,7 +4,9 @@ import { esc } from "./format.js";
 
 // [fonte, o que traz, licença, situação, endereço]. Situação: livre | provisorio | pendente.
 export const SOURCES = [
-  ["Banco Central do Brasil", "Selic, IPCA, PTAX, Focus, câmbio contratado, balanço de pagamentos e atuações no câmbio", "ODbL 1.0, uso comercial com atribuição", "livre", "https://dadosabertos.bcb.gov.br/"],
+  ["Banco Central do Brasil", "Selic, IPCA, PTAX, Focus, câmbio contratado, balanço de pagamentos, atuações no câmbio e notas à imprensa", "ODbL 1.0, uso comercial com atribuição", "livre", "https://dadosabertos.bcb.gov.br/"],
+  ["Agência Brasil (EBC)", "Notícias de economia e política econômica na seção Ao vivo (título, resumo curto e link)", "CC BY 4.0, uso com atribuição", "livre", "https://agenciabrasil.ebc.com.br/"],
+  ["Fed e BCE", "Comunicados, decisões e discursos na seção Ao vivo", "Domínio público (Fed); reuso com citação (BCE)", "livre", "https://www.federalreserve.gov/feeds/feeds.htm"],
   ["IBGE · SIDRA", "Desemprego, atividade, serviços e varejo", "Uso por terceiros com citação do IBGE", "livre", "https://sidra.ibge.gov.br/"],
   ["CVM", "Captação dos fundos e carteiras para os mapas de calor mensais", "ODbL 1.0", "livre", "https://dados.cvm.gov.br/"],
   ["BCE", "Câmbio de referência diário de nove moedas", "Reprodução com crédito e precisão original; dados gratuitos no BCE", "livre", "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"],
@@ -23,7 +25,7 @@ export function aboutHtml() {
     '<p class="abLead">O Observatório Econômico Global reúne, numa só tela, os dados públicos que movem câmbio, juros, bolsa e atividade, no Brasil e no mundo, com leituras em português sobre o que eles significam.</p>' +
     '<div class="abDesks">' +
     [
-      ["#/panorama", "Panorama", "O essencial do dia: pulso, termômetro de risco, próximos eventos e o mapa por país."],
+      ["#/panorama", "Panorama", "O essencial do dia: pulso, notícias ao vivo, termômetro de risco, próximos eventos e o mapa por país."],
       ["#/mercados", "Mercados", "Bolsas agora (roteiro do pregão e bolsas do mundo), pregão da B3, mapas de calor e força das moedas."],
       ["#/brasil", "Brasil", "Selic, inflação, expectativas do Focus, fluxo de capital e fundos."],
       ["#/global", "Global", "Ciclo econômico, juros dos EUA, agenda com impacto e notícias oficiais."],

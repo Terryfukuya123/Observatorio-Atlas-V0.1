@@ -21,6 +21,7 @@ import { shell } from "./shell.js";
 import { sourceHealth } from "./health.js";
 import { about } from "./about.js";
 import { tourGuide } from "./tour.js";
+import { liveNews } from "./news.js";
 const $ = (s) => document.querySelector(s);
 const compare = comparison({ read, save, fmt, timestamp });
 shell({ read, save });
@@ -40,6 +41,7 @@ function whenShown(root, start) {
   watch.observe(owner, { attributes: true, attributeFilter: ["hidden"] });
 }
 pulse({ root: $("#pulse") });
+liveNews({ root: $("#noticias"), flash: $("#ultima"), read, save });
 glossary();
 agenda({ week: $("#semana"), full: $("#agenda"), read, save });
 riskMeter({ root: $("#termometro") });

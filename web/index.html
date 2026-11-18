@@ -77,6 +77,7 @@
           <i data-icon="search"></i><span>Buscar país, moeda ou assunto</span><kbd>/</kbd>
         </button>
       </div>
+      <div id="ultima" class="flash shell" role="status" aria-live="polite" hidden></div>
     </header>
     <main id="top" class="shell">
       <section id="pulse" data-desk="panorama" aria-labelledby="pulseTitle">
@@ -89,6 +90,47 @@
         <div id="pulsePicker" class="pulsePicker" hidden></div>
         <p class="pulseHeadline" aria-live="polite"></p>
         <div class="pulseGrid"><p class="empty">Carregando indicadores…</p></div>
+      </section>
+      <section id="noticias" class="card nwCard" data-desk="panorama" aria-labelledby="nwTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="news"></i>
+            <h2 id="nwTitle">Ao vivo · o que acabou de sair</h2>
+          </div>
+          <span class="nwStamp unit-label">Consultando canais oficiais…</span>
+        </div>
+        <p class="nwLead">
+          Notas do Banco Central (inclusive intervenções no câmbio), governo e Fazenda, IBGE, fatos
+          relevantes das companhias, Fed e BCE, minutos depois de publicados. Cada item traz o tema, o
+          impacto provável no mercado e o atalho para a análise na plataforma.
+        </p>
+        <div class="nwControls">
+          <div class="nwTopics layerTabs" role="group" aria-label="Tema"></div>
+          <div class="nwOptions">
+            <div class="layerTabs" role="group" aria-label="Período">
+              <button type="button" data-window="24" aria-pressed="true">24 horas</button>
+              <button type="button" data-window="168" aria-pressed="false">7 dias</button>
+            </div>
+            <button type="button" class="nwToggle" data-high aria-pressed="false"><b class="nwDot"></b>Só alto impacto</button>
+            <button type="button" class="nwToggle" data-notify aria-pressed="false" hidden>Avisar alto impacto</button>
+          </div>
+        </div>
+        <div class="nwList" aria-live="polite"><p class="empty">Carregando notícias…</p></div>
+        <details class="nwHow">
+          <summary>Como o impacto é definido</summary>
+          <dl>
+            <div><dt><b class="nwDot" data-level="3"></b>Alto</dt><dd>Decisão de juros (Copom, Fed, BCE), leilão ou intervenção no câmbio, medida fiscal (IOF, bloqueio, meta, reforma) e dados de peso (IPCA, PIB, desemprego, CPI, payroll).</dd></div>
+            <div><dt><b class="nwDot" data-level="2"></b>Médio</dt><dd>Política monetária e fiscal em geral, câmbio, dados secundários, novas regras e fatos relevantes de empresas grandes ou com operações societárias e proventos.</dd></div>
+            <div><dt><b class="nwDot" data-level="1"></b>Baixo</dt><dd>O restante. Rotinas como rolagem de swaps, estudos e relatórios periódicos valem um nível a menos.</dd></div>
+          </dl>
+          <p>As regras são palavras-chave fixas, iguais para todas as fontes, sem modelo de IA. Erram para os dois lados: leia a fonte antes de agir.</p>
+        </details>
+        <p class="sourceNote">
+          <span class="nwStatus"></span>. Fontes: Banco Central do Brasil, Agência Brasil (CC BY 4.0), IBGE,
+          CVM (fatos relevantes, com alguns dias de atraso), Federal Reserve e Banco Central Europeu.
+          Mostramos título, resumo curto e link; o texto completo fica na fonte. Notícias de agências
+          privadas (Reuters, Bloomberg, Valor) exigem licença.
+        </p>
       </section>
       <section id="termometro" class="card rkCard" data-desk="panorama" aria-labelledby="rkTitle">
         <div class="cardhead">

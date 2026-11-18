@@ -15,6 +15,7 @@ from server.editions import MonthlyEdition
 from server.macro import MacroStore
 from server.funds import FundFlows
 from server.b3 import B3Store
+from server.news import NewsStore
 from server.health import health
 from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
@@ -116,6 +117,9 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/b3":
             body = json.dumps(self.server.b3.read(), ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
+        elif path == "/api/noticias":
+            body = json.dumps(self.server.news.read(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
         elif path == "/api/fluxo":
             self.server.macro.refresh_if_due()
             body = json.dumps(self.server.macro.flows(), ensure_ascii=False, allow_nan=False).encode()
@@ -189,6 +193,7 @@ def main():
         server.macro = MacroStore(ROOT)
         server.funds = FundFlows(ROOT)
         server.b3 = B3Store(ROOT)
+        server.news = NewsStore(ROOT)
         print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
         try:
             server.serve_forever()

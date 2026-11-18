@@ -11,6 +11,7 @@ import { tvTheme, tvWidget, whenVisible } from "./tv-widget.js";
 import { flag, round } from "./symbols.js";
 import { brl, digest, monthName, shortDay } from "./pregao.js";
 import { cachedFetch } from "./data.js";
+import { load as loadNews, row as newsRow } from "./news.js";
 import { esc, nf, tone, dayMonth as day } from "./format.js";
 
 const signed = (v, d = 2) => (v > 0 ? "+" : v < 0 ? "−" : "") + nf(d).format(Math.abs(v));
@@ -227,6 +228,16 @@ export function bolsas({ root, read, save }) {
       : '<p class="ppMuted">Calculando…</p>';
   }
 
+  // Última hora: o que de médio ou alto impacto saiu nas últimas 12 horas.
+  function headlines(now) {
+    const news = data.news;
+    if (!news) return '<p class="ppMuted">Consultando canais oficiais…</p>';
+    const top = news.items.filter((i) => i.impact >= 2 && !i.day_only && now - Date.parse(i.time) <= 12 * 3600e3).slice(0, 3);
+    return top.length
+      ? '<ol class="nwItems bsNews">' + top.map((i) => newsRow(i, news, { compact: true })).join("") + "</ol>"
+      : '<p class="ppMuted">Nada de peso nos canais oficiais nas últimas 12 horas.</p>';
+  }
+
   function draw() {
     const now = new Date();
     auto = moment(now);
@@ -259,6 +270,7 @@ export function bolsas({ root, read, save }) {
         : m === "post"
           ? [
               block("Pregão B3", b3Block(data.b3), "#pregao"),
+              block("Última hora", headlines(now), "#noticias"),
               block("Dólar e juros", money(data.macro, data.curve), "#juros"),
               block("Fluxo cambial", flowDay(data.flows), "#fluxo"),
               block("Agenda de amanhã", agendaToday(new Date(now.getTime() + 864e5), "Sem divulgações de peso amanhã."), "#agenda"),
@@ -266,6 +278,7 @@ export function bolsas({ root, read, save }) {
             ]
           : [
               block("O mundo agora", world(now), "#relogio"),
+              block("Última hora", headlines(now), "#noticias"),
               block("Agenda de hoje", agendaToday(now), "#agenda"),
               block("Dólar e juros", money(data.macro, data.curve), "#juros"),
               block("Termômetro de risco", riskLine(), "#termometro"),
@@ -304,9 +317,18 @@ export function bolsas({ root, read, save }) {
   Promise.all(
     ["/api/atlas?base=USD", "/api/macro/curva", "/api/fluxo", "/api/macro/regional?id=ocde_cli", "/api/macro", "/api/b3"].map((u) => json(u).catch(() => null)),
   ).then(([atlas, curve, flows, cli, macro, b3]) => {
-    data = { atlas, curve, flows, cli, macro, b3 };
+    data = { ...data, atlas, curve, flows, cli, macro, b3 };
     draw();
   });
+  const news = () =>
+    loadNews()
+      .then((n) => {
+        data = { ...data, news: n };
+        draw();
+      })
+      .catch(() => {});
+  news();
+  setInterval(news, 60_000);
   draw();
   setInterval(draw, 30000);
 }
