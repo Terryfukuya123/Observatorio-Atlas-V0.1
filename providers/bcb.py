@@ -150,3 +150,64 @@ def normalize_focus(body, today, indicators):
         for points in refs.values():
             points.sort()
     return out
+
+
+# Histórico de atuações do BC no mercado de câmbio (ODbL), arquivo CSV completo desde 1999.
+ATUACOES = "https://www.bcb.gov.br/conteudo/dadosabertos/BCBDepin/historico-atuacoes-mercado-cambio.csv"
+ATUACOES_HOST = "https://www.bcb.gov.br/conteudo/dadosabertos/"
+ATUACOES_MAX = 8_000_000
+ATUACOES_COLUMNS = ("Data", "Instrumento", "Modalidade", "Volume USD Ofertado", "Volume USD Aceito")
+
+
+def download_atuacoes(url):
+    if not url.startswith(ATUACOES_HOST):
+        raise ValueError("Endereço fora da lista autorizada")
+    request = Request(url, headers={"Accept": "text/csv", "User-Agent": "ObservatorioEconomico/1.0"})
+    with urlopen(request, timeout=30) as response:
+        if not response.url.startswith(ATUACOES_HOST):
+            raise ValueError("Redirecionamento inesperado")
+        body = response.read(ATUACOES_MAX + 1)
+    if len(body) > ATUACOES_MAX:
+        raise ValueError("Resposta excede o limite")
+    return body
+
+
+def _brl_number(raw):
+    """Volumes do arquivo usam vírgula decimal e nenhum separador de milhar."""
+    raw = (raw or "").strip()
+    if not raw:
+        return None
+    if "." in raw:
+        raise ValueError("Separador inesperado")
+    return _number(raw.replace(",", "."))
+
+
+def normalize_atuacoes(body, today):
+    """Operações desde 1º de janeiro do ano anterior: [(data, instrumento, modalidade, ofertado, aceito)].
+
+    Volumes em US$. Linhas sem volume aceito (leilão sem aceitação ou ainda não
+    divulgado) são mantidas com aceito None.
+    """
+    import csv
+    import io
+    reader = csv.DictReader(io.StringIO(body.decode("utf-8-sig")))
+    if not reader.fieldnames or any(c not in reader.fieldnames for c in ATUACOES_COLUMNS):
+        raise ValueError("Colunas inesperadas nas atuações")
+    start = date(today.year - 1, 1, 1)
+    out = []
+    for row in reader:
+        day = datetime.strptime(row["Data"][:10], "%Y-%m-%d").date()
+        if day < start:
+            continue
+        if day > today + timedelta(days=7):
+            raise ValueError("Data futura")
+        instrument = row["Instrumento"].strip()
+        modality = row["Modalidade"].strip()
+        if not instrument or len(instrument) > 60 or len(modality) > 60:
+            raise ValueError("Instrumento inválido")
+        out.append((day.isoformat(), instrument, modality,
+                    _brl_number(row["Volume USD Ofertado"]), _brl_number(row["Volume USD Aceito"])))
+    if not out:
+        raise ValueError("Atuações sem operações no período")
+    out.sort(key=lambda row: row[0])  # Estável: mantém a ordem do arquivo no mesmo dia.
+    return out

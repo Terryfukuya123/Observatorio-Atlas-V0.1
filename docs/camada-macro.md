@@ -45,6 +45,7 @@ Em telas a partir de 851 px a ficha acompanha a altura do mapa e rola por dentro
 | `/api/macro/focus` | Expectativas Focus com histórico diário das medianas (cerca de 120 dias) |
 | `/api/macro/regional?id=eu_inflacao` | Série mensal ou trimestral do Eurostat ou da OCDE por território, com período, situação (estimado/provisório), defasagem e histórico |
 | `/api/macro/indicador?id=inflacao` | Valor por território (ISO3) para colorir o mapa |
+| `/api/fluxo` | Fluxo de capital no Brasil: acumulado no ano e mesmo período do ano anterior, meses, dias, câmbio por natureza, investimento de não residentes, posição dos bancos, interbancário e atuações do BC |
 | `/api/macro/pais?iso=BRA` | Indicadores anuais do Banco Mundial com a referência Mundo e, em `recent`, o dado mensal ou trimestral mais recente por conceito (Eurostat ou OCDE). Aceita também `EMU` (zona do euro) e `EUU` (UE) |
 
 Cada resposta identifica fonte, licença, conjunto de dados e estado da coleta.

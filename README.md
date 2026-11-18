@@ -51,6 +51,18 @@ A seção **Índices mundiais** resume a tela de índices globais dos terminais 
 
 A seção **Mercados ao vivo** reproduz os heatmaps do CryptoLab V2 com o widget público do TradingView: cripto por valor de mercado e variação em 24 h, S&P 500 e Ibovespa por setor. O widget só carrega quando a seção aparece na tela, acompanha o tema claro ou escuro e mantém a atribuição do TradingView. É provisório: os termos do TradingView vetam uso comercial sem acordo, então antes de cobrar assinatura é preciso fechar acordo ou substituir `web/live-heat.js` e `web/indices.js`, que dependem de `web/tv-widget.js`. O heatmap mensal calculado a partir da CVM continua na aba Heatmap do mapa.
 
+## Fluxo de capital
+
+A seção **Fluxo de capital · Brasil** mostra quanto dinheiro entrou e saiu do país pelo câmbio, em camadas de tempo:
+
+- **No ano:** fluxo cambial total, comercial (exportação − importação) e financeiro (compras − vendas), comparados ao mesmo período do ano anterior, e a posição de câmbio dos bancos com o volume do interbancário.
+- **Mês a mês e dia a dia:** barras do comercial e do financeiro com o total, nos últimos 13 meses ou nos últimos 25 dias úteis divulgados.
+- **Quem moveu:** capitais estrangeiros, capitais brasileiros, serviços e rendas no câmbio contratado.
+- **Estrangeiros: onde aplicaram:** investimento direto, ações, renda fixa e fundos no balanço de pagamentos.
+- **Banco Central no câmbio:** volume aceito por instrumento no ano (à vista, linhas e swaps) e os últimos leilões.
+
+Tudo vem do BCB sob ODbL. O câmbio contratado diário sai com cerca de uma semana de defasagem, e as séries por agente são mensais. A participação de estrangeiros, institucionais e pessoa física na B3, e o fluxo por ação, dependem de autorização da B3 e não entram nesta versão.
+
 ## Camada macro
 
 A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`.

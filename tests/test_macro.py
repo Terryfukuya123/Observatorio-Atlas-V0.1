@@ -70,6 +70,16 @@ def sdmx(*rows, measure="CPI"):
     return "\n".join([head] + [f"X,{a},{measure},{t},{v},{st}" for a, t, v, st in rows]).encode()
 
 
+ATUACOES = ("\ufeffComunicação,Data Hora Comunicação,Comunicado,Data Hora Comunicado,Data Hora Anúncio,"
+            "Procedimento Operacional,Data,Instrumento,Modalidade,Tipo Composto,Data de Liquidação,Data de Vencimento,"
+            "Volume USD Ofertado,Volume USD Aceito,Taxa de Corte\n"
+            ',,,,,Operação Direta,2024-03-01 00:00:00,Venda a Vista,Mercado,,2024-03-05 00:00:00,,,"1000000000,00",\n'
+            ',,1,2026-02-10 18:00:00,2026-02-10 18:00:00,Leilão Eletrônico,2026-02-11 00:00:00,Swap Cambial,Tradicional,,'
+            '2026-02-12 00:00:00,2026-06-01 00:00:00,"1500000000,00","1000000000,00","5,1"\n'
+            ',,2,2026-03-02 18:00:00,2026-03-02 18:00:00,Leilão Eletrônico,2026-03-03 00:00:00,Venda a Vista,PTAX,,'
+            '2026-03-05 00:00:00,,"2000000000,00","1250000000,00","5,2"\n'
+            ',,3,2026-03-02 18:00:00,2026-03-02 18:00:00,Leilão Eletrônico,2026-03-03 00:00:00,Venda com Recompra,'
+            'Pós-fixado Selic,,2026-03-05 00:00:00,2026-07-01 00:00:00,"1000000000,00",,\n').encode("utf8")
 OECD = sdmx(("USA", "2026-09", "3.7", "A"), ("USA", "2026-08", "3.4", "A"), ("JPN", "2026-09", "2.4", "E"),
             ("G20", "2026-09", "4.3", "A"), ("ZZZ", "2026-09", "1", "A"), ("DEU", "2026-09", "2.7", "A"))
 
@@ -242,6 +252,8 @@ class Fake:
             return sidra(variable, {"202608": "5.3", "202609": "5.2"})
         if url.startswith(treasury.BASE):
             return UST[url.split("csv/")[1][:4]]
+        if url == bcb.ATUACOES:
+            return ATUACOES
         if "Expectativas" in url:
             return FOCUS
         if "olinda" in url:
@@ -268,7 +280,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + len(store.catalog["regional"]) + 3
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + len(store.catalog["ibge"]) + len(store.catalog["regional"]) + len(store.catalog["fluxo"]) + 4
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
@@ -318,7 +330,8 @@ class Store(TestCase):
     def test_downloader_by_source(self):
         store = MacroStore(ROOT, clock=lambda: NOW, background=False, path=self.path)
         expected = {"sgs": bcb.download, "ptax": bcb.download, "focus": bcb.download,
-                    "wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}
+                    "wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download,
+                    "bcfx": bcb.download_atuacoes}
         sources = {f"rg:{s['id']}": s["source"] for s in store.catalog["regional"]}
         for key, _, _ in store.jobs(TODAY):
             want = (eurostat.download if sources[key] == "eurostat" else oecd.download) if key in sources else expected[key.split(":")[0]]
@@ -417,7 +430,7 @@ class Http(TestCase):
             worker.start()
             try:
                 for path, code in [("/api/macro", 200), ("/api/macro/pais?iso=bra", 200), ("/api/macro/pais?iso=ZZZ", 400),
-                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/curva", 200), ("/api/macro/regional?id=ocde_cli", 200), ("/api/macro/regional?id=x", 400), ("/api/macro/indicador?id=x", 400)]:
+                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/curva", 200), ("/api/macro/regional?id=ocde_cli", 200), ("/api/macro/regional?id=x", 400), ("/api/macro/indicador?id=x", 400), ("/api/fluxo", 200)]:
                     with self.subTest(path=path):
                         conn = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
                         conn.request("GET", path)

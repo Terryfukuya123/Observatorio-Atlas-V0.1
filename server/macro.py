@@ -15,8 +15,9 @@ from threading import Lock, Thread
 from time import monotonic
 
 from providers import bcb, eurostat, ibge, oecd, treasury, worldbank
+from server import flows
 
-TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "rg": timedelta(hours=12), "wb": timedelta(hours=24)}
+TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "rg": timedelta(hours=12), "wb": timedelta(hours=24), "bcfx": timedelta(hours=12)}
 RETRY = timedelta(minutes=30)
 # Idade máxima do último dado antes de a série ser marcada como defasada.
 STALE = {"Mensal": timedelta(days=125), "Trimestral": timedelta(days=215)}
@@ -61,6 +62,7 @@ def load_catalog(root):
     catalog.setdefault("focus", [])
     catalog.setdefault("ibge", [])
     catalog.setdefault("regional", [])
+    catalog.setdefault("fluxo", [])
     ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"] + catalog["regional"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
@@ -68,6 +70,15 @@ def load_catalog(root):
         if (series["source"] not in {"eurostat", "oecd"} or series["frequency"] not in {"Mensal", "Trimestral"}
                 or not series.get("concept")):
             raise ValueError(f"Fonte ou periodicidade inválida em {series['id']}")
+    flow_ids = [s["id"] for s in catalog["fluxo"]]
+    codes = [s["code"] for s in catalog["fluxo"]]
+    if len(flow_ids) != len(set(flow_ids)) or len(codes) != len(set(codes)) or set(codes) & {s["code"] for s in catalog["brasil"]}:
+        raise ValueError("Séries repetidas no catálogo de fluxo")
+    if catalog["fluxo"] and not flows.REQUIRED <= set(flow_ids):
+        raise ValueError("Catálogo de fluxo incompleto")
+    for series in catalog["fluxo"]:
+        if series["frequency"] not in {"Diária", "Mensal"} or series["block"] not in flows.BLOCKS:
+            raise ValueError(f"Periodicidade ou bloco inválido em {series['id']}")
     for series in catalog["brasil"] + catalog["ibge"]:
         if series["frequency"] not in HISTORY:
             raise ValueError(f"Periodicidade desconhecida em {series['id']}")
@@ -110,6 +121,11 @@ class MacroStore:
 
     # -- Coleta ---------------------------------------------------------------
     def jobs(self, today):
+        for s in self.catalog.get("fluxo", []):
+            yield (f"sgs:{s['code']}", bcb.sgs_url(s["code"], s["frequency"], today),
+                   lambda body, t=today: bcb.normalize_sgs(body, t))
+        if self.catalog.get("fluxo"):
+            yield ("bcfx:atuacoes", bcb.ATUACOES, lambda body, t=today: bcb.normalize_atuacoes(body, t))
         for s in self.catalog["brasil"]:
             yield (f"sgs:{s['code']}", bcb.sgs_url(s["code"], s["frequency"], today),
                    lambda body, t=today: bcb.normalize_sgs(body, t))
@@ -148,7 +164,8 @@ class MacroStore:
         if prefix == "rg":
             spec = next(s for s in self.catalog["regional"] if f"rg:{s['id']}" == key)
             return eurostat.download if spec["source"] == "eurostat" else oecd.download
-        return {"wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download}.get(prefix, bcb.download)
+        return {"wb": worldbank.download, "ust": treasury.download, "ibge": ibge.download,
+                "bcfx": bcb.download_atuacoes}.get(prefix, bcb.download)
 
     def collect(self, now):
         pending = set(self.due(now))
@@ -454,3 +471,15 @@ class MacroStore:
                     best[s["concept"]] = item
             recent = list(best.values())
             return dict(iso=iso, indicators=rows, recent=recent, **RIGHTS["wb"])
+
+    # -- Fluxo de capital -----------------------------------------------------------
+    def flows(self):
+        catalog = self.catalog.get("fluxo", [])
+        series = {s["id"]: (self.entries.get(f"sgs:{s['code']}") or {}).get("data") for s in catalog}
+        operations = (self.entries.get("bcfx:atuacoes") or {}).get("data")
+        data = flows.summary(series, operations, catalog) if catalog else None
+        collection = {s["id"]: self.status(f"sgs:{s['code']}") for s in catalog}
+        collection["atuacoes"] = self.status("bcfx:atuacoes")
+        return dict(data=data, collection=collection, series=catalog,
+                    atuacoes_dataset="https://dadosabertos.bcb.gov.br/dataset/historico-de-atuacoes-no-mercado-de-cambio",
+                    warning=self.warning, generated=self.clock().isoformat(), **RIGHTS["sgs"])

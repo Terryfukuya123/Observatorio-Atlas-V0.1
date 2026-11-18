@@ -55,5 +55,24 @@
     {"id": "ocde_inflacao", "source": "oecd", "flow": "OECD.SDD.TPS,DSD_PRICES@DF_PRICES_ALL,1.0", "key": ".M.N.CPI.PA._T.N.GY", "name": "Inflação ao consumidor (OCDE)", "unit": "% em 12 meses", "frequency": "Mensal", "group": "Inflação", "decimals": 1, "concept": "inflacao"},
     {"id": "ocde_desemprego", "source": "oecd", "flow": "OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0", "key": "..._Z.Y._T.Y_GE15..M", "name": "Taxa de desemprego (OCDE)", "unit": "% da força de trabalho, dessazonalizada", "frequency": "Mensal", "group": "Trabalho", "decimals": 1, "concept": "desemprego"},
     {"id": "ocde_cli", "source": "oecd", "flow": "OECD.SDD.STES,DSD_STES@DF_CLI,", "key": ".M.LI...AA.IX..H", "name": "Indicador antecedente composto (CLI)", "unit": "índice, 100 = tendência de longo prazo", "frequency": "Mensal", "group": "Ciclo", "decimals": 1, "concept": "cli"}
+  ],
+  "fluxo": [
+    {"id": "cambio_total", "code": 13961, "name": "Fluxo cambial total", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_exportacao", "code": 13962, "name": "Comercial · exportação", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_importacao", "code": 13966, "name": "Comercial · importação", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_comercial", "code": 13967, "name": "Fluxo comercial", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_fin_compras", "code": 13968, "name": "Financeiro · compras", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_fin_vendas", "code": 13969, "name": "Financeiro · vendas", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "cambio_financeiro", "code": 13970, "name": "Fluxo financeiro", "unit": "US$ milhões", "frequency": "Diária", "block": "cambio"},
+    {"id": "interbancario", "code": 20205, "name": "Volume do interbancário de dólar (D+2)", "unit": "US$", "frequency": "Diária", "block": "mercado"},
+    {"id": "posicao_bancos", "code": 21195, "name": "Posição de câmbio dos bancos", "unit": "US$ milhões", "frequency": "Mensal", "block": "mercado"},
+    {"id": "capitais_estrangeiros", "code": 29564, "name": "Capitais estrangeiros", "unit": "US$ milhões", "frequency": "Mensal", "block": "agentes"},
+    {"id": "capitais_brasileiros", "code": 29563, "name": "Capitais brasileiros", "unit": "US$ milhões", "frequency": "Mensal", "block": "agentes"},
+    {"id": "servicos", "code": 29561, "name": "Serviços", "unit": "US$ milhões", "frequency": "Mensal", "block": "agentes"},
+    {"id": "rendas", "code": 29562, "name": "Rendas primária e secundária", "unit": "US$ milhões", "frequency": "Mensal", "block": "agentes"},
+    {"id": "idp", "code": 22885, "name": "Investimento direto no país", "unit": "US$ milhões", "frequency": "Mensal", "block": "estrangeiros"},
+    {"id": "carteira_acoes", "code": 22927, "name": "Ações", "unit": "US$ milhões", "frequency": "Mensal", "block": "estrangeiros"},
+    {"id": "carteira_renda_fixa", "code": 22939, "name": "Títulos de renda fixa", "unit": "US$ milhões", "frequency": "Mensal", "block": "estrangeiros"},
+    {"id": "carteira_fundos", "code": 22936, "name": "Fundos de investimento", "unit": "US$ milhões", "frequency": "Mensal", "block": "estrangeiros"}
   ]
 }

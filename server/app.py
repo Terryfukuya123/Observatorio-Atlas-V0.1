@@ -78,13 +78,17 @@ class Handler(BaseHTTPRequestHandler):
                 return
             body = json.dumps(result, ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
+        elif path == "/api/fluxo":
+            self.server.macro.refresh_if_due()
+            body = json.dumps(self.server.macro.flows(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
         elif path == "/api/heatmaps":
             body = self.server.editions.read()
             if body is None:
                 self.send_error(503, "Edicao mensal indisponivel")
                 return
             mime = "application/json"
-        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/macro.js", "/live-heat.js", "/tv-widget.js", "/indices.js", "/flows.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)

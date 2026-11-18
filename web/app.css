@@ -2712,3 +2712,258 @@ footer a {
     height: 500px;
   }
 }
+
+/* Fluxo de capital */
+.flowLead {
+  margin: -6px 0 14px;
+  color: var(--soft);
+  font-size: 13px;
+}
+.flowKpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.flowKpi {
+  padding: 16px;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.flowKpi h3 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.flowKpi strong {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.flowKpi[data-tone="pos"] strong,
+.flowDiff[data-tone="pos"],
+.flowRows li[data-tone="pos"] b {
+  color: var(--pos);
+}
+.flowKpi[data-tone="neg"] strong,
+.flowDiff[data-tone="neg"],
+.flowRows li[data-tone="neg"] b {
+  color: var(--neg);
+}
+.flowKpi small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.flowKpi p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--soft);
+  line-height: 1.45;
+}
+.flowSpark {
+  width: 100%;
+  height: 34px;
+  margin-top: 6px;
+}
+.flowSpark path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+.flowSpark path.zero,
+.flowBars path.zero {
+  stroke: var(--border);
+  stroke-dasharray: 3 3;
+}
+.flowChartCard .cardhead {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.flowLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 12px;
+  color: var(--soft);
+  margin-bottom: 6px;
+}
+.flowLegend .swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+.swatch.com,
+.flowBars rect.com {
+  fill: var(--accent);
+  background: var(--accent);
+}
+.swatch.fin,
+.flowBars rect.fin {
+  fill: #6f9fc8;
+  background: #6f9fc8;
+}
+.swatch.tot {
+  background: var(--text);
+  border-radius: 50%;
+}
+.flowBars {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.flowBars circle.tot {
+  fill: var(--text);
+  stroke: var(--panel);
+  stroke-width: 1.5;
+}
+.flowBars text {
+  font-size: 11px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+.flowBars text.axis {
+  text-anchor: start;
+  font-size: 10px;
+}
+.flowBars rect.hit {
+  fill: transparent;
+}
+.flowBars .flowSlot:hover rect.hit {
+  fill: color-mix(in srgb, var(--text) 6%, transparent);
+}
+.flowBars .partial rect.com,
+.flowBars .partial rect.fin {
+  opacity: 0.5;
+}
+.flowGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+  align-items: start;
+}
+.flowGrid .card {
+  padding-bottom: 14px;
+}
+.flowHint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.flowRows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.flowRows li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name value" "track track" "prev prev";
+  gap: 3px 10px;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+.flowRows li:first-child {
+  border-top: 0;
+}
+.flowRows .name {
+  grid-area: name;
+  font-size: 13px;
+}
+.flowRows b {
+  grid-area: value;
+  font-size: 13px;
+  font-weight: 600;
+}
+.flowRows small {
+  grid-area: prev;
+  font-size: 11px;
+  color: var(--muted);
+}
+.flowRows .track {
+  grid-area: track;
+  position: relative;
+  height: 8px;
+  background: linear-gradient(var(--border), var(--border)) center / 1px 100% no-repeat;
+}
+.flowRows .track i {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  border-radius: 2px;
+  background: var(--pos);
+}
+.flowRows li[data-tone="neg"] .track i {
+  background: var(--neg);
+}
+.flowBcSpan {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.flowBc,
+.flowRecent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.flowBc li,
+.flowRecent li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.flowBc li:first-child,
+.flowRecent li:first-child {
+  border-top: 0;
+}
+.flowBc span {
+  display: grid;
+}
+.flowBc small {
+  font-size: 11px;
+  color: var(--muted);
+}
+#flowBC h4 {
+  margin: 14px 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.flowRecent li {
+  font-size: 12px;
+  padding: 6px 0;
+}
+.flowRecent li span:first-child {
+  color: var(--muted);
+  min-width: 72px;
+}
+.flowRecent li span:nth-child(2) {
+  flex: 1;
+}
+@media (max-width: 1150px) {
+  .flowKpis,
+  .flowGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 670px) {
+  .flowKpis,
+  .flowGrid {
+    grid-template-columns: 1fr;
+  }
+  .flowKpi strong {
+    font-size: 22px;
+  }
+}

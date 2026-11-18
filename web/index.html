@@ -43,6 +43,9 @@
         <a href="#brasil" title="Painel Brasil" aria-label="Painel Brasil"
           ><i data-icon="chart"></i><span>Painel Brasil</span></a
         >
+        <a href="#fluxo" title="Fluxo de capital" aria-label="Fluxo de capital"
+          ><i data-icon="flow"></i><span>Fluxo de capital</span></a
+        >
         <a href="#juros" title="Juros e ciclo" aria-label="Juros e ciclo"
           ><i data-icon="layers"></i><span>Juros e ciclo</span></a
         >
@@ -323,6 +326,64 @@
           </p>
         </section>
         <p id="brasilSources" class="sourceNote"></p>
+      </section>
+      <section id="fluxo" aria-labelledby="fluxoTitle">
+        <div class="sectionTitle">
+          <h2 id="fluxoTitle">Fluxo de capital · Brasil</h2>
+          <span id="fluxoStamp">Banco Central do Brasil</span>
+        </div>
+        <p class="flowLead">
+          Quanto dinheiro entrou e saiu do país pelo câmbio. Valor positivo
+          significa que entraram mais dólares do que saíram.
+        </p>
+        <div id="flowKpis" class="flowKpis">
+          <p class="empty">Carregando fluxo…</p>
+        </div>
+        <section class="card flowChartCard" aria-labelledby="flowChartTitle">
+          <div class="cardhead">
+            <div class="headtitle">
+              <i data-icon="flow"></i>
+              <h2 id="flowChartTitle">Entradas e saídas de dólares</h2>
+            </div>
+            <div class="layerTabs" role="group" aria-label="Período do gráfico de fluxo">
+              <button data-flow-view="month" aria-pressed="true">Mês a mês</button>
+              <button data-flow-view="day" aria-pressed="false">Dia a dia</button>
+            </div>
+          </div>
+          <div class="flowLegend">
+            <span><b class="swatch com"></b>Comercial (exportação − importação)</span>
+            <span><b class="swatch fin"></b>Financeiro (investimentos, empréstimos, remessas)</span>
+            <span><b class="swatch tot"></b>Total</span>
+          </div>
+          <div id="flowChart" class="flowChart"></div>
+          <p id="flowChartNote" class="sourceNote"></p>
+        </section>
+        <div class="flowGrid">
+          <section class="card" aria-labelledby="flowAgentsTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="flowAgentsTitle">Quem moveu o dinheiro</h2></div>
+              <span id="flowAgentsSpan" class="unit-label"></span>
+            </div>
+            <p class="flowHint">Câmbio contratado no segmento financeiro, por natureza. Acumulado no ano.</p>
+            <div id="flowAgents"></div>
+          </section>
+          <section class="card" aria-labelledby="flowForeignTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="flowForeignTitle">Estrangeiros: onde aplicaram</h2></div>
+              <span id="flowForeignSpan" class="unit-label"></span>
+            </div>
+            <p class="flowHint">Ingressos menos saídas de não residentes no balanço de pagamentos. Acumulado no ano.</p>
+            <div id="flowForeign"></div>
+          </section>
+          <section class="card" aria-labelledby="flowBcTitle">
+            <div class="cardhead">
+              <div class="headtitle"><h2 id="flowBcTitle">Banco Central no câmbio</h2></div>
+            </div>
+            <p class="flowHint">Volume aceito nos leilões do ano. Inclui rolagens de swaps e linhas; não é posição líquida.</p>
+            <div id="flowBC"></div>
+          </section>
+        </div>
+        <p id="flowSources" class="sourceNote"></p>
       </section>
       <section id="juros" aria-labelledby="jurosTitle">
         <div class="sectionTitle">
