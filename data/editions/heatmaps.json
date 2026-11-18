@@ -1,0 +1,401 @@
+{
+  "from": "2026-09-30",
+  "to": "2026-10-31",
+  "generated": "2026-11-18T02:02:21.117248+00:00",
+  "archives": [
+    {
+      "url": "https://dados.cvm.gov.br/dados/FI/DOC/CDA/DADOS/cda_fi_202609.zip",
+      "sha256": "ef465e3c9134a6fe34d3551f5f4e84a74b2c6852ea05a6f408bd396cf6468ebe"
+    },
+    {
+      "url": "https://dados.cvm.gov.br/dados/FI/DOC/CDA/DADOS/cda_fi_202610.zip",
+      "sha256": "b85a4b4c560268651914ab0bdeb8b0e9639d7f9e545c7be73a7ac55000ba5d08"
+    }
+  ],
+  "fx": [
+    {
+      "observed": "2026-09-30",
+      "EUR": "5.9077",
+      "USD": "5.202730074856891237340378688"
+    },
+    {
+      "observed": "2026-10-30",
+      "EUR": "6.0692",
+      "USD": "5.432509846043680630146795560"
+    }
+  ],
+  "fx_snapshot": "6ef5920c11e5adb540e0c58ad81ad7d6f94d6435e4f5df7dc3bcd115ba333e93",
+  "fx_received": "2026-11-18T01:03:58.767771+00:00",
+  "fx_url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml",
+  "source": "CVM · CDA",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "dataset": "https://dados.cvm.gov.br/dataset/fi-doc-cda",
+  "groups": {
+    "br": [
+      {
+        "symbol": "PETR4",
+        "name": "Petrobras PN",
+        "funds": 244,
+        "quotes": {
+          "USD": {
+            "value": 9.702697554867198,
+            "percent": 2.7697808956595975
+          },
+          "EUR": {
+            "value": 8.684834904105978,
+            "percent": 4.453174191748544
+          }
+        }
+      },
+      {
+        "symbol": "VALE3",
+        "name": "Vale",
+        "funds": 248,
+        "quotes": {
+          "USD": {
+            "value": 11.41645422790483,
+            "percent": -15.038292433489381
+          },
+          "EUR": {
+            "value": 10.21880972780597,
+            "percent": -13.646599586669524
+          }
+        }
+      },
+      {
+        "symbol": "ITUB4",
+        "name": "Itaú Unibanco PN",
+        "funds": 211,
+        "quotes": {
+          "USD": {
+            "value": 7.121938311474329,
+            "percent": -16.319957894347336
+          },
+          "EUR": {
+            "value": 6.374810518684505,
+            "percent": -14.949259030640352
+          }
+        }
+      },
+      {
+        "symbol": "BBDC4",
+        "name": "Bradesco PN",
+        "funds": 159,
+        "quotes": {
+          "USD": {
+            "value": 2.551306926777829,
+            "percent": -28.288701900930743
+          },
+          "EUR": {
+            "value": 2.2836617676135242,
+            "percent": -27.114053892326226
+          }
+        }
+      },
+      {
+        "symbol": "ABEV3",
+        "name": "Ambev",
+        "funds": 92,
+        "quotes": {
+          "USD": {
+            "value": 2.6875238911223884,
+            "percent": -8.968350421621954
+          },
+          "EUR": {
+            "value": 2.405588874975285,
+            "percent": -7.477230490289769
+          }
+        }
+      },
+      {
+        "symbol": "WEGE3",
+        "name": "WEG",
+        "funds": 126,
+        "quotes": {
+          "USD": {
+            "value": 8.901962696895803,
+            "percent": -6.359666299243939
+          },
+          "EUR": {
+            "value": 7.9681012324523826,
+            "percent": -4.825815505541973
+          }
+        }
+      },
+      {
+        "symbol": "BBAS3",
+        "name": "Banco do Brasil",
+        "funds": 126,
+        "quotes": {
+          "USD": {
+            "value": 3.031747841560667,
+            "percent": -31.628237214260306
+          },
+          "EUR": {
+            "value": 2.713701970605681,
+            "percent": -30.50829158323718
+          }
+        }
+      },
+      {
+        "symbol": "RENT3",
+        "name": "Localiza",
+        "funds": 136,
+        "quotes": {
+          "USD": {
+            "value": 5.126543860805378,
+            "percent": -34.14315080324666
+          },
+          "EUR": {
+            "value": 4.588743162196006,
+            "percent": -33.06440005109791
+          }
+        }
+      },
+      {
+        "symbol": "SUZB3",
+        "name": "Suzano",
+        "funds": 127,
+        "quotes": {
+          "USD": {
+            "value": 9.229619719238121,
+            "percent": 8.640769440661506
+          },
+          "EUR": {
+            "value": 8.261385355565809,
+            "percent": 10.420330916461815
+          }
+        }
+      }
+    ],
+    "us": [
+      {
+        "symbol": "MSFT",
+        "name": "Microsoft",
+        "funds": 17,
+        "quotes": {
+          "USD": {
+            "value": 524.1955585975087,
+            "percent": 2.88911401300493
+          },
+          "EUR": {
+            "value": 469.20476064939913,
+            "percent": 4.574462013755011
+          }
+        }
+      },
+      {
+        "symbol": "AMZN",
+        "name": "Amazon",
+        "funds": 15,
+        "quotes": {
+          "USD": {
+            "value": 241.4025453329615,
+            "percent": -2.458429568447142
+          },
+          "EUR": {
+            "value": 216.07818236033071,
+            "percent": -0.8606755952127908
+          }
+        }
+      },
+      {
+        "symbol": "V",
+        "name": "Visa",
+        "funds": 8,
+        "quotes": {
+          "USD": {
+            "value": 415.40120176729687,
+            "percent": 16.38126149475005
+          },
+          "EUR": {
+            "value": 371.8234888715511,
+            "percent": 18.287614059513675
+          }
+        }
+      },
+      {
+        "symbol": "MA",
+        "name": "Mastercard",
+        "funds": 3,
+        "quotes": {
+          "USD": {
+            "value": 640.803986812313,
+            "percent": 16.980130576002214
+          },
+          "EUR": {
+            "value": 573.580367715998,
+            "percent": 18.896292757832537
+          }
+        }
+      },
+      {
+        "symbol": "AMAT",
+        "name": "Applied Materials",
+        "funds": 2,
+        "quotes": {
+          "USD": {
+            "value": 391.7982859629044,
+            "percent": -22.869245591616135
+          },
+          "EUR": {
+            "value": 350.6966397806162,
+            "percent": -21.605825608020158
+          }
+        }
+      },
+      {
+        "symbol": "GOOGL",
+        "name": "Alphabet A",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 280.96760755179156,
+            "percent": -17.84288464585948
+          },
+          "EUR": {
+            "value": 251.4926669815535,
+            "percent": -16.497131682217542
+          }
+        }
+      },
+      {
+        "symbol": "NVDA",
+        "name": "Nvidia",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 205.46459078685177,
+            "percent": -9.483598961062016
+          },
+          "EUR": {
+            "value": 183.91030324637646,
+            "percent": -8.00091892256169
+          }
+        }
+      },
+      {
+        "symbol": "NFLX",
+        "name": "Netflix",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 62.35186122058921,
+            "percent": -9.786029976317648
+          },
+          "EUR": {
+            "value": 55.810831740591844,
+            "percent": -8.308303829313186
+          }
+        }
+      },
+      {
+        "symbol": "META",
+        "name": "Meta Platforms",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 617.4680845491735,
+            "percent": -14.332310429931125
+          },
+          "EUR": {
+            "value": 552.6925210787446,
+            "percent": -12.929053431065872
+          }
+        }
+      }
+    ],
+    "crypto": [
+      {
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 76784.23087091811,
+            "percent": -7.92013290468864
+          },
+          "EUR": {
+            "value": 68729.17192169541,
+            "percent": -6.411842922729996
+          }
+        }
+      },
+      {
+        "symbol": "ETH",
+        "name": "Ether",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 2239.0767613832477,
+            "percent": -15.874282539609547
+          },
+          "EUR": {
+            "value": 2004.1861451693946,
+            "percent": -14.49628340827662
+          }
+        }
+      },
+      {
+        "symbol": "BNB",
+        "name": "BNB",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 699.6861178090846,
+            "percent": -8.381733044824822
+          },
+          "EUR": {
+            "value": 626.2854616980708,
+            "percent": -6.881004182240051
+          }
+        }
+      },
+      {
+        "symbol": "USDT",
+        "name": "Tether",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 1.0031258083894625,
+            "percent": 0.9569591705604128
+          },
+          "EUR": {
+            "value": 0.897892775142734,
+            "percent": 2.610658018413309
+          }
+        }
+      },
+      {
+        "symbol": "USDC",
+        "name": "USD Coin",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 1.0036268524111132,
+            "percent": 0.9967760332093261
+          },
+          "EUR": {
+            "value": 0.8983412570811968,
+            "percent": 2.651127090681337
+          }
+        }
+      },
+      {
+        "symbol": "RLUSD",
+        "name": "Ripple USD",
+        "funds": 1,
+        "quotes": {
+          "USD": {
+            "value": 1.0040277327335676,
+            "percent": 1.0068012541767561
+          },
+          "EUR": {
+            "value": 0.8987000830053415,
+            "percent": 2.661316527137224
+          }
+        }
+      }
+    ]
+  }
+}

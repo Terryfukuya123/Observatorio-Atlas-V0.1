@@ -7,7 +7,8 @@ import json
 import mimetypes
 
 from server.service import Feed
-from core.fx import compare_rates, usd_cross
+from server.editions import MonthlyEdition
+from core.fx import compare_rates, in_base, usd_cross
 from providers.ecb import CURRENCIES
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,11 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(403)
             return
         path = urlsplit(self.path).path
+        params = parse_qs(urlsplit(self.path).query)
+        base = params.get("base", ["USD"])[0]
+        if path in {"/api/atlas", "/api/comparacao"} and base not in {"USD", "EUR"}:
+            self.send_error(400, "Base invalida")
+            return
         if path == "/api/atlas":
             snapshot = self.server.feed.read()
             series = snapshot["series"]
@@ -36,18 +42,28 @@ class Handler(BaseHTTPRequestHandler):
                     cross = usd_cross(local, series.get("USD"), currency)
                     if cross:
                         crosses[currency] = cross
-            body = json.dumps(dict(markets=MARKETS, usd_crosses=crosses, **snapshot), allow_nan=False).encode()
+            markets = {key: dict(m, series=(("EUR" if m["currency"] == "USD" else m["currency"])
+                                           if base == "USD" else m["series"]))
+                       for key, m in MARKETS.items()}
+            body = json.dumps(dict(markets=markets, usd_crosses=crosses, **in_base(snapshot, base)),
+                              allow_nan=False).encode()
             mime = "application/json"
         elif path == "/api/comparacao":
-            params = parse_qs(urlsplit(self.path).query)
             first, second, period = (params.get(k, [""])[0] for k in ("a", "b", "dias"))
-            if first not in CURRENCIES or second not in CURRENCIES or period not in {"7", "30", "90"}:
+            allowed = (CURRENCIES | {"EUR"}) - {base}
+            if first not in allowed or second not in allowed or period not in {"7", "30", "90"}:
                 self.send_error(400, "Parametros invalidos")
                 return
-            result = compare_rates(self.server.feed.read(), first, second, int(period))
+            result = compare_rates(in_base(self.server.feed.read(), base), first, second, int(period))
             body = json.dumps(result, allow_nan=False).encode()
             mime = "application/json"
-        elif path in {"/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
+        elif path == "/api/heatmaps":
+            body = self.server.editions.read()
+            if body is None:
+                self.send_error(503, "Edicao mensal indisponivel")
+                return
+            mime = "application/json"
+        elif path in {"/asset-heat.js", "/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)
@@ -77,6 +93,7 @@ def main():
     args = parser.parse_args()
     with ThreadingHTTPServer(("127.0.0.1", args.port), Handler) as server:
         server.feed = Feed(ROOT / "data/cache/ecb.json")
+        server.editions = MonthlyEdition(ROOT, server.feed)
         print(f"Observatório em http://127.0.0.1:{server.server_port}", flush=True)
         try:
             server.serve_forever()

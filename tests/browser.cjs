@@ -36,10 +36,7 @@ const path = require("node:path");
       path.join(__dirname, "../data/run/capturas");
     fs.mkdirSync(media, { recursive: true });
     await page.waitForSelector(".comparisonPlot .trace2");
-    assert.match(
-      await page.locator("#detail").innerText(),
-      /USD\/BRL · calculado/,
-    );
+    assert.match(await page.locator("#detail").innerText(), /USD\/BRL/);
     assert.equal(
       await page
         .locator("body")
@@ -87,6 +84,41 @@ const path = require("node:path");
     );
     await page.locator("h1").scrollIntoViewIfNeeded();
     await page.screenshot({ path: media + "/heatmap.png" });
+    assert.equal(await page.locator("#fxBase").inputValue(), "USD");
+    assert.match(
+      await page.locator("#ticker button").first().innerText(),
+      /USD \/ BRL/,
+    );
+    for (const [key, count, asset] of [
+      ["crypto", 6, "BTC"],
+      ["us", 9, "MSFT"],
+      ["br", 9, "PETR4"],
+    ]) {
+      await page.click('[data-group="' + key + '"]');
+      await page.click('[data-asset="' + asset + '"]');
+      assert.equal(
+        await page.locator("#heatTiles [data-asset]").count(),
+        count,
+      );
+      assert.match(
+        await page.locator("#assetDetail").innerText(),
+        /CVM · CDA mensal/,
+      );
+      assert.match(await page.locator("#assetDetail").innerText(), /USD/);
+      await page.screenshot({ path: media + "/heatmap-" + key + ".png" });
+    }
+    await page.selectOption("#fxBase", "EUR");
+    await page.waitForFunction(() =>
+      document.querySelector(".assetPrice")?.textContent.includes("EUR"),
+    );
+    await page.click('[data-group="fx"]');
+    await page.waitForFunction(() =>
+      document.querySelector("#heatTiles")?.textContent.includes("EUR/BRL"),
+    );
+    await page.selectOption("#fxBase", "USD");
+    await page.waitForFunction(() =>
+      document.querySelector("#heatTiles")?.textContent.includes("USD/BRL"),
+    );
     await page.click('[data-heat-pick="BRA"]');
     assert.equal(await page.locator("#detail h2").textContent(), "Brasil");
     assert.equal(
@@ -104,7 +136,7 @@ const path = require("node:path");
     await page.selectOption("#compareB", "JPY");
     await page.selectOption("#compareDays", "7");
     await page.waitForFunction(
-      () => document.querySelector(".key2 strong")?.textContent === "EUR/JPY",
+      () => document.querySelector(".key2 strong")?.textContent === "USD/JPY",
     );
     await page.locator("#compareResult summary").click();
     assert.ok((await page.locator("#compareResult tbody tr").count()) >= 2);
@@ -116,7 +148,7 @@ const path = require("node:path");
     await page
       .getByText("Selecione dois pares distintos.", { exact: true })
       .waitFor();
-    await page.selectOption("#compareB", "USD");
+    await page.selectOption("#compareB", "EUR");
     await page.locator('#pins [data-id="CAN"] circle').click();
     assert.equal(await page.locator("#detail h2").textContent(), "Canadá");
     const initial = await page.locator("#map").getAttribute("viewBox");
@@ -190,9 +222,28 @@ const path = require("node:path");
       true,
     );
     await page.screenshot({ path: media + "/mobile.png", fullPage: true });
+    await page.click("#openEquities");
+    await page.click('[data-asset="PETR4"]');
+    assert.equal(
+      await page.locator("#assetDetail h2").textContent(),
+      "Petrobras PN",
+    );
+    await page.locator("#assetDetail summary").click();
+    assert.match(await page.locator("#assetDetail").innerText(), /R\$ 100/);
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await page.screenshot({
+      path: media + "/mobile-heatmap.png",
+      fullPage: true,
+    });
+    await page.click('[data-layer="daily"]');
     await page.locator("#compareMarket").click();
     assert.equal(await page.locator("#compareA").inputValue(), "BRL");
-    await page.route("**/api/atlas", async (route) => {
+    await page.route("**/api/atlas?*", async (route) => {
       const response = await route.fetch();
       const simulated = await response.json();
       simulated.source.status = "Fonte indisponível";
@@ -220,6 +271,26 @@ const path = require("node:path");
       /Comparação indisponível/,
     );
     assert.equal(await page.locator("#compareResult .trace").count(), 0);
+    await page.route("**/api/heatmaps", (route) =>
+      route.fulfill({ status: 503, body: "indisponível" }),
+    );
+    await page.reload();
+    await page.click('[data-layer="heat"]');
+    await page.click('[data-group="crypto"]');
+    await page.getByRole("button", { name: "Tentar novamente" }).waitFor();
+    assert.equal(await page.locator("[data-asset]").count(), 0);
+    await page.unroute("**/api/heatmaps");
+    await page.getByRole("button", { name: "Tentar novamente" }).click();
+    await page.locator('[data-asset="BTC"]').waitFor();
+    await page.unroute("**/api/atlas?*");
+    await page.goto("http://127.0.0.1:8842/?heatmap=us");
+    await page.locator('[data-asset="MSFT"]').waitFor();
+    await page.selectOption("#fxBase", "EUR");
+    await page.waitForFunction(() => document.querySelector(".assetPrice")?.textContent.includes("EUR"));
+    await page.reload();
+    await page.locator('[data-asset="MSFT"]').waitFor();
+    assert.equal(await page.locator("#fxBase").inputValue(), "USD");
+    assert.match(await page.locator("#assetDetail .assetPrice").innerText(), /USD/);
     assert.deepEqual(errors, []);
     assert.deepEqual(external, []);
     console.log(

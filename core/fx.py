@@ -2,7 +2,8 @@
 from datetime import date, timedelta
 from decimal import Decimal
 
-from core.indicators import price_return
+from core.calendar import is_target_day
+from core.indicators import price_return, variation
 
 
 def usd_cross(local, dollar, currency):
@@ -18,10 +19,46 @@ def usd_cross(local, dollar, currency):
                       [local["instrument"], dollar["instrument"]]}
 
 
+def in_base(snapshot, base):
+    if base == "EUR":
+        return dict(snapshot, base=base)
+    if base != "USD":
+        raise ValueError("Base cambial desconhecida")
+    raw = snapshot["series"]
+    derived = {}
+    dollar = raw.get("USD")
+    if dollar:
+        usd = dict(dollar["history"])
+        for code, local in {**raw, "EUR": dollar}.items():
+            if code == "USD":
+                continue
+            points = [(day, format((Decimal(1) if code == "EUR" else Decimal(value))
+                                  / Decimal(usd[day]), ".12f"))
+                      for day, value in local["history"] if day in usd]
+            if not points:
+                continue
+            day, value = points[-1]
+            previous = date.fromisoformat(day) - timedelta(days=1)
+            while not is_target_day(previous):
+                previous -= timedelta(days=1)
+            change = variation(points, "1D")
+            status = ("Dado histórico" if snapshot["source"].get("error") else
+                      "Atrasado" if day < snapshot["expected"] else "Atualizado")
+            derived[code] = dict(local, instrument=f"USD/{code}", currency=code,
+                                 unit=f"{code} por USD", observed=day, status=status,
+                                 value=format(Decimal(value), ".5f"), history=points,
+                                 change=change if change and change["from"] == previous.isoformat() else None,
+                                 method="Cruzamento do Observatório com referências do BCE",
+                                 inputs=[dollar["instrument"]] if code == "EUR" else
+                                        [local["instrument"], dollar["instrument"]])
+    return dict(snapshot, series=derived, base=base)
+
+
 def compare_rates(snapshot, first, second, days):
     """Rebaseia duas séries na primeira observação comum dentro da janela solicitada."""
     source = snapshot["source"]
-    result = {"pairs": [f"EUR/{first}", f"EUR/{second}"], "days": days, "points": [],
+    base_currency = snapshot.get("base", "EUR")
+    result = {"pairs": [f"{base_currency}/{first}", f"{base_currency}/{second}"], "days": days, "points": [],
               "status": source["status"], "received": source.get("received"),
               "snapshot": source.get("snapshot"), "source": "BCE"}
     if first == second:

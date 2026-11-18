@@ -75,7 +75,16 @@
           <p class="crumb">Mercados <span>/</span> Panorama</p>
           <h1>Atlas de mercados</h1>
         </div>
-        <p id="edition">Referências diárias do Banco Central Europeu</p>
+        <div class="atlasSettings">
+          <p id="edition">Referências diárias do Banco Central Europeu</p>
+          <label class="basePick"
+            >Moeda-base
+            <select id="fxBase">
+              <option value="USD" selected>USD · Dólar</option>
+              <option value="EUR">EUR · Euro</option>
+            </select></label
+          >
+        </div>
       </section>
       <div class="workspace">
         <section class="mapcard card" aria-labelledby="mapTitle">
@@ -121,6 +130,14 @@
               <g id="pins"></g>
             </svg>
             <div id="heatView" hidden>
+              <div id="heatGroups" role="group" aria-label="Mercado do heatmap">
+                <button data-group="fx" aria-pressed="true">Câmbio</button>
+                <button data-group="crypto" aria-pressed="false">Cripto</button>
+                <button data-group="us" aria-pressed="false">Ações EUA</button>
+                <button data-group="br" aria-pressed="false">
+                  Ações Brasil
+                </button>
+              </div>
               <div class="heatHead">
                 <h3>Mapa de calor cambial</h3>
                 <span id="heatDate"></span>
@@ -129,15 +146,7 @@
                 id="heatTiles"
                 aria-label="Pares cambiais por variação diária"
               ></div>
-              <div class="heatFoot">
-                <span>Blocos de mesmo peso · Variação do par</span
-                ><a
-                  href="https://www.tradingview.com/heatmap/stock/?dataset=SPX500"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Heatmap do S&amp;P 500 no TradingView ↗</a
-                >
-              </div>
+              <div class="heatFoot" id="heatFoot"></div>
             </div>
             <button
               id="expandAtlas"
@@ -173,6 +182,7 @@
               Notícias e agenda
             </button>
           </div>
+          <div id="assetDetail" aria-live="polite" hidden></div>
           <div id="detail" aria-live="polite"></div>
           <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>

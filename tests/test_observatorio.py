@@ -153,7 +153,7 @@ class FeedTests(TestCase):
             worker=Thread(target=server.serve_forever,daemon=True)
             worker.start()
             try:
-                for path,host,code in [("/",None,200),("/api/atlas",None,200),("/../config/markets.json",None,404),("/", "other.invalid",403)]:
+                for path,host,code in [("/",None,200),("/api/atlas",None,200),("/api/atlas?base=EUR",None,200),("/api/atlas?base=BRL",None,400),("/../config/markets.json",None,404),("/", "other.invalid",403)]:
                     with self.subTest(path=path,host=host):
                         conn=HTTPConnection("127.0.0.1",server.server_port,timeout=2)
                         conn.request("GET",path,headers={"Host":host} if host else {})
@@ -161,6 +161,9 @@ class FeedTests(TestCase):
                         self.assertEqual(response.status,code)
                         body=response.read()
                         if path=="/api/atlas":
+                            self.assertEqual(json.loads(body)["base"], "USD")
+                            self.assertEqual(json.loads(body)["series"], {})  # Fixture sem EUR/USD.
+                        if path=="/api/atlas?base=EUR":
                             self.assertEqual(json.loads(body)["series"]["BRL"]["value"],"5.50")
                         conn.close()
             finally:

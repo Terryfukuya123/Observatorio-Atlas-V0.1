@@ -1,11 +1,11 @@
 # Contrato de dados da primeira entrega
 
-**GET /api/atlas** retorna `markets` (cadastro), `series` (observações por moeda de cotação), `source` (saúde e proveniência), `endpoint` (origem oficial) e `expected` (dia TARGET esperado à hora da requisição). A associação de país a série é explícita. Alemanha, França e Zona do Euro compartilham a referência EUR/USD. A série não representa o desempenho de bolsa ou da economia local.
+**GET /api/atlas** retorna `markets` (cadastro), `series` (observações por moeda de cotação), `source` (saúde e proveniência), `endpoint` (origem oficial) e `expected` (dia TARGET esperado à hora da requisição). A associação de país a série é explícita. USD é a base padrão. A opção `?base=EUR` recupera as séries originais do BCE. Alemanha, França e Zona do Euro compartilham o par bilateral dólar–euro na direção selecionada. A série não representa o desempenho de bolsa ou da economia local.
 
 | Campo da série | Semântica |
 |---|---|
-| instrument, currency, unit | EUR/XXX, moeda de cotação, unidades de XXX por EUR |
-| value | String decimal da observação mais recente, preserva a precisão da fonte |
+| instrument, currency, unit | USD/XXX ou EUR/XXX, moeda de cotação, unidades de XXX por unidade da base selecionada |
+| value | String decimal da observação mais recente. Em EUR conserva a precisão publicada, em USD apresenta o cruzamento arredondado a cinco casas |
 | source, market, method, rights | BCE, referência do Eurosistema, método cambial e autorização ECB-REF da matriz |
 | observed, observation_time | Data ISO da observação. Hora individual ausente e representada por null |
 | received | Instante ISO UTC em que o servidor recebeu a captura válida. A interface usa Brasília |
@@ -40,3 +40,5 @@ A cartografia tem versão fixa e permanece disponível offline. O catálogo é v
 A variação exibida é do **preço do par cambial**, calculada no backend como 100 × (final / inicial − 1). Exige o dia TARGET imediatamente anterior. Na falta dele, `change` vale null. Fonte e datas-base constam no registro. A janela de 7/30/90 dias controla o gráfico, sem alterar o significado da variação diária dos cartões.
 
 O núcleo aritmético também dispõe de preço local e conversão em USD: (final / inicial) × (câmbio inicial / câmbio final) − 1, quando o câmbio está em moeda local por USD. Para MTD e YTD, a referência teórica é o último dia do mês/ano anterior. Em 12M, usa-se a data de um ano antes, com 28 de fevereiro para o aniversário de um dia bissexto. O utilitário localiza a última observação anterior ou igual à referência, com tolerância máxima de sete dias. Adaptadores de índices deverão exigir a sessão correta, calendário comum para câmbio e índice e natureza de preço ou retorno total antes da exibição. Esses retornos de índices ainda não são publicados.
+
+**Comparação e edição mensal.** `/api/comparacao?a=BRL&b=EUR&dias=30&base=USD` compara os pares USD/BRL e USD/EUR. `/api/heatmaps` fornece datas das duas competências, amostra por ativo, mediana dos retornos e marcação final em USD e EUR. A edição inclui referências cambiais, data de preparo, licença e SHA-256 dos arquivos utilizados. [Método e atualização](heatmaps-mensais.md).

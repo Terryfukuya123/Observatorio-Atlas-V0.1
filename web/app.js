@@ -1,6 +1,7 @@
 import { makeMap, svg, euro } from "./map.js";
 import { renderBulletin, renderLocalBulletin } from "./bulletin.js";
 import { comparison } from "./comparison.js";
+import { assetHeat } from "./asset-heat.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -103,16 +104,30 @@ const state = {
   period: read("period", "30"),
   geo: new Map(),
   markets: {},
+  base: "USD",
+  group: "fx",
   crosses: {},
   series: {},
   source: { status: "Consultando fonte" },
 };
+const requestedHeat = new URLSearchParams(location.search).get("heatmap");
+if (["fx", "br", "us", "crypto"].includes(requestedHeat)) {
+  state.layer = "heat";
+  state.group = requestedHeat;
+}
+function syncHeatLink() {
+  const url = new URL(location.href);
+  if (state.layer === "heat") url.searchParams.set("heatmap", state.group);
+  else url.searchParams.delete("heatmap");
+  if (url.href !== location.href) history.replaceState(null, "", url);
+}
 let map;
 const regions = [...$("#region").options].map((o) => o.value).filter(Boolean);
 if (!regions.includes(state.region)) state.region = "";
 if (!["7", "30", "90"].includes(state.period)) state.period = "30";
-const focusCodes = ["USA", "BRA", "JPN", "GBR"];
+const focusCodes = ["BRA", "USA", "JPN", "GBR"];
 const names = {
+  EUR: "Euro",
   USD: "Dólar americano",
   BRL: "Real brasileiro",
   JPY: "Iene japonês",
@@ -132,7 +147,12 @@ function missing(market) {
     : "Sem cobertura";
 }
 function number(raw) {
-  return raw == null ? "—" : String(raw).replace(".", ",");
+  return raw == null
+    ? "—"
+    : Number(raw).toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 5,
+      });
 }
 function delta(change) {
   if (!change) return '<span class="delta muted">—</span>';
@@ -224,11 +244,19 @@ function renderTicker() {
       const m = state.markets[id],
         s = state.series[m?.series],
         code =
-          m?.series || { USA: "USD", BRA: "BRL", JPN: "JPY", GBR: "GBP" }[id];
+          m?.series ||
+          {
+            USA: state.base === "USD" ? "EUR" : "USD",
+            BRA: "BRL",
+            JPN: "JPY",
+            GBR: "GBP",
+          }[id];
       return (
         '<button class="tick" data-pick="' +
         id +
-        '"><div class="ticktop"><span class="pair">EUR / ' +
+        '"><div class="ticktop"><span class="pair">' +
+        state.base +
+        " / " +
         code +
         '</span><span class="tickname">' +
         names[code] +
@@ -267,7 +295,9 @@ function renderTable() {
             escape(m.name) +
             "</button></td><td>" +
             escape(m.index) +
-            "</td><td>EUR/" +
+            "</td><td>" +
+            state.base +
+            "/" +
             m.series +
             "</td><td>" +
             number(s?.value) +
@@ -283,6 +313,11 @@ function renderTable() {
 }
 function select(id, scroll = false) {
   if (!state.geo.has(id) && !state.markets[id]) return;
+  if (state.layer === "heat" && state.group !== "fx") {
+    state.layer = "daily";
+    save("mapLayer", "daily");
+    syncHeatLink();
+  }
   state.id = id;
   save("country", id);
   if (state.region && info(id).region !== state.region) {
@@ -338,7 +373,9 @@ function detail() {
     html +=
       '<div class="quotebox"><div class="line"><b class="pair">' +
       s.instrument +
-      '</b><span class="minor">Câmbio de referência</span></div><div class="line"><b class="rate">' +
+      '</b><span class="minor">' +
+      (state.base === "USD" ? "Cruzamento BCE" : "Referência BCE") +
+      '</span></div><div class="line"><b class="rate">' +
       number(s.value) +
       "</b>" +
       delta(s.change) +
@@ -379,10 +416,13 @@ function detail() {
   $("#detail").insertAdjacentHTML(
     "beforeend",
     '<div class="facts">' +
-      (state.crosses[m.currency]
+      (state.id === "USA" && state.base === "USD"
+        ? fact("Referência bilateral", "Dólar frente ao euro")
+        : "") +
+      (state.base === "EUR" && state.crosses[m.currency]
         ? fact(
             state.crosses[m.currency].instrument + " · calculado",
-            number(state.crosses[m.currency].value),
+            number(state.base === "EUR" && state.crosses[m.currency].value),
           )
         : "") +
       (s
@@ -397,9 +437,18 @@ function detail() {
       fact("Sessão de bolsa", "Não verificada") +
       "</details>" +
       '</div><div class="detailActions">' +
+      (["BRA", "USA"].includes(id)
+        ? '<button id="openEquities">Heatmap de ações →</button>'
+        : "") +
       (s ? '<button id="compareMarket">Comparar este par →</button>' : "") +
       '<button class="contextlink" id="record">Origem e método</button></div>',
   );
+  if ($("#openEquities"))
+    $("#openEquities").onclick = () => {
+      state.group = id === "BRA" ? "br" : "us";
+      document.querySelector('button[data-layer="heat"]').click();
+      $("#heatGroups [aria-pressed=true]").focus({ preventScroll: true });
+    };
   $("#record").onclick = openMeta;
   if ($("#compareMarket"))
     $("#compareMarket").onclick = () => compare.pick(m.series);
@@ -422,6 +471,15 @@ function renderAll() {
 function renderMap() {
   const daily = state.layer !== "coverage";
   const heat = state.layer === "heat";
+  const assets = heat && state.group !== "fx";
+  $(".workspace").classList.toggle("isAsset", assets);
+  $("#assetDetail").hidden = !assets;
+  $(".contexthead h2").textContent = assets
+    ? "Ficha do ativo"
+    : "Ficha do mercado";
+  $(".regionpick").hidden = assets;
+  for (const btn of document.querySelectorAll("[data-group]"))
+    btn.setAttribute("aria-pressed", String(btn.dataset.group === state.group));
   $("#heatView").hidden = !heat;
   $("#map").toggleAttribute("hidden", heat);
   $(".maptools").hidden = heat;
@@ -439,12 +497,16 @@ function renderMap() {
   for (const btn of document.querySelectorAll("button[data-layer]"))
     btn.setAttribute("aria-pressed", String(btn.dataset.layer === state.layer));
   $("#mapScope").textContent = daily
-    ? "Alta do par = euro mais forte"
+    ? assets
+      ? "Marcação mensal em " + state.base
+      : "Alta do par = " +
+        (state.base === "USD" ? "dólar" : "euro") +
+        " mais forte"
     : "Referências do BCE";
   const keys = daily
     ? [
-        ["up", "Alta do par"],
-        ["down", "Baixa do par"],
+        ["up", assets ? "Alta" : "Alta do par"],
+        ["down", assets ? "Queda" : "Baixa do par"],
         ["flat", "Estável"],
         ["none", "Sem variação válida"],
       ]
@@ -459,10 +521,18 @@ function renderMap() {
         '<span><b class="swatch ' + cls + '"></b>' + label + "</span>",
     )
     .join("");
-  if (heat) renderHeatmap(lastDate);
-  map?.draw(state.id, values, state.layer, lastDate);
+  if (assets) assetPanel.draw(state.group, state.base);
+  else if (heat) renderHeatmap(lastDate);
+  if (!heat) map?.draw(state.id, values, state.layer, lastDate);
 }
 function renderHeatmap(lastDate) {
+  $(".heatHead h3").textContent = "Mapa de calor cambial";
+  $("#heatTiles").setAttribute(
+    "aria-label",
+    "Pares cambiais por variação diária",
+  );
+  $("#heatFoot").textContent =
+    "Blocos de mesmo tamanho · Variação diária do par";
   const included = new Map();
   for (const [id, market] of Object.entries(state.markets)) {
     if (state.region && market.region !== state.region) continue;
@@ -508,7 +578,9 @@ function renderHeatmap(lastDate) {
         level +
         '" data-heat-pick="' +
         escape(id) +
-        '"><strong>EUR/' +
+        '"><strong>' +
+        state.base +
+        "/" +
         escape(code) +
         "</strong><b>" +
         (Number.isFinite(change) ? pct.format(change) + "%" : "—") +
@@ -528,6 +600,7 @@ $("#heatTiles").addEventListener("click", (e) => {
   if (!tile) return;
   state.layer = "daily";
   save("mapLayer", "daily");
+  syncHeatLink();
   document.querySelector('button[data-sheet="market"]').click();
   select(tile.dataset.heatPick, true);
   document
@@ -540,7 +613,7 @@ function openMeta() {
   const entry = (k, v) =>
     "<dt>" + escape(k) + "</dt><dd>" + escape(v) + "</dd>";
   let html =
-    '<p>Taxas diárias em unidades da moeda de cotação por euro. Estatísticas do Banco Central Europeu, disponíveis gratuitamente na <a href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html" target="_blank" rel="noreferrer">fonte oficial ↗</a>.</p><dl>' +
+    '<p>O BCE publica as taxas diárias em unidades de moeda por euro. Na base dólar, o Observatório divide as taxas publicadas na mesma data por EUR/USD. Para USD/EUR, usa o inverso de EUR/USD. Estatísticas do Banco Central Europeu, disponíveis gratuitamente na <a href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html" target="_blank" rel="noreferrer">fonte oficial ↗</a>.</p><dl>' +
     entry("Saúde da fonte", h.status + (h.error ? " · " + h.error : "")) +
     entry("Última tentativa", timestamp(h.attempted)) +
     entry("Última coleta válida", timestamp(h.received)) +
@@ -576,8 +649,9 @@ function openMeta() {
       ) +
       entry("Identificador SHA-256 do arquivo", h.snapshot);
   html +=
-    "</dl><p>A variação diária é calculada pelo Observatório contra a referência do dia útil TARGET anterior. O gráfico apresenta níveis do par. Uma alta indica que um euro compra mais unidades da moeda de cotação.</p><p>O BCE costuma publicar por volta das 16h na Europa Central. A aplicação admite margem até 17h UTC. Falhas identificam a fonte como indisponível e os valores retidos como históricos.</p><p>Para mercados da zona do euro, EUR/USD representa o contexto cambial comum. Os índices listados identificam os mercados. Suas cotações aguardam licença de exibição.</p>";
-  const cross = state.crosses[info(state.id).currency];
+    "</dl><p>A variação diária é calculada pelo Observatório contra a referência do dia útil TARGET anterior. O gráfico apresenta níveis do par. Uma alta indica que uma unidade da moeda-base compra mais unidades da moeda de cotação.</p><p>O BCE costuma publicar por volta das 16h na Europa Central. A aplicação admite margem até 17h UTC. Falhas identificam a fonte como indisponível e os valores retidos como históricos.</p><p>Para o mercado da moeda-base, o par dólar–euro oferece a referência bilateral. Os índices listados identificam os mercados. Suas cotações aguardam licença de exibição.</p>";
+  const cross =
+    state.base === "USD" && s ? s : state.crosses[info(state.id).currency];
   if (cross)
     html +=
       "<p><strong>" +
@@ -590,7 +664,7 @@ function openMeta() {
       escape(cross.status) +
       ". Séries BCE: " +
       escape(cross.inputs.join(", ")) +
-      ". Taxa da moeda local por EUR dividida por USD por EUR; para EUR usa-se o inverso de EUR/USD. Exibição com cinco casas decimais.</p>";
+      ". Taxa da moeda local por EUR dividida por USD por EUR; para EUR usa-se o inverso de EUR/USD. Exibição com até cinco casas decimais.</p>";
   if (s)
     html +=
       "<details><summary>Observações diárias · " +
@@ -609,6 +683,8 @@ function openMeta() {
       "</tbody></table></details>";
   html +=
     '<p><a href="https://www.ecb.europa.eu/stats/ecb_statistics/governance_and_quality_framework/html/usage_policy.en.html" target="_blank" rel="noreferrer">Política de reutilização do SEBC ↗</a> · <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Cartografia Natural Earth ↗</a></p>';
+  html +=
+    '<h3>Heatmaps mensais de ativos</h3><p>O Observatório calcula a variação das marcações por unidade nas posições divulgadas pelos mesmos fundos à CVM. A ficha de cada ativo identifica a competência, a moeda e a amostra. A base derivada está disponível na <a href="/api/heatmaps" target="_blank" rel="noreferrer">edição mensal</a>. <a href="https://dados.cvm.gov.br/dataset/fi-doc-cda" target="_blank" rel="noreferrer">Dados abertos CVM</a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL 1.0</a>.</p>';
   $("#metaBody").innerHTML = html;
   if (!$("#metadata").open) $("#metadata").showModal();
 }
@@ -637,7 +713,7 @@ function results() {
         m.index,
         m.market,
         m.series,
-        m.series ? "EUR/" + m.series : "",
+        m.series ? state.base + "/" + m.series : "",
       ]
         .filter(Boolean)
         .join(" "),
@@ -713,6 +789,7 @@ for (const btn of document.querySelectorAll("button[data-layer]")) {
   btn.onclick = () => {
     state.layer = btn.dataset.layer;
     save("mapLayer", state.layer);
+    syncHeatLink();
     renderMap();
   };
 }
@@ -748,24 +825,43 @@ async function json(url) {
   if (!r.ok) throw Error("Falha de leitura");
   return r.json();
 }
+let refreshVersion = 0;
+const assetPanel = assetHeat({ $, fmt, timestamp, render: renderMap });
+$("#fxBase").onchange = () => refresh();
+$("#heatGroups").onclick = (event) => {
+  const btn = event.target.closest("button[data-group]");
+  if (btn) {
+    state.group = btn.dataset.group;
+    syncHeatLink();
+    renderMap();
+  }
+};
 async function refresh() {
+  const version = ++refreshVersion;
+  const base = $("#fxBase").value;
+  $("#edition").textContent = "Consultando referências em " + base + "…";
   try {
-    const data = await json("/api/atlas");
+    const data = await json("/api/atlas?base=" + base);
+    if (version !== refreshVersion) return;
     Object.assign(state, {
+      base,
       markets: data.markets,
       crosses: data.usd_crosses || {},
       series: data.series,
       source: data.source,
     });
   } catch {
+    if (version !== refreshVersion) return;
+    state.base = base;
     state.series = {};
+    state.markets = {};
     state.crosses = {};
     state.source = {
       status: "Fonte indisponível",
       error: "API local indisponível",
     };
   }
-  compare.refresh(state.series);
+  compare.refresh(state.series, state.base);
   const observed = Object.values(state.series)
     .map((s) => s.observed)
     .sort()

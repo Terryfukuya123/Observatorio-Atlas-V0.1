@@ -130,6 +130,7 @@ export function comparison({ read, save, fmt, timestamp }) {
     details.append(table);
     output.replaceChildren(summary, chart(data.points), caption, details);
   }
+  let currencyBase = "USD";
   async function update() {
     const version = ++requestNumber;
     output.textContent = "Carregando comparação…";
@@ -143,6 +144,7 @@ export function comparison({ read, save, fmt, timestamp }) {
       return;
     }
     const params = new URLSearchParams({
+      base: currencyBase,
       a: a.value,
       b: b.value,
       dias: days.value,
@@ -164,20 +166,21 @@ export function comparison({ read, save, fmt, timestamp }) {
     [days, "compareDays"],
   ]) {
     el.onchange = () => {
-      save(key, el.value);
+      save(el === days ? key : currencyBase + key, el.value);
       update();
     };
   }
   return {
-    refresh(series) {
+    refresh(series, base) {
+      currencyBase = base;
       const codes = Object.keys(series).sort();
       for (const [select, key, fallback] of [
         [a, "compareA", "BRL"],
-        [b, "compareB", "USD"],
+        [b, "compareB", base === "USD" ? "EUR" : "USD"],
       ]) {
-        const wanted = read(key, fallback);
+        const wanted = read(base + key, fallback);
         select.replaceChildren(
-          ...codes.map((code) => new Option("EUR/" + code, code)),
+          ...codes.map((code) => new Option(base + "/" + code, code)),
         );
         if (codes.includes(wanted)) select.value = wanted;
         else if (select === b && codes.length > 1)
@@ -190,13 +193,13 @@ export function comparison({ read, save, fmt, timestamp }) {
       if (![...a.options].some((o) => o.value === code)) return;
       const previous = a.value;
       a.value = code;
-      save("compareA", code);
+      save(currencyBase + "compareA", code);
       if (b.value === code) {
         b.value =
           previous !== code
             ? previous
             : [...b.options].find((o) => o.value !== code)?.value || code;
-        save("compareB", b.value);
+        save(currencyBase + "compareB", b.value);
       }
       update();
       if (location.hash !== "#comparison") location.hash = "comparison";

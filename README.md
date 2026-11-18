@@ -17,7 +17,7 @@ Abra http://127.0.0.1:8842/ no navegador. Para encerrar a instância iniciada pe
 .\scripts\stop.ps1
 ```
 
-Também é possível executar **em primeiro plano** com `python observatorio.py` e encerrar com Ctrl+C. A opção `--port` permite outra porta em primeiro plano. Todos os modos escutam em 127.0.0.1. O serviço usa apenas a biblioteca padrão de Python. O navegador recebe código, fonte e cartografia do servidor local. A internet é necessária para renovar o arquivo cambial. A primeira tentativa de coleta pode levar alguns segundos.
+Também é possível executar **em primeiro plano** com `python observatorio.py` e encerrar com Ctrl+C. A opção `--port` permite outra porta em primeiro plano. Todos os modos escutam em 127.0.0.1. O serviço usa apenas a biblioteca padrão de Python. O navegador recebe código, fonte e cartografia do servidor local. A internet permite renovar o câmbio no BCE e as edições mensais de ativos na CVM. A primeira tentativa de coleta pode levar alguns segundos.
 
 [Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
 
@@ -31,9 +31,17 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 
 ## Câmbio e comparação
 
-Na ficha de um mercado há uma taxa calculada em moeda local por USD quando as referências necessárias têm a mesma data. Em **Origem e método** é possível conferir os pares de entrada. Use **Comparar este par** para levá-lo ao comparador. Escolha o segundo par e uma janela de 7, 30 ou 90 dias. O gráfico coloca ambas as séries em 100 na primeira observação comum. **Dados e método** mostra as datas, os valores normalizados e a captura utilizada.
+O atlas abre em USD. O primeiro cartão é USD/BRL. O seletor de moeda-base também oferece EUR e atualiza a ficha, o mapa, a tabela, o histórico, o comparador e as marcações mensais dos ativos. Em **Origem e método** é possível conferir os pares de entrada. Use **Comparar este par** para levá-lo ao comparador. Escolha o segundo par e uma janela de 7, 30 ou 90 dias. O gráfico coloca ambas as séries em 100 na primeira observação comum. **Dados e método** mostra as datas, os valores normalizados e a captura utilizada.
 
 [Relatório da atualização visual e cambial](docs/atlas-e-cambio.md)
+
+## Heatmaps de ativos
+
+Em **Heatmap**, escolha Cripto, Ações EUA ou Ações Brasil. Cada bloco abre a marcação por unidade, a variação na moeda selecionada e a amostra de fundos. Os links locais `/?heatmap=crypto`, `/?heatmap=us` e `/?heatmap=br` abrem cada mercado diretamente. As fichas geográficas do Brasil e dos EUA também dão acesso às ações correspondentes.
+
+A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatmap, o servidor verifica a última competência encerrada. Enquanto a nova edição é preparada, serve a edição disponível com suas datas. Uma falha permite nova tentativa após 24 horas. Para republicar uma competência após revisão dos dados de origem, execute `python -m scripts.heatmaps 2026-10` na pasta do projeto. As duas competências precisam estar no histórico cambial disponível. O comando utiliza dois arquivos oficiais da CVM e o cache cambial compartilhado em disco.
+
+[Metodologia e cobertura](docs/heatmaps-mensais.md)
 
 ## Estrutura
 
@@ -41,10 +49,11 @@ Na ficha de um mercado há uma taxa calculada em moeda local por USD quando as r
 |---|---|
 | web | Página, busca, estilos, gráfico e mapa SVG local |
 | config | Catálogo de mercados e vínculo explícito com a série de referência |
-| providers | Adaptador para o arquivo oficial do BCE |
+| providers | Adaptadores do BCE e dos informes públicos da CVM |
 | core | Cálculos com Decimal e calendário TARGET |
 | server | API HTTP, validade, integridade e cache compartilhado |
-| data/cache | Uma captura corrente, metadados e contadores; gravação atômica |
+| data/cache | Captura cambial, edição mensal atualizada e controle de tentativas |
+| data/editions | Edição inicial mensal com procedência e atribuição |
 | data/run | Saída local dos scripts de execução |
 | scripts | Início, encerramento e utilitário de preparação da cartografia |
 | tests | Testes determinísticos e roteiro executável de navegador |
