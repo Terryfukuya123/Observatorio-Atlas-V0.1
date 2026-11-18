@@ -383,8 +383,8 @@ export function sectorMap(host) {
     selected = next.selected;
     if (key !== next.group || selectedBoard !== next.items) {
       if (key !== next.group) {
-        mode = "position";
-        group = "";
+        mode = next.initial?.mode === "volume" ? "volume" : "position";
+        group = next.initial?.sector || "";
         scale = 1;
         ox = oy = 0;
       }
@@ -412,5 +412,6 @@ export function sectorMap(host) {
     }
     if (!view.isConnected) host.replaceChildren(bar, view, note);
     paint();
+    return () => ({ mode, sector: group });
   };
 }

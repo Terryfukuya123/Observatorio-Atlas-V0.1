@@ -12,6 +12,8 @@ Set-Location .\Observatorio-Atlas-V0.1
 .\scripts\start.ps1
 ```
 
+O perfil local abre os widgets de demonstração. Para uma apresentação com os widgets TradingView e o relatório B3 bloqueados, inicie a instância com `.\scripts\start.ps1 -Perfil profissional`. Encerre a instância anterior antes de trocar de perfil.
+
 Abra http://127.0.0.1:8842/ no navegador. Para encerrar a instância iniciada pelo script:
 
 ```powershell
@@ -112,7 +114,7 @@ O bloco **Bolsas agora** reúne num só lugar o que antes eram duas seções (pr
 
 Uma legenda recolhível explica índice à vista, contrato, ADR, EWZ, VIX, DXY e o atraso das cotações. Os endereços antigos `#prepos` e `#indices` continuam abrindo a visão certa.
 
-A visão **Bolsas do mundo** resume a tela de índices globais dos terminais profissionais no que importa para consulta rápida. São quatro regiões: Américas, Europa, Ásia-Pacífico e Referências (DXY, VIX, dólar em reais, ouro, Brent e bitcoin). Cada uma mostra valor, variação do dia e gráfico do índice escolhido, pelo widget público do TradingView. Alguns índices aparecem por contratos que os acompanham, indicados como "contrato". Ao lado, **Pregões agora** informa se cada bolsa da região está aberta, em intervalo ou fechada, quanto falta para fechar ou abrir, e a hora local. Esse cálculo é feito no navegador a partir do horário regular de cada bolsa, sem feriados. P/L, estimativas e dividendos ficaram de fora por falta de fonte gratuita licenciada.
+A visão **Bolsas do mundo** resume a tela de índices globais dos terminais profissionais no que importa para consulta rápida. São quatro regiões: Américas, Europa, Ásia-Pacífico e Referências (DXY, VIX, dólar em reais, ouro, Brent e bitcoin). Cada uma mostra valor, variação do dia e gráfico do índice escolhido, pelo widget público do TradingView. Alguns índices aparecem por contratos que os acompanham, indicados como "contrato". Ao lado, **Pregões agora** informa se cada bolsa da região está aberta, em intervalo ou fechada, quanto falta para fechar ou abrir, e a hora local. Em 2026, o relógio inclui os feriados e as sessões especiais da B3 e da NYSE. Outras praças e anos seguem a grade semanal estimada. P/L, estimativas e dividendos ficaram de fora por falta de fonte gratuita licenciada.
 
 ## Mapas de calor ao vivo
 
@@ -220,6 +222,7 @@ node tests/browser.cjs
 Roteiro de fumaça, mais curto, para rodar a cada mudança com o servidor ativo:
 
 ```powershell
+node tests/session-calendar.mjs
 node tests/smoke.cjs http://127.0.0.1:8842
 ```
 

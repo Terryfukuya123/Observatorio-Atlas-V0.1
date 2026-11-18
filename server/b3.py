@@ -221,6 +221,12 @@ def daily(snapshots):
     return days
 
 
+class RestrictedB3:
+    def read(self):
+        return dict(RIGHTS, data=None, restricted=True,
+                    status="Exibição do relatório B3 pendente de autorização")
+
+
 class B3Store:
     """Lê os relatórios de data/b3/, guarda os retratos e entrega o mais recente com os dias derivados."""
 

@@ -127,6 +127,26 @@ const path = require("node:path");
     await page.waitForFunction(() =>
       document.querySelector(".assetPrice")?.textContent.includes("EUR"),
     );
+    await page.getByLabel("Setor",{exact:true}).selectOption("Financeiro");
+    await page.getByLabel("Ativo",{exact:true}).selectOption("ITUB4");
+    await page.context().grantPermissions(["clipboard-read","clipboard-write"], {origin:"http://127.0.0.1:8842"});
+    await page.getByRole("button",{name:"Copiar análise"}).click();
+    await page.getByText("Link copiado",{exact:true}).waitFor();
+    const shared = await page.evaluate(() => navigator.clipboard.readText());
+    const sharedUrl = new URL(shared);
+    assert.match(sharedUrl.searchParams.get("rev"), /^[a-f0-9]{64}$/);
+    const recipient = await browser.newPage();
+    await recipient.goto(shared);
+    await recipient.waitForSelector(".assetPrice");
+    assert.equal(await recipient.locator("#fxBase").inputValue(), "EUR");
+    assert.equal(await recipient.getByLabel("Setor",{exact:true}).inputValue(), "Financeiro");
+    assert.equal(await recipient.getByLabel("Área",{exact:true}).inputValue(), "volume");
+    assert.equal(await recipient.getByLabel("Ativo",{exact:true}).inputValue(), "ITUB4");
+    sharedUrl.searchParams.set("competencia","1900-01");
+    await recipient.goto(sharedUrl.href);
+    await recipient.getByText("Edição solicitada indisponível · 1900-01",{exact:true}).waitFor();
+    assert.equal(await recipient.locator(".assetPrice").count(), 0);
+    await recipient.close();
     await page.click('[data-group="fx"]');
     await page.waitForFunction(() =>
       document.querySelector("#heatTiles")?.textContent.includes("EUR/BRL"),

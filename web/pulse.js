@@ -183,7 +183,7 @@ const builders = {
     const now = new Date();
     const list = Object.values(MARKETS).map((m) => ({ m, s: session(m, now) }));
     const open = list.filter((x) => x.s.state === "open");
-    const next = list.filter((x) => x.s.state !== "open").sort((a, b) => a.s.wait - b.s.wait)[0];
+    const next = list.filter((x) => x.s.state !== "open" && x.s.wait != null).sort((a, b) => a.s.wait - b.s.wait)[0];
     const dots = '<span class="pulseDots" aria-hidden="true">' + list.map((x) => '<i data-state="' + x.s.state + '" title="' + esc(x.m.name) + '">' + round(x.m.country) + "</i>").join("") + "</span>";
     return tile({
       href: "#indices",
