@@ -6389,3 +6389,54 @@ dialog.dossier {
     display: none;
   }
 }
+
+/* Qualidade da inflação */
+.ifCard {
+  --if-ipca: #e0875a;
+  --if-core: #d1a94a;
+  --if-serv: #6f9fc8;
+  --if-agro: #8fb86c;
+  --if-metal: #a7a9ad;
+  --if-energy: #d9634c;
+}
+:root[data-theme="light"] .ifCard {
+  --if-ipca: #b85a2a;
+  --if-core: #8a6a12;
+  --if-serv: #2f6b9a;
+  --if-agro: #4f7d2c;
+  --if-metal: #5b5e63;
+  --if-energy: #a8402c;
+}
+.ifIpca.cpLine { stroke: var(--if-ipca); }
+.ifCore.cpLine { stroke: var(--if-core); }
+.ifServ.cpLine { stroke: var(--if-serv); }
+.ifAgro.cpLine { stroke: var(--if-agro); }
+.ifMetal.cpLine { stroke: var(--if-metal); }
+.ifEnergy.cpLine { stroke: var(--if-energy); }
+.cpTag.ifIpca, .cpKey.ifIpca { fill: var(--if-ipca); background: var(--if-ipca); }
+.cpTag.ifCore, .cpKey.ifCore { fill: var(--if-core); background: var(--if-core); }
+.cpTag.ifServ, .cpKey.ifServ { fill: var(--if-serv); background: var(--if-serv); }
+.cpTag.ifAgro, .cpKey.ifAgro { fill: var(--if-agro); background: var(--if-agro); }
+.cpTag.ifMetal, .cpKey.ifMetal { fill: var(--if-metal); background: var(--if-metal); }
+.cpTag.ifEnergy, .cpKey.ifEnergy { fill: var(--if-energy); background: var(--if-energy); }
+.ifBar {
+  fill: color-mix(in srgb, var(--if-core) 45%, transparent);
+}
+.ifBar.ifHigh {
+  fill: var(--if-core);
+}
+@media (max-width: 700px) {
+  .ifTable th:nth-child(2),
+  .ifTable td:nth-child(2),
+  .ifTable th:nth-child(5),
+  .ifTable td:nth-child(5) {
+    display: none;
+  }
+}
+.ifTable th,
+.ifTable td {
+  white-space: normal;
+}
+.ifTable td:first-child {
+  min-width: 9em;
+}

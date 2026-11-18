@@ -567,6 +567,42 @@
           calculadas pelo Observatório. Não é recomendação de investimento.
         </p>
       </section>
+      <section id="inflacao" class="card cpCard ifCard" data-desk="brasil" aria-labelledby="ifTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="ifTitle">Qualidade da inflação · o IPCA por dentro</h2>
+          </div>
+          <span class="ifStamp unit-label">Banco Central</span>
+        </div>
+        <p class="cpRead"></p>
+        <div class="cpKpis"></div>
+        <div class="tdTabs layerTabs" role="group" aria-label="Visão">
+          <button type="button" data-if-view="nucleos" aria-pressed="true">Núcleos e serviços</button>
+          <button type="button" data-if-view="difusao" aria-pressed="false">Difusão</button>
+          <button type="button" data-if-view="commodities" aria-pressed="false">Commodities em reais</button>
+          <button type="button" data-if-view="tabela" aria-pressed="false">Todas as medidas</button>
+        </div>
+        <div class="ifPlot cpPlot"><p class="empty">Carregando as séries de inflação…</p></div>
+        <p class="ifLegend cpLegend"></p>
+        <details class="tdHow">
+          <summary>Como ler</summary>
+          <dl>
+            <div><dt>Núcleos</dt><dd>Medidas que tiram do IPCA os itens mais voláteis ou os extremos de cada mês. A média dos cinco que o mercado acompanha (EX0, EX3, MS, DP e P55) mostra a tendência; é o que o Banco Central olha para decidir juros.</dd></div>
+            <div><dt>Ritmo de 3 meses anualizado</dt><dd>Quanto daria a inflação em um ano se os últimos três meses se repetissem. Antecipa a virada do acumulado em 12 meses, mas sem ajuste sazonal oscila mais.</dd></div>
+            <div><dt>Serviços</dt><dd>Preços puxados por salários e demanda interna. Demoram a cair e por isso pesam nas decisões do Copom.</dd></div>
+            <div><dt>Difusão</dt><dd>Parcela dos itens do IPCA que subiram no mês. Tem sazonalidade, por isso a comparação é com a média do mesmo mês nos cinco anos anteriores.</dd></div>
+            <div><dt>Livres e monitorados</dt><dd>Monitorados são preços definidos por contrato ou governo (energia, combustíveis, planos de saúde, transporte público). Livres respondem à demanda e aos juros.</dd></div>
+            <div><dt>IC-Br</dt><dd>Índice de Commodities do Banco Central, em reais. Agropecuária antecipa alimentos; energia, combustíveis e tarifas; metal, custos da indústria.</dd></div>
+          </dl>
+        </details>
+        <p class="sourceNote">
+          Séries do Banco Central (SGS): IPCA (433), difusão (21379), núcleos EX0 (11427), EX3 (27839),
+          MS (4466), DP (16122) e P55 (28751), serviços (10844), livres (11428), monitorados (4449),
+          comercializáveis (4447), não comercializáveis (4448) e IC-Br (27574 a 27577). Acumulados,
+          ritmos e comparações calculados pelo Observatório. BCB sob ODbL 1.0.
+        </p>
+      </section>
       <section id="brasil" data-desk="brasil" aria-labelledby="brasilTitle">
         <div class="sectionTitle">
           <h2 id="brasilTitle">Painel Brasil</h2>

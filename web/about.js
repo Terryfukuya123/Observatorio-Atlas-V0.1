@@ -4,7 +4,7 @@ import { esc } from "./format.js";
 
 // [fonte, o que traz, licença, situação, endereço]. Situação: livre | provisorio | pendente.
 export const SOURCES = [
-  ["Banco Central do Brasil", "Selic, IPCA, PTAX, Focus, câmbio contratado, balanço de pagamentos, atuações no câmbio e notas à imprensa", "ODbL 1.0, uso comercial com atribuição", "livre", "https://dadosabertos.bcb.gov.br/"],
+  ["Banco Central do Brasil", "Selic, IPCA por dentro (núcleos, difusão, serviços), commodities (IC-Br), PTAX, Focus, câmbio contratado, balanço de pagamentos, atuações no câmbio e notas à imprensa", "ODbL 1.0, uso comercial com atribuição", "livre", "https://dadosabertos.bcb.gov.br/"],
   ["Agência Brasil (EBC)", "Notícias de economia e política econômica na seção Ao vivo (título, resumo curto e link)", "CC BY 4.0, uso com atribuição", "livre", "https://agenciabrasil.ebc.com.br/"],
   ["Fed e BCE", "Comunicados, decisões e discursos na seção Ao vivo", "Domínio público (Fed); reuso com citação (BCE)", "livre", "https://www.federalreserve.gov/feeds/feeds.htm"],
   ["Tesouro Nacional · Tesouro Direto", "Taxas diárias dos títulos públicos: juro nominal, juro real e inflação implícita", "ODbL 1.0", "livre", "https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto"],

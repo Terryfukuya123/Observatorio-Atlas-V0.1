@@ -68,7 +68,7 @@ def names(catalog):
         out["bcfx:atuacoes"] = "Atuações do BC no câmbio"
     if catalog.get("focus"):
         out["focus:anuais"] = "Expectativas Focus"
-    for s in catalog.get("brasil", []) + catalog.get("fluxo", []):
+    for s in catalog.get("brasil", []) + catalog.get("fluxo", []) + catalog.get("inflacao", []):
         out[f"sgs:{s['code']}"] = s.get("name") or s["id"]
     for s in catalog.get("ibge", []):
         out[f"ibge:{s['id']}"] = s.get("name") or s["id"]

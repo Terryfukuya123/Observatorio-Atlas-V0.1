@@ -48,6 +48,7 @@ export const DESKS = {
     parts: [
       ["bussola", "Bússola dos juros"],
       ["tesouro", "Mercado precifica"],
+      ["inflacao", "Qualidade da inflação"],
       ["brasil", "Painel Brasil"],
       ["focus", "Expectativas · Focus"],
       ["fluxo", "Fluxo de capital"],

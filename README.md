@@ -37,6 +37,7 @@ A plataforma se divide em quatro espaços, escolhidos na barra lateral. Cada um 
   - **Cotações:** widget do TradingView com futuros dos EUA, Brasil em Nova York (EWZ e ADRs de Petrobras, Vale, Itaú, Bradesco e Nubank), commodities, DXY e Treasuries. Depois do fechamento, entram Ibovespa, small caps e IFIX.
   - **Roteiro ao lado, com dados da plataforma:** o mundo agora (Ásia, Europa, Nova York e São Paulo), a agenda do dia, dólar e juros, o termômetro de risco e o fluxo cambial do BCB.
   - **Volume e origem do pregão:** vêm do relatório *Dados de Mercado* da B3 (CSV ou .xlsx). Ele é baixado à mão e salvo em `data/b3/`, porque a B3 veda a coleta automática. A exibição a terceiros depende de licença de Market Data.
+- **Qualidade da inflação (Brasil):** o IPCA por dentro, com 15 séries do Banco Central. Quatro números abrem a seção: média dos cinco núcleos em 12 meses e no ritmo dos últimos 3 meses anualizado, serviços, difusão (parcela dos itens que subiram, comparada à média do mesmo mês nos cinco anos anteriores) e commodities em reais (IC-Br). Uma frase diz se a tendência acelera ou desacelera e se a alta está espalhada. Quatro visões: núcleos, IPCA e serviços em 12 meses com a faixa da meta; difusão mês a mês; IC-Br de agropecuária, metal e energia em base 100; e a tabela com todas as medidas.
 - **O que o mercado precifica (Brasil):** com as taxas diárias do Tesouro Direto, a plataforma monta a curva de juro nominal (prefixados) e a de juro real (IPCA+) e calcula a **inflação implícita** entre elas, a inflação média que deixa os dois títulos empatados. Quatro números abrem a seção: inflação implícita de 5 anos (comparada ao Focus no mesmo período), juro real de 5 anos, prefixado de 1 ano (comparado à Selic) e a distância da meta, cada um com a variação em um mês. Uma frase resume se o mercado acredita na volta da inflação à meta e se embute alta ou corte de juros. Três visões: inflação implícita até cada vencimento contra o Focus e a meta, dois anos de histórico e a taxa de cada título com a variação no mês.
 - **Pregão B3 (Mercados):** volume médio por pregão mês a mês contra a média do ano anterior, saldo mensal dos estrangeiros, participação por tipo de investidor e uma leitura em texto do mês. Importando o relatório todo dia, a seção mostra também cada pregão (diferença entre dois relatórios).
 - **Mercados:** Bolsas agora, pregão da B3, mapas de calor ao vivo, **Força das moedas**, comparador de câmbio e mercados acompanhados. A Força das moedas ranqueia o dólar e as nove moedas do BCE pela variação média contra as outras no dia, na semana, no mês ou em 3 meses, com uma frase de leitura, a trajetória de cada moeda e uma matriz cruzada colorida. Um toque num par da matriz abre os dois no comparador, no período equivalente.
@@ -68,6 +69,10 @@ Em **Heatmap**, escolha Cripto, Ações EUA ou Ações Brasil. Cada bloco abre a
 A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatmap, o servidor verifica a última competência encerrada. Enquanto a nova edição é preparada, serve a edição disponível com suas datas. Uma falha permite nova tentativa após 24 horas. Para republicar uma competência após revisão dos dados de origem, execute `python -m scripts.heatmaps 2026-10` na pasta do projeto. As duas competências precisam estar no histórico cambial disponível. O comando utiliza dois arquivos oficiais da CVM e o cache cambial compartilhado em disco.
 
 [Metodologia e cobertura](docs/heatmaps-mensais.md)
+
+## Qualidade da inflação
+
+As 15 séries entram na mesma coleta do SGS (lista `inflacao` em `config/macro.json`) e o servidor calcula o resumo em `server/inflation.py`, exposto em `/api/inflacao`. Acumulado em 12 meses: produto das variações mensais. Ritmo de 3 meses anualizado: (1 + acumulado dos 3 meses) ^ 4 − 1, sem ajuste sazonal. Média dos núcleos: média simples de EX0, EX3, MS, DP e P55, só nos meses em que os cinco saíram. Difusão: comparada à média do mesmo mês nos cinco anos anteriores, porque tem sazonalidade forte. IC-Br: variação do índice em 1, 3 e 12 meses.
 
 ## O que o mercado precifica
 
@@ -111,7 +116,7 @@ Câmbio e balanço de pagamentos vêm do BCB e os fundos da CVM, ambos sob ODbL.
 
 ## Camada macro
 
-A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`.
+A API `/api/macro` reúne 13 séries brasileiras do BCB (mais 15 de inflação servidas em `/api/inflacao`), 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`.
 
 Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões por tema com histórico e a tabela do Focus), **Juros e ciclo global** (curva dos EUA e indicador antecedente da OCDE), a aba **Indicadores** do mapa (coroplético em quintis, com seletor do indicador) e o bloco **Indicadores macro** da ficha de cada país.
 
@@ -174,7 +179,7 @@ Uma coleta parada há mais de 6 horas aparece como atrasada. O relatório da B3 
 | `data.js` | Busca compartilhada da API (uma vez por minuto por endereço) |
 | `desks.js` | Espaços (Panorama, Mercados, Brasil, Global) e roteamento por endereço |
 | `atlas.js` | Mapa, cotações, tabela, painel do país, busca e folhas de fontes do Panorama |
-| demais | Uma seção cada: `pulse`, `risk`, `agenda`, `clock`, `news` (Ao vivo), `tesouro` (mercado precifica), `prepos` (Bolsas agora), `pregao`, `indices` (horários das bolsas), `live-heat`, `fx-board`, `comparison`, `compass`, `flows`, `funds`, `cycle-clock`, `macro`, `bulletin`, `dossier`, `glossary`, `finder` |
+| demais | Uma seção cada: `pulse`, `risk`, `agenda`, `clock`, `news` (Ao vivo), `tesouro` (mercado precifica), `inflation` (qualidade da inflação), `prepos` (Bolsas agora), `pregao`, `indices` (horários das bolsas), `live-heat`, `fx-board`, `comparison`, `compass`, `flows`, `funds`, `cycle-clock`, `macro`, `bulletin`, `dossier`, `glossary`, `finder` |
 
 Uma seção nova é um módulo em `web/` com uma função de montagem chamada em `app.js`. O servidor entrega o arquivo sem cadastro.
 

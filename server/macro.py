@@ -15,7 +15,7 @@ from threading import Lock, Thread
 from time import monotonic
 
 from providers import bcb, eurostat, ibge, oecd, treasury, worldbank
-from server import flows
+from server import flows, inflation
 
 TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "ibge": timedelta(hours=6), "rg": timedelta(hours=12), "wb": timedelta(hours=24), "bcfx": timedelta(hours=12)}
 RETRY = timedelta(minutes=30)
@@ -63,6 +63,7 @@ def load_catalog(root):
     catalog.setdefault("ibge", [])
     catalog.setdefault("regional", [])
     catalog.setdefault("fluxo", [])
+    catalog.setdefault("inflacao", [])
     ids = [s["id"] for s in catalog["brasil"] + catalog["global"] + catalog["focus"] + catalog["ibge"] + catalog["regional"]]
     if len(ids) != len(set(ids)):
         raise ValueError("Identificadores repetidos no catálogo macro")
@@ -78,6 +79,14 @@ def load_catalog(root):
         raise ValueError("Catálogo de fluxo incompleto")
     for series in catalog["fluxo"]:
         if series["frequency"] not in {"Diária", "Mensal"} or series["block"] not in flows.BLOCKS:
+            raise ValueError(f"Periodicidade ou bloco inválido em {series['id']}")
+    inf_ids = [s["id"] for s in catalog["inflacao"]]
+    inf_codes = [s["code"] for s in catalog["inflacao"]]
+    if (len(inf_ids) != len(set(inf_ids)) or len(inf_codes) != len(set(inf_codes))
+            or set(inf_codes) & ({s["code"] for s in catalog["brasil"]} | set(codes))):
+        raise ValueError("Séries repetidas no catálogo de inflação")
+    for series in catalog["inflacao"]:
+        if series["frequency"] != "Mensal" or series["block"] not in inflation.BLOCKS:
             raise ValueError(f"Periodicidade ou bloco inválido em {series['id']}")
     for series in catalog["brasil"] + catalog["ibge"]:
         if series["frequency"] not in HISTORY:
@@ -126,7 +135,7 @@ class MacroStore:
                    lambda body, t=today: bcb.normalize_sgs(body, t))
         if self.catalog.get("fluxo"):
             yield ("bcfx:atuacoes", bcb.ATUACOES, lambda body, t=today: bcb.normalize_atuacoes(body, t))
-        for s in self.catalog["brasil"]:
+        for s in self.catalog["brasil"] + self.catalog.get("inflacao", []):
             yield (f"sgs:{s['code']}", bcb.sgs_url(s["code"], s["frequency"], today),
                    lambda body, t=today: bcb.normalize_sgs(body, t))
         for s in self.catalog["ibge"]:
@@ -474,6 +483,17 @@ class MacroStore:
                     best[s["concept"]] = item
             recent = list(best.values())
             return dict(iso=iso, indicators=rows, recent=recent, **RIGHTS["wb"])
+
+    # -- Qualidade da inflação -----------------------------------------------------
+    def inflation(self):
+        self.refresh_if_due()
+        catalog = self.catalog.get("inflacao", [])
+        with self.lock:
+            series = {s["id"]: (self.entries.get(f"sgs:{s['code']}") or {}).get("data") for s in catalog}
+            headline = (self.entries.get("sgs:433") or {}).get("data")
+            collection = {s["id"]: self.status(f"sgs:{s['code']}") for s in catalog}
+        return dict(data=inflation.summary(series, catalog, headline) if catalog else None, collection=collection,
+                    series=catalog, warning=self.warning, generated=self.clock().isoformat(), **RIGHTS["sgs"])
 
     # -- Fluxo de capital -----------------------------------------------------------
     def flows(self):

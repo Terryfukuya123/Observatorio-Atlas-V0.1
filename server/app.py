@@ -124,6 +124,9 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/noticias":
             body = json.dumps(self.server.news.read(), ensure_ascii=False, allow_nan=False).encode()
             mime = "application/json"
+        elif path == "/api/inflacao":
+            body = json.dumps(self.server.macro.inflation(), ensure_ascii=False, allow_nan=False).encode()
+            mime = "application/json"
         elif path == "/api/fluxo":
             self.server.macro.refresh_if_due()
             body = json.dumps(self.server.macro.flows(), ensure_ascii=False, allow_nan=False).encode()
