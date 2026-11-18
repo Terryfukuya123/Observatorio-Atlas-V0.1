@@ -25,6 +25,17 @@ O Eurostat autoriza reuso comercial com citação, **exceto** para dados de paí
 
 Em 2026 o Eurostat migrou o HICP para a COICOP 2018 (`prc_hicp_minr`). O conjunto antigo (`prc_hicp_manr`) e a inflação da OCDE para países europeus pararam em dez/2025. A ficha do país escolhe a observação mais recente de cada conceito, e qualquer série com último dado acima de 125 dias (mensal) ou 215 dias (trimestral) é marcada como defasada.
 
+## Telas
+
+O módulo `web/macro.js` consome a API e alimenta:
+
+- **Painel Brasil** (`#brasil`): cartões agrupados em Juros e câmbio, Atividade, Inflação, Trabalho e crédito, Fiscal e setor externo. Cada cartão traz último valor, variação contra o anterior, período e minigráfico. Abaixo, a tabela do Focus com as medianas por ano e as sequências semanais de alta ou queda.
+- **Juros e ciclo global** (`#juros`): curva do Tesouro dos EUA (hoje, há 1 mês e há 1 ano, eixo em raiz do prazo) com inclinações 10A−2A e 10A−3M, e o CLI da OCDE por território com a fase do ciclo.
+- **Mapa · Indicadores**: coroplético em quintis do indicador escolhido, com legenda, cobertura e referência Mundo. A escolha fica salva no navegador.
+- **Ficha do país**: dado recente mensal ou trimestral (Eurostat ou OCDE), três anuais-chave do Banco Mundial e o restante recolhido em "Mais indicadores anuais".
+
+Em telas a partir de 851 px a ficha acompanha a altura do mapa e rola por dentro; até 670 px os cartões ficam em 2×2.
+
 ## API
 
 | Rota | Conteúdo |
@@ -40,6 +51,6 @@ Cada resposta identifica fonte, licença, conjunto de dados e estado da coleta.
 
 ## Pendências
 
-- Integração visual (painel Brasil, ficha macro do país e mapa coroplético) após a entrega do heatmap, para evitar conflito em `web/app.js` e `web/index.html`.
+- Merge no `main` depois da entrega do heatmap; conflitos esperados em `server/app.py`, `web/app.js`, `web/index.html` e `web/app.css`.
 - Próximos candidatos gratuitos: FMI (World Economic Outlook, projeções por país), BIS (juros básicos dos bancos centrais).
 - Descartados nesta revisão: SGS 24369 (desocupação) sem resposta, substituída pela tabela 6381 do IBGE, e juros reais do WDI (FR.INR.RINR), com valor inconsistente para o Brasil.

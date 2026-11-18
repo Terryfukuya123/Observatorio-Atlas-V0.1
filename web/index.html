@@ -34,6 +34,12 @@
         <a href="#bulletin" title="Informativo" aria-label="Informativo"
           ><i data-icon="news"></i><span>Informativo</span></a
         >
+        <a href="#brasil" title="Painel Brasil" aria-label="Painel Brasil"
+          ><i data-icon="chart"></i><span>Painel Brasil</span></a
+        >
+        <a href="#juros" title="Juros e ciclo" aria-label="Juros e ciclo"
+          ><i data-icon="layers"></i><span>Juros e ciclo</span></a
+        >
         <a
           href="#comparison"
           title="Comparar câmbio"
@@ -114,7 +120,14 @@
                 Variação diária
               </button>
               <button data-layer="heat" aria-pressed="false">Heatmap</button>
+              <button data-layer="macro" aria-pressed="false">
+                Indicadores
+              </button>
             </div>
+            <label class="macroPick" hidden
+              ><span class="visually-hidden">Indicador do mapa</span
+              ><select id="macroIndicator" aria-label="Indicador do mapa"></select
+            ></label>
             <span id="mapScope"></span>
           </div>
           <div class="canvas">
@@ -220,6 +233,59 @@
           Seleção editorial de 17/11/2026 · Fontes oficiais · Datas dos eventos
           no horário local de cada instituição.
         </p>
+      </section>
+      <section id="brasil" aria-labelledby="brasilTitle">
+        <div class="sectionTitle">
+          <h2 id="brasilTitle">Painel Brasil</h2>
+          <span id="brasilStamp">BCB e IBGE</span>
+        </div>
+        <div id="brasilGroups" class="macroGroups">
+          <p class="empty">Carregando indicadores…</p>
+        </div>
+        <section class="card focusCard" aria-labelledby="focusTitle">
+          <div class="cardhead">
+            <div class="headtitle">
+              <i data-icon="calendar"></i>
+              <h2 id="focusTitle">Expectativas de mercado · Focus</h2>
+            </div>
+            <span id="focusDate" class="unit-label"></span>
+          </div>
+          <div id="focusTable" class="scroll"></div>
+          <p class="sourceNote focusNote">
+            Mediana das projeções de instituições consultadas pelo BCB. ▲▼ e o
+            número indicam altas ou quedas semanais seguidas; = indica
+            estabilidade.
+          </p>
+        </section>
+        <p id="brasilSources" class="sourceNote"></p>
+      </section>
+      <section id="juros" aria-labelledby="jurosTitle">
+        <div class="sectionTitle">
+          <h2 id="jurosTitle">Juros e ciclo global</h2>
+          <span>Tesouro dos EUA · OCDE</span>
+        </div>
+        <div class="cycleGrid">
+          <section class="card" aria-labelledby="curveTitle">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="chart"></i>
+                <h2 id="curveTitle">Curva de juros dos EUA</h2>
+              </div>
+              <span id="curveDate" class="unit-label"></span>
+            </div>
+            <div id="usCurve"><p class="empty">Carregando curva…</p></div>
+          </section>
+          <section class="card" aria-labelledby="cliTitle">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="globe"></i>
+                <h2 id="cliTitle">Indicador antecedente</h2>
+              </div>
+              <span id="cliDate" class="unit-label"></span>
+            </div>
+            <div id="cliList"><p class="empty">Carregando ciclo…</p></div>
+          </section>
+        </div>
       </section>
       <section id="comparison" class="card" aria-labelledby="compareTitle">
         <div class="cardhead">

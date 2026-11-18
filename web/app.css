@@ -2131,3 +2131,439 @@ footer a {
     padding: 12px;
   }
 }
+
+/* ------------------------------------------------------------ Camada macro */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.macroPick {
+  border-radius: 3px;
+  background: var(--bg);
+  padding: 3px 6px;
+  margin-left: 8px;
+  font-size: 12px;
+}
+.macroPick select {
+  background: transparent;
+  max-width: 220px;
+}
+#map[data-layer="macro"] .land {
+  fill: var(--land);
+}
+#map[data-layer="macro"] [data-q="0"],
+.swatch.q0 {
+  fill: color-mix(in srgb, var(--accent) 14%, var(--land));
+  background: color-mix(in srgb, var(--accent) 14%, var(--land));
+}
+#map[data-layer="macro"] [data-q="1"],
+.swatch.q1 {
+  fill: color-mix(in srgb, var(--accent) 34%, var(--land));
+  background: color-mix(in srgb, var(--accent) 34%, var(--land));
+}
+#map[data-layer="macro"] [data-q="2"],
+.swatch.q2 {
+  fill: color-mix(in srgb, var(--accent) 54%, var(--land));
+  background: color-mix(in srgb, var(--accent) 54%, var(--land));
+}
+#map[data-layer="macro"] [data-q="3"],
+.swatch.q3 {
+  fill: color-mix(in srgb, var(--accent) 76%, var(--land));
+  background: color-mix(in srgb, var(--accent) 76%, var(--land));
+}
+#map[data-layer="macro"] [data-q="4"],
+.swatch.q4 {
+  fill: var(--selected);
+  background: var(--selected);
+}
+#map[data-layer="macro"] .land.selected {
+  stroke: var(--text);
+  stroke-width: 1.8;
+}
+#brasil,
+#juros {
+  scroll-margin: 12px;
+}
+.macroGroups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+.macroGroup[data-wide="yes"] {
+  grid-column: span 2;
+}
+.macroGroup[data-wide="yes"] .macroTiles {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.cycleGrid {
+  align-items: start;
+}
+@media (max-width: 1150px) {
+  .macroGroups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.macroGroup .cardhead {
+  min-height: 40px;
+  padding: 9px 16px;
+}
+.macroGroup h3 {
+  margin: 0;
+  font: 450 18px/1 var(--display);
+}
+.macroTiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+.macroTile {
+  padding: 12px 16px 10px;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  min-width: 0;
+  color: var(--text);
+}
+.macroTile h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--soft);
+  line-height: 1.3;
+  min-height: 2.6em;
+}
+.macroValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.macroValue b {
+  font: 500 21px/1.1 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+.macroDelta {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.macroMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.macroMeta span:last-child {
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.macroWarn {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--neg);
+}
+.spark {
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin-top: 6px;
+  color: var(--accent);
+}
+.focusCard {
+  margin-top: 15px;
+}
+#focusTable th small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+#focusTable tbody th {
+  background: transparent;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#focusTable .num {
+  text-align: right;
+}
+#focusTable td b {
+  color: var(--text);
+  font-weight: 600;
+}
+.focusTrend {
+  display: inline-block;
+  min-width: 26px;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: left;
+}
+.sourceNote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+.sourceNote a {
+  color: var(--link);
+}
+.focusNote,
+#usCurve .sourceNote,
+#cliList .sourceNote {
+  margin: 0;
+  padding: 10px 16px 14px;
+}
+.cycleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 15px;
+}
+.curveFacts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+.curveFacts div {
+  padding: 10px 12px;
+  border-right: 1px solid var(--border);
+}
+.curveFacts div:last-child {
+  border-right: 0;
+}
+.curveFacts span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+}
+.curveFacts b {
+  font: 500 18px/1.2 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+.curveFacts b[data-inverted="true"] {
+  color: var(--neg);
+}
+.curveChart {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 10px 12px 0;
+}
+.curveChart .gridline {
+  stroke: var(--border);
+  stroke-dasharray: 3 4;
+}
+.curveLine {
+  fill: none;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+.curveLine.now {
+  stroke: var(--accent);
+  stroke-width: 2.4;
+}
+.curveLine.month {
+  stroke: var(--second);
+}
+.curveLine.year {
+  stroke: var(--muted);
+  stroke-dasharray: 5 4;
+}
+.curveDot {
+  fill: var(--accent);
+}
+.curveLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 2px 16px 0;
+  font-size: 11px;
+  color: var(--soft);
+}
+.curveLegend i {
+  display: inline-block;
+  width: 16px;
+  height: 0;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-top: 2px solid var(--accent);
+}
+.curveLegend i.month {
+  border-top-color: var(--second);
+}
+.curveLegend i.year {
+  border-top: 2px dashed var(--muted);
+}
+.cliRows {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+.cliRows li {
+  display: grid;
+  grid-template-columns: minmax(96px, 1.1fr) minmax(70px, 1fr) 48px 92px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  font-size: 12px;
+}
+.cliRows b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cliRows small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.cliRows small[data-phase="Expansão"],
+.cliRows small[data-phase="Recuperação"] {
+  color: var(--pos);
+}
+.cliRows small[data-phase="Contração"],
+.cliRows small[data-phase="Desaceleração"] {
+  color: var(--neg);
+}
+.cliBar {
+  position: relative;
+  height: 8px;
+  background: linear-gradient(var(--border), var(--border)) center / 1px 100% no-repeat;
+}
+.cliBar i {
+  position: absolute;
+  top: 1px;
+  height: 6px;
+  border-radius: 1px;
+}
+.cliBar i[data-side="up"] {
+  left: 50%;
+  background: var(--rise-fill);
+}
+.cliBar i[data-side="down"] {
+  right: 50%;
+  background: var(--fall-fill);
+}
+.macroFacts:empty {
+  display: none;
+}
+.macroFacts {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 4px;
+}
+.macroHead {
+  margin: 10px 0 2px;
+  font: 450 19px/1.1 var(--display);
+}
+.macroSub {
+  margin: 12px 0 2px;
+  font-size: 11px;
+  color: var(--link);
+}
+.macroRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.macroRow small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.macroRow b {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.macroRow.stale b {
+  color: var(--muted);
+}
+.macroLoading {
+  font-size: 11px;
+  color: var(--muted);
+}
+@media (max-width: 1020px) {
+  .cycleGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 670px) {
+  .macroGroups {
+    grid-template-columns: 1fr;
+  }
+  .curveFacts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .curveFacts div:nth-child(3) {
+    border-right: 0;
+  }
+  .cliRows li {
+    grid-template-columns: minmax(84px, 1fr) minmax(50px, 1fr) 42px;
+  }
+  .cliRows small {
+    display: none;
+  }
+  .macroPick select {
+    max-width: 150px;
+  }
+}
+
+.macroMeta span:first-child {
+  white-space: nowrap;
+}
+.macroMore summary {
+  cursor: pointer;
+  padding: 8px 0;
+  font-size: 11px;
+  color: var(--soft);
+}
+/* Em duas colunas, a ficha acompanha a altura do mapa e rola por dentro. */
+@media (min-width: 851px) {
+  .workspace > .context {
+    height: 0;
+    min-height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .workspace.isAsset > .context {
+    height: auto;
+  }
+}
+@media (max-width: 850px) {
+  .mapBar {
+    flex-wrap: wrap;
+  }
+  .macroPick {
+    order: 3;
+    margin: 0 0 8px;
+  }
+  .macroPick select {
+    max-width: none;
+  }
+}
+/* Celular: declarado por último para prevalecer sobre a grade de tablet. */
+@media (max-width: 670px) {
+  .macroGroups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .macroGroup[data-wide="yes"] {
+    grid-column: auto;
+  }
+  .macroTiles,
+  .macroGroup[data-wide="yes"] .macroTiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

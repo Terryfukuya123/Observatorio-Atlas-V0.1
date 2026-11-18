@@ -2,6 +2,7 @@ import { makeMap, svg, euro } from "./map.js";
 import { renderBulletin, renderLocalBulletin } from "./bulletin.js";
 import { comparison } from "./comparison.js";
 import { assetHeat } from "./asset-heat.js";
+import { macroLayer } from "./macro.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -82,7 +83,7 @@ $("#railToggle").onclick = () => {
 };
 function markSection() {
   const target =
-    ["#markets", "#comparison", "#bulletin"].find(
+    ["#markets", "#comparison", "#juros", "#brasil", "#bulletin"].find(
       (id) => $(id).getBoundingClientRect().top <= 24,
     ) || "#top";
   for (const link of document.querySelectorAll("#sections a")) {
@@ -97,7 +98,7 @@ window.addEventListener("hashchange", markSection);
 markSection();
 const state = {
   id: read("country", "BRA"),
-  layer: ["coverage", "daily", "heat"].includes(read("mapLayer", "daily"))
+  layer: ["coverage", "daily", "heat", "macro"].includes(read("mapLayer", "daily"))
     ? read("mapLayer", "daily")
     : "daily",
   region: read("region", ""),
@@ -109,7 +110,16 @@ const state = {
   crosses: {},
   series: {},
   source: { status: "Consultando fonte" },
+  indicator: read("macroIndicator", "inflacao"),
+  paint: null,
 };
+const macro = macroLayer({
+  onIndicator(id) {
+    state.indicator = id;
+    save("macroIndicator", id);
+    renderMap();
+  },
+});
 const requestedHeat = new URLSearchParams(location.search).get("heatmap");
 if (["fx", "br", "us", "crypto"].includes(requestedHeat)) {
   state.layer = "heat";
@@ -433,7 +443,6 @@ function detail() {
         m.index || "Índice de bolsa",
         m.index ? "Uso não autorizado" : "Sem cobertura",
       ) +
-      fact("Juros e inflação", "Sem cobertura") +
       fact("Sessão de bolsa", "Não verificada") +
       "</details>" +
       '</div><div class="detailActions">' +
@@ -441,8 +450,10 @@ function detail() {
         ? '<button id="openEquities">Heatmap de ações →</button>'
         : "") +
       (s ? '<button id="compareMarket">Comparar este par →</button>' : "") +
-      '<button class="contextlink" id="record">Origem e método</button></div>',
+      '<button class="contextlink" id="record">Origem e método</button></div>' +
+      '<div id="macroFacts" class="macroFacts" aria-live="polite"></div>',
   );
+  macro.country(id, $("#macroFacts"));
   if ($("#openEquities"))
     $("#openEquities").onclick = () => {
       state.group = id === "BRA" ? "br" : "us";
@@ -469,8 +480,10 @@ function renderAll() {
   renderMap();
 }
 function renderMap() {
-  const daily = state.layer !== "coverage";
+  const macroOn = state.layer === "macro";
+  const daily = state.layer !== "coverage" && !macroOn;
   const heat = state.layer === "heat";
+  $(".macroPick").hidden = !macroOn;
   const assets = heat && state.group !== "fx";
   $(".workspace").classList.toggle("isAsset", assets);
   $("#assetDetail").hidden = !assets;
@@ -496,6 +509,32 @@ function renderMap() {
   $("#map").dataset.layer = state.layer;
   for (const btn of document.querySelectorAll("button[data-layer]"))
     btn.setAttribute("aria-pressed", String(btn.dataset.layer === state.layer));
+  if (macroOn) {
+    const version = ++paintVersion;
+    $("#macroIndicator").value = state.indicator;
+    if (!$("#macroIndicator").value && $("#macroIndicator").options.length)
+      state.indicator = $("#macroIndicator").value = $("#macroIndicator").options[0].value;
+    macro.paint(state.indicator).then(
+      (paint) => {
+        if (version !== paintVersion || state.layer !== "macro") return;
+        state.paint = paint;
+        $("#mapScope").textContent = paint.scope;
+        $("#mapLegend").innerHTML =
+          paint.legend
+            .map(([q, label]) => '<span><b class="swatch q' + q + '"></b>' + escape(label) + "</span>")
+            .join("") + '<span><b class="swatch none"></b>Sem dado</span>';
+        map?.draw(state.id, values, "macro", lastDate, paint);
+      },
+      () => {
+        if (version !== paintVersion) return;
+        $("#mapScope").textContent = "Indicador indisponível no momento";
+        $("#mapLegend").innerHTML = "";
+        map?.draw(state.id, values, "macro", lastDate, null);
+      },
+    );
+    if (!state.paint) $("#mapScope").textContent = "Carregando indicador…";
+    return;
+  }
   $("#mapScope").textContent = daily
     ? assets
       ? "Marcação mensal em " + state.base
@@ -826,6 +865,7 @@ async function json(url) {
   return r.json();
 }
 let refreshVersion = 0;
+let paintVersion = 0;
 const assetPanel = assetHeat({ $, fmt, timestamp, render: renderMap });
 $("#fxBase").onchange = () => refresh();
 $("#heatGroups").onclick = (event) => {
@@ -885,4 +925,6 @@ try {
   );
 }
 await refresh();
+macro.load().then(() => state.layer === "macro" && renderMap());
 setInterval(refresh, 300000);
+setInterval(() => macro.load(), 1800000);

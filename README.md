@@ -45,7 +45,9 @@ A edição inicial de outubro de 2026 acompanha 24 ativos. Na consulta ao heatma
 
 ## Camada macro
 
-A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`. A interface será integrada após o heatmap.
+A API `/api/macro` reúne 13 séries brasileiras do BCB, 9 do IBGE, a PTAX de USD e EUR, as expectativas do Focus para 8 indicadores, a curva de juros diária do Tesouro dos EUA, séries mensais e trimestrais do Eurostat e da OCDE e 9 indicadores anuais do Banco Mundial por país. O catálogo fica em `config/macro.json`.
+
+Na interface, a camada aparece em quatro pontos: o **Painel Brasil** (cartões por tema com histórico e a tabela do Focus), **Juros e ciclo global** (curva dos EUA e indicador antecedente da OCDE), a aba **Indicadores** do mapa (coroplético em quintis, com seletor do indicador) e o bloco **Indicadores macro** da ficha de cada país.
 
 [Camada macro: fontes, cache e rotas](docs/camada-macro.md)
 

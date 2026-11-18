@@ -22,6 +22,9 @@ RETRY = timedelta(minutes=30)
 STALE = {"Mensal": timedelta(days=125), "Trimestral": timedelta(days=215)}
 HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30, "Trimestral": 24, "Trimestral móvel": 36}
 LIMIT = 8_000_000
+# Versão das regras de normalização. Ao mudar territórios aceitos, filtros ou formato dos
+# pontos, incremente: entradas gravadas com outra versão são coletadas de novo.
+PARSER_VERSION = 2
 AGGREGATE_CODES = frozenset({"WLD", "EMU", "EUU", "OECD", "G20", "G7"})
 # O BCB publica em datas de Brasília (sem horário de verão desde 2019).
 BRASILIA = timezone(timedelta(hours=-3))
@@ -135,7 +138,8 @@ class MacroStore:
 
     def due(self, now):
         keys = {key for key, _, _ in self.jobs(now.astimezone(BRASILIA).date())}
-        return [k for k in keys if k not in self.entries or now >= datetime.fromisoformat(self.entries[k]["next"])]
+        return [k for k in keys if k not in self.entries or now >= datetime.fromisoformat(self.entries[k]["next"])
+                or (self.entries[k].get("data") and self.entries[k].get("parser") != PARSER_VERSION)]
 
     def downloader(self, key):
         if self.fetch:
@@ -162,7 +166,7 @@ class MacroStore:
                 received = self.clock()
                 entry.update(data=data, sha256=sha256(body).hexdigest(), received=received.isoformat(),
                              url=address, error=None, next=(received + self.ttl(key, now)).isoformat(),
-                             successes=entry.get("successes", 0) + 1)
+                             successes=entry.get("successes", 0) + 1, parser=PARSER_VERSION)
             except Exception as error:
                 detail = getattr(error, "code", None)
                 entry.update(error=f"Falha na coleta ({f'HTTP {detail}' if detail else type(error).__name__})",

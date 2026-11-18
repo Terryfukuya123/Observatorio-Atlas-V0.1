@@ -173,7 +173,7 @@ export function makeMap(geography, onPick) {
       region = name;
       home();
     },
-    draw(id, available, layer, lastDate) {
+    draw(id, available, layer, lastDate, paint = null) {
       const moves = new Map();
       for (const [code, series] of available) {
         if (
@@ -194,6 +194,7 @@ export function makeMap(geography, onPick) {
         const code = path.dataset.id;
         const value = moves.get(code);
         path.classList.toggle("covered", available.has(code));
+        path.dataset.q = paint?.classes.get(code) ?? "none";
         path.dataset.move =
           value === undefined
             ? "missing"
@@ -206,7 +207,9 @@ export function makeMap(geography, onPick) {
         const name =
           path.dataset.name || (path.dataset.name = title.textContent);
         title.textContent =
-          layer === "daily"
+          layer === "macro"
+            ? name + " · " + (paint?.labels.get(code) ?? "Sem dado")
+            : layer === "daily"
             ? name +
               " · " +
               (value === undefined
@@ -226,7 +229,8 @@ export function makeMap(geography, onPick) {
         const selected = g.id === id;
         if (
           !selected &&
-          !(layer === "daily" ? moves.has(g.id) : available.has(g.id))
+          (layer === "macro" ||
+            !(layer === "daily" ? moves.has(g.id) : available.has(g.id)))
         )
           continue;
         const [cx, cy] = g.point;
@@ -251,7 +255,9 @@ export function makeMap(geography, onPick) {
             class: selected ? "pinLabel" : "pinLabel secondary",
           });
           label.textContent =
-            selected && layer === "daily" && moves.has(g.id)
+            selected && layer === "macro" && paint?.labels.has(g.id)
+              ? g.name + "  " + paint.labels.get(g.id).split(" · ")[0]
+              : selected && layer === "daily" && moves.has(g.id)
               ? g.name + "  " + pct.format(moves.get(g.id)) + "%"
               : selected
                 ? g.name

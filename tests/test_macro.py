@@ -237,6 +237,8 @@ class Fake:
             return OECD
         if url.startswith(ibge.BASE):
             variable = url.split("/variaveis/")[1].split("?")[0]
+            if variable in {"6561", "6564"}:  # PIB trimestral: códigos de trimestre.
+                return sidra(variable, {"202601": "1.1", "202602": "0.5"})
             return sidra(variable, {"202608": "5.3", "202609": "5.2"})
         if url.startswith(treasury.BASE):
             return UST[url.split("csv/")[1][:4]]
@@ -354,6 +356,20 @@ class Store(TestCase):
             return original(url)
         data = self.store(fetch).overview()
         self.assertEqual(data["brasil"][0]["observed"], "2026-11-17")
+
+    def test_parser_version_forces_refresh(self):
+        self.store().overview()
+        stored = json.loads(self.path.read_text(encoding="utf8"))
+        failed = [k for k, e in stored["entries"].items() if not e.get("data")]
+        self.assertEqual(failed, [])
+        for entry in stored["entries"].values():
+            entry.pop("parser")  # Cache gravado por uma versão anterior das regras.
+        self.path.write_text(json.dumps(stored), encoding="utf8")
+        calls = len(self.fake.calls)
+        self.store().overview()
+        self.assertEqual(len(self.fake.calls) - calls, len(stored["entries"]))
+        self.store().overview()
+        self.assertEqual(len(self.fake.calls) - calls, len(stored["entries"]))  # Já atualizado, sem nova coleta.
 
     def test_corrupt_cache(self):
         self.path.write_text('{"entries": {"sgs:432": {"next": "ontem"}}}', encoding="utf8")
