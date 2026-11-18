@@ -90,7 +90,7 @@ O arquivo de preços e taxas do Tesouro Direto (Tesouro Transparente, cerca de 1
 
 `server/narrator.py` monta as frases em `/api/narrador` a cada leitura, a partir do que a plataforma já coletou (PTAX, placar de surpresas e Copom, Focus, fluxo cambial, notícias). São regras fixas, sem modelo de linguagem: cada frase tem `text` (escrita) e `say` (para a voz, com siglas e valores por extenso), peso (1 rotina, 2 relevante, 3 destaque), tom (positivo, negativo ou neutro, só quando a leitura é clara) e link para a seção. Pesos: dólar com 0,75% no dia (ou 1,5% em cinco pregões) é relevante e 1,5% no dia (ou 3% em cinco pregões) é destaque; dado contra o consenso é relevante e IPCA ou desemprego a 1,5 desvio ou mais é destaque; Copom fora da mediana é destaque. Revisão mínima do Focus para virar frase, em relação à semana anterior: 0,05 p.p. no IPCA e no PIB, 0,125 p.p. na Selic e R$ 0,03 no dólar. Horários aproximados de divulgação: PTAX às 13h, dados às 9h do dia seguinte à última pesquisa Focus, Focus na segunda-feira às 8h, Copom às 18h. Ficam 14 dias; notícias, 48 horas. Um dado faltando tira só a sua frase. O resumo traz o dólar e até quatro destaques da semana, dados antes de notícias (no máximo duas).
 
-O mesmo endereço serve para outros canais (por exemplo, um aviso no Telegram) sem repetir a lógica.
+O mesmo endereço pode alimentar outros usos sem repetir a lógica, como um app, um assistente de voz ou um modelo de linguagem que reescreva as frases. A plataforma não depende de nenhum deles: a leitura em voz alta é do próprio navegador.
 
 ## Ao vivo
 
