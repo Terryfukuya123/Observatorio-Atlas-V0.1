@@ -21,7 +21,7 @@ export const DESTINATIONS = [
   ["#juros", "Curva de juros dos EUA", "Global", "Treasuries de 1 mês a 30 anos", "curva juros eua estados unidos treasury tesouro fed 10 anos"],
   ["#recessionSignal", "Sinal de recessão", "Global", "Diferença entre os juros de 10 e 2 anos dos EUA", "recessao inversao curva invertida spread 10a 2a"],
   ["#agenda", "Agenda com impacto", "Global", "Copom, FOMC, IPCA, payroll: o que muda se vier acima ou abaixo", "agenda calendario eventos copom fomc bce ipca ipca-15 payroll cpi pib pnad focus divulgacao expectativa impacto"],
-  ["#bulletin", "Notícias e agenda", "Global", "Comunicados oficiais e calendário", "noticias calendario agenda copom fomc bce reuniao comunicados"],
+  ["#bulletin", "Notícias oficiais", "Global", "Comunicados dos bancos centrais e câmbio de referência", "noticias comunicados copom fomc bce decisao banco central"],
   ["meta", "Fontes e metodologia", "Plataforma", "De onde vem cada dado e como é calculado", "fontes metodologia licenca dados origem"],
 ];
 

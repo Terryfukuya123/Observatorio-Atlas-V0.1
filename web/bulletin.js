@@ -1,3 +1,4 @@
+import { EVENTS } from "./agenda.js";
 // Edição editorial, conferida em 17/11/2026. Cada entrada aponta para seu documento primário.
 export const items = [
   {
@@ -8,10 +9,6 @@ export const items = [
     headline: "Copom mantém a meta Selic na reunião de novembro",
     article:
       "https://www.bcb.gov.br/content/copom/atascopom/Copom282-not20261104282.pdf",
-    event: "Reunião do Copom",
-    dates: "8–9 dez 2026",
-    calendar:
-      "https://www.bcb.gov.br/acessoinformacao/calendariobc?agenda=Reuni%C3%B5es+do+Copom",
   },
   {
     group: "EMU",
@@ -21,10 +18,6 @@ export const items = [
     headline: "BCE mantém as três taxas de referência na reunião de outubro",
     article:
       "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp261029~9a493adf17.en.html",
-    event: "Reunião monetária do Conselho do BCE",
-    dates: "16–17 dez 2026",
-    calendar:
-      "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
   },
   {
     group: "USA",
@@ -34,35 +27,24 @@ export const items = [
     headline: "FOMC mantém a faixa de juros em votação de outubro",
     article:
       "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
-    event: "Reunião do FOMC",
-    dates: "8–9 dez 2026",
-    calendar: "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
   },
 ];
-const calendarItems = [items[0], items[2], items[1]];
 function make(tag, text, cls) {
   const el = document.createElement(tag);
   el.textContent = text;
   if (cls) el.className = cls;
   return el;
 }
-function record(item, calendar) {
+function record(item) {
   const row = make("div", "", "publication");
-  const date = calendar
-    ? item.dates
-    : item.newsDay.split("-").reverse().join("/");
   row.append(
     make(
       "small",
-      (calendar ? date : "Decisão de " + date) +
-        "  ·  " +
-        item.bank +
-        "  /  " +
-        item.market,
+      "Decisão de " + item.newsDay.split("-").reverse().join("/") + "  ·  " + item.bank + "  /  " + item.market,
     ),
   );
-  const link = make("a", calendar ? item.event : item.headline);
-  link.href = calendar ? item.calendar : item.article;
+  const link = make("a", item.headline);
+  link.href = item.article;
   link.target = "_blank";
   link.rel = "noreferrer";
   link.append(make("span", " ↗", "outLink"));
@@ -72,10 +54,7 @@ function record(item, calendar) {
 export function renderBulletin() {
   document
     .querySelector("#globalNews")
-    .replaceChildren(...items.map((x) => record(x, false)));
-  document
-    .querySelector("#globalCalendar")
-    .replaceChildren(...calendarItems.map((x) => record(x, true)));
+    .replaceChildren(...items.map((x) => record(x)));
 }
 export function renderLocalBulletin(country, group) {
   const target = document.querySelector("#localBulletin");
@@ -87,10 +66,17 @@ export function renderLocalBulletin(country, group) {
   if (item)
     target.append(
       make("h4", "Notícia oficial"),
-      record(item, false),
-      make("h4", "Calendário econômico"),
-      record(item, true),
+      record(item),
     );
+  const next = EVENTS.find((e) => e.country === group && e.weight === 3 && new Date(e.when) > new Date());
+  if (next) {
+    const row = make("div", "", "publication");
+    row.append(make("small", new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(next.when)) + "  ·  " + country));
+    const link = make("a", next.title);
+    link.href = "#agenda";
+    row.append(link);
+    target.append(make("h4", "Próximo grande evento"), row);
+  }
   else
     target.append(
       make(

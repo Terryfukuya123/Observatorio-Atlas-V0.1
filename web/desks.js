@@ -62,7 +62,7 @@ export const DESKS = {
       ["ciclo", "Relógio do ciclo"],
       ["juros", "Juros e ciclo"],
       ["agenda", "Agenda com impacto"],
-      ["bulletin", "Notícias e agenda"],
+      ["bulletin", "Notícias oficiais"],
     ],
     next: [
       ["#indices", "Mercados", "Como as bolsas reagem agora"],

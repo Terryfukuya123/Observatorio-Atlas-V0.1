@@ -74,7 +74,7 @@ export const EVENTS = [
   ["2026-12-10T09:00:00-03:00", "BRA", "atividade", "Volume de serviços", "outubro, ante setembro", 2, IBGE, "servicos_mes", "#brasil"],
   ["2026-12-11T09:00:00-03:00", "BRA", "inflacao", "IPCA", "novembro", 3, IBGE, "ipca_mes", "#bussola"],
   ["2026-12-14T08:25:00-03:00", "BRA", "focus", "Boletim Focus", "semanal", 1, FOCUS, null, "#focus"],
-  ["2026-12-17T14:15:00+01:00", "EMU", "bce", "Decisão do BCE", "juros da zona do euro", 3, ECB, null, "#bulletin"],
+  ["2026-12-17T14:15:00+01:00", "EMU", "bce", "Decisão do BCE", "juros da zona do euro", 3, ECB, null, "#moedas"],
   ["2026-12-21T08:25:00-03:00", "BRA", "focus", "Boletim Focus", "semanal", 1, FOCUS, null, "#focus"],
   ["2026-12-28T08:25:00-03:00", "BRA", "focus", "Boletim Focus", "semanal", 1, FOCUS, null, "#focus"],
 ].map(([when, country, kind, title, ref, weight, source, series, href]) => ({ when, country, kind, title, ref, weight, source, series, href }));

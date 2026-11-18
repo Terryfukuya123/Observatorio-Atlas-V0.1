@@ -5112,3 +5112,13 @@ dialog.dossier {
     display: none;
   }
 }
+
+/* Notícias oficiais: o calendário passou para a Agenda com impacto */
+.newsCard .cardhead {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.newsAgenda {
+  color: var(--accent);
+  font-size: 12px;
+}
