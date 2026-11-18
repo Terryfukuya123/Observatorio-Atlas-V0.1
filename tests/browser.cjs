@@ -44,9 +44,61 @@ const path = require("node:path");
       await page
         .locator("body")
         .evaluate((el) => getComputedStyle(el).backgroundColor),
-      "rgb(233, 189, 87)",
+      "rgb(16, 19, 22)",
+    );
+    assert.ok(
+      await page
+        .locator("#map")
+        .evaluate(
+          (el) =>
+            el.getBoundingClientRect().top <
+            document.querySelector("#ticker").getBoundingClientRect().top,
+        ),
     );
     await page.screenshot({ path: media + "/panorama.png" });
+    await page.click("#railToggle");
+    assert.equal(
+      await page.locator("#railToggle").getAttribute("aria-expanded"),
+      "true",
+    );
+    await page.click("#railToggle");
+    await page.click("#expandAtlas");
+    assert.ok(await page.evaluate(() => Boolean(document.fullscreenElement)));
+    await page.click("#expandAtlas");
+    await page.click('button[data-sheet="news"]');
+    assert.ok(
+      (await page.locator("#localBulletin a[href*='bcb.gov.br']").count()) ===
+        2,
+    );
+    await page.locator('#pins [data-id="USA"] circle').click();
+    assert.equal(
+      await page
+        .locator("#localBulletin a[href*='federalreserve.gov']")
+        .count(),
+      2,
+    );
+    await page.click('button[data-sheet="market"]');
+    await page.click('button[data-layer="heat"]');
+    assert.equal(await page.locator("#heatTiles button").count(), 9);
+    assert.ok(
+      (await page
+        .locator("#heatTiles .up,#heatTiles .down,#heatTiles .flat")
+        .count()) > 0,
+    );
+    await page.locator("h1").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: media + "/heatmap.png" });
+    await page.click('[data-heat-pick="BRA"]');
+    assert.equal(await page.locator("#detail h2").textContent(), "Brasil");
+    assert.equal(
+      await page.locator("#map").getAttribute("data-layer"),
+      "daily",
+    );
+    await page.click('button[data-layer="coverage"]');
+    assert.equal(
+      await page.locator("#map").getAttribute("data-layer"),
+      "coverage",
+    );
+    await page.click('button[data-layer="daily"]');
     await page.click("#compareMarket");
     assert.equal(await page.locator("#compareA").inputValue(), "BRL");
     await page.selectOption("#compareB", "JPY");
@@ -156,6 +208,13 @@ const path = require("node:path");
       .waitFor();
     assert.equal(await page.locator("#detail .rate").count(), 0);
     assert.equal(await page.locator("#land .covered").count(), 0);
+    await page.click('button[data-layer="heat"]');
+    assert.equal(
+      await page
+        .locator("#heatTiles .up,#heatTiles .down,#heatTiles .flat")
+        .count(),
+      0,
+    );
     assert.match(
       await page.locator("#compareResult").innerText(),
       /Comparação indisponível/,

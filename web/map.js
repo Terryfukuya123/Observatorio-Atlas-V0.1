@@ -4,7 +4,7 @@ export function svg(tag, attrs = {}) {
   for (const [key, val] of Object.entries(attrs)) el.setAttribute(key, val);
   return el;
 }
-const euro = new Set(
+export const euro = new Set(
   "AUT BEL BGR HRV CYP EST FIN FRA DEU GRC IRL ITA LVA LTU LUX MLT NLD PRT SVK SVN ESP".split(
     " ",
   ),
@@ -173,11 +173,50 @@ export function makeMap(geography, onPick) {
       region = name;
       home();
     },
-    draw(id, available) {
+    draw(id, available, layer, lastDate) {
+      const moves = new Map();
+      for (const [code, series] of available) {
+        if (
+          series.status === "Atualizado" &&
+          series.observed === lastDate &&
+          series.change?.to === lastDate &&
+          Number.isFinite(series.change.percent)
+        )
+          moves.set(code, series.change.percent);
+      }
+      const pct = new Intl.NumberFormat("pt-BR", {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+        signDisplay: "exceptZero",
+      });
       pins.replaceChildren();
       for (const path of land.children) {
         const code = path.dataset.id;
+        const value = moves.get(code);
         path.classList.toggle("covered", available.has(code));
+        path.dataset.move =
+          value === undefined
+            ? "missing"
+            : value > 0
+              ? "up"
+              : value < 0
+                ? "down"
+                : "flat";
+        const title = path.querySelector("title");
+        const name =
+          path.dataset.name || (path.dataset.name = title.textContent);
+        title.textContent =
+          layer === "daily"
+            ? name +
+              " · " +
+              (value === undefined
+                ? "Sem variação válida"
+                : available.get(code).instrument +
+                  " " +
+                  pct.format(value) +
+                  "% · " +
+                  lastDate)
+            : name;
         path.classList.toggle(
           "selected",
           code === id || (id === "EMU" && euro.has(code)),
@@ -185,7 +224,11 @@ export function makeMap(geography, onPick) {
       }
       for (const g of geography) {
         const selected = g.id === id;
-        if (!selected && !available.has(g.id)) continue;
+        if (
+          !selected &&
+          !(layer === "daily" ? moves.has(g.id) : available.has(g.id))
+        )
+          continue;
         const [cx, cy] = g.point;
         const group = svg("g", { "data-id": g.id, "data-x": cx, "data-y": cy });
         const title = svg("title");
@@ -207,7 +250,12 @@ export function makeMap(geography, onPick) {
             y: 3,
             class: selected ? "pinLabel" : "pinLabel secondary",
           });
-          label.textContent = selected ? g.name : g.id;
+          label.textContent =
+            selected && layer === "daily" && moves.has(g.id)
+              ? g.name + "  " + pct.format(moves.get(g.id)) + "%"
+              : selected
+                ? g.name
+                : g.id;
           group.append(label);
         }
         pins.append(group);

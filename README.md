@@ -19,6 +19,8 @@ Abra http://127.0.0.1:8842/ no navegador. Para encerrar a instância iniciada pe
 
 Também é possível executar **em primeiro plano** com `python observatorio.py` e encerrar com Ctrl+C. A opção `--port` permite outra porta em primeiro plano. Todos os modos escutam em 127.0.0.1. O serviço usa apenas a biblioteca padrão de Python. O navegador recebe código, fonte e cartografia do servidor local. A internet é necessária para renovar o arquivo cambial. A primeira tentativa de coleta pode levar alguns segundos.
 
+[Atlas geográfico, heatmap e informativo](docs/atlas-geografico.md)
+
 ## Usar o atlas
 
 - Clique em um território, um marcador, um cartão de câmbio ou um nome na tabela. A ficha indica mercado, par, nível, variação do par, histórico e cobertura.

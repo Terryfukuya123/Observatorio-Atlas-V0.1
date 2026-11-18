@@ -47,7 +47,7 @@ class Handler(BaseHTTPRequestHandler):
             result = compare_rates(self.server.feed.read(), first, second, int(period))
             body = json.dumps(result, allow_nan=False).encode()
             mime = "application/json"
-        elif path in {"/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/world.json", "/mark.svg", "/dmsans.ttf"}:
+        elif path in {"/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/bulletin.js", "/world.json", "/mark.svg", "/dmsans.ttf", "/newsreader.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)

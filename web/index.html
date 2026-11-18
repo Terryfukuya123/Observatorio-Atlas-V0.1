@@ -10,42 +10,73 @@
     <script type="module" src="/app.js"></script>
   </head>
   <body>
-    <header>
-      <div class="shell nav">
-        <a class="brand" href="#top"
-          ><img src="/mark.svg" width="37" height="37" alt="" /><span
-            >Observatório<small>Econômico Global</small></span
-          ></a
+    <a class="skip" href="#top">Pular para o atlas</a>
+    <aside class="rail" aria-label="Área de navegação">
+      <a
+        class="railBrand"
+        href="#top"
+        aria-label="Observatório Econômico Global"
+        ><img src="/mark.svg" alt="" width="34" height="34"
+      /></a>
+      <button
+        id="railToggle"
+        aria-controls="sections"
+        aria-expanded="false"
+        aria-label="Expandir navegação"
+        title="Expandir navegação"
+      >
+        <i data-icon="rail"></i>
+      </button>
+      <nav id="sections" aria-label="Navegação principal">
+        <a href="#top" title="Panorama" aria-label="Panorama" class="active"
+          ><i data-icon="globe"></i><span>Panorama</span></a
         >
-        <nav aria-label="Navegação principal">
-          <a class="active" href="#top">Panorama</a
-          ><a href="#comparison">Comparar</a><a href="#markets">Mercados</a
-          ><button id="sources">Fontes</button>
-        </nav>
-        <div class="tools">
-          <button id="searchOpen" class="search">
-            <i data-icon="search"></i><span>Buscar mercado</span
-            ><kbd>/</kbd></button
-          ><button class="iconbtn" id="theme" aria-label="Alternar tema">
-            <i data-icon="sun"></i>
-          </button>
-        </div>
+        <a href="#bulletin" title="Informativo" aria-label="Informativo"
+          ><i data-icon="news"></i><span>Informativo</span></a
+        >
+        <a
+          href="#comparison"
+          title="Comparar câmbio"
+          aria-label="Comparar câmbio"
+          ><i data-icon="chart"></i><span>Comparar câmbio</span></a
+        >
+        <a href="#markets" title="Mercados" aria-label="Mercados"
+          ><i data-icon="list"></i><span>Mercados</span></a
+        >
+        <button
+          id="sources"
+          title="Fontes e metodologia"
+          aria-label="Fontes e metodologia"
+        >
+          <i data-icon="layers"></i><span>Fontes e método</span>
+        </button>
+      </nav>
+      <button id="theme" title="Alternar tema" aria-label="Alternar tema">
+        <i data-icon="sun"></i><span>Alternar tema</span>
+      </button>
+    </aside>
+    <header class="mast">
+      <div class="shell topbar">
+        <a class="wordmark" href="#top"
+          ><strong>Observatório</strong><span>Econômico Global</span></a
+        >
+        <button id="health" class="health">
+          <b class="dot"></b><span id="healthText">Consultando fonte</span
+          ><i data-icon="chevron"></i>
+        </button>
+        <button id="searchOpen" class="search" aria-label="Buscar mercado">
+          <i data-icon="search"></i><span>Buscar mercado</span><kbd>/</kbd>
+        </button>
       </div>
     </header>
     <main id="top" class="shell">
       <section class="hero">
         <div>
+          <p class="crumb">Mercados <span>/</span> Panorama</p>
           <h1>Atlas de mercados</h1>
-          <p id="edition">
-            Referências cambiais diárias do Banco Central Europeu
-          </p>
         </div>
-        <button class="health" id="health">
-          <b class="dot"></b><span id="healthText">Consultando fonte</span
-          ><i data-icon="chevron"></i>
-        </button>
+        <p id="edition">Referências diárias do Banco Central Europeu</p>
       </section>
-      <section id="ticker" aria-label="Referências cambiais globais"></section>
       <div class="workspace">
         <section class="mapcard card" aria-labelledby="mapTitle">
           <div class="cardhead">
@@ -65,6 +96,18 @@
               </select></label
             >
           </div>
+          <div class="mapBar">
+            <div class="layerTabs" role="group" aria-label="Camada do mapa">
+              <button data-layer="coverage" aria-pressed="true">
+                Cobertura
+              </button>
+              <button data-layer="daily" aria-pressed="false">
+                Variação diária
+              </button>
+              <button data-layer="heat" aria-pressed="false">Heatmap</button>
+            </div>
+            <span id="mapScope"></span>
+          </div>
           <div class="canvas">
             <svg
               id="map"
@@ -77,6 +120,33 @@
               <g id="land"></g>
               <g id="pins"></g>
             </svg>
+            <div id="heatView" hidden>
+              <div class="heatHead">
+                <h3>Mapa de calor cambial</h3>
+                <span id="heatDate"></span>
+              </div>
+              <div
+                id="heatTiles"
+                aria-label="Pares cambiais por variação diária"
+              ></div>
+              <div class="heatFoot">
+                <span>Blocos de mesmo peso · Variação do par</span
+                ><a
+                  href="https://www.tradingview.com/heatmap/stock/?dataset=SPX500"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Heatmap do S&amp;P 500 no TradingView ↗</a
+                >
+              </div>
+            </div>
+            <button
+              id="expandAtlas"
+              class="expandAtlas"
+              aria-label="Ampliar atlas"
+              title="Ampliar atlas"
+            >
+              <i data-icon="fit"></i>
+            </button>
             <div class="maptools">
               <button id="zin" aria-label="Aumentar zoom">+</button
               ><button id="zout" aria-label="Diminuir zoom">−</button
@@ -86,10 +156,8 @@
             </div>
           </div>
           <div class="legend">
-            <span><b class="swatch sel"></b>Seleção</span
-            ><span><b class="swatch cov"></b>Com dados</span
-            ><span><b class="swatch none"></b>Sem cobertura</span
-            ><span class="credit">Natural Earth · 1:50m</span>
+            <div id="mapLegend"></div>
+            <span class="credit">Natural Earth · 1:50m</span>
           </div>
         </section>
         <aside class="card context" aria-label="Painel contextual">
@@ -99,9 +167,50 @@
               <h2>Ficha do mercado</h2>
             </div>
           </div>
+          <div class="contextTabs" role="group" aria-label="Conteúdo da ficha">
+            <button data-sheet="market" aria-pressed="true">Mercado</button>
+            <button data-sheet="news" aria-pressed="false">
+              Notícias e agenda
+            </button>
+          </div>
           <div id="detail" aria-live="polite"></div>
+          <div id="localBulletin" hidden aria-live="polite"></div>
         </aside>
       </div>
+      <section id="bulletin" aria-labelledby="bulletinTitle">
+        <div class="sectionTitle">
+          <h2 id="bulletinTitle">Informativo global</h2>
+          <span>Referências cambiais · BCE</span>
+        </div>
+        <section
+          id="ticker"
+          aria-label="Referências cambiais globais"
+        ></section>
+        <div class="publicationGrid">
+          <section class="card">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="news"></i>
+                <h2>Notícias oficiais</h2>
+              </div>
+            </div>
+            <div id="globalNews"></div>
+          </section>
+          <section class="card">
+            <div class="cardhead">
+              <div class="headtitle">
+                <i data-icon="calendar"></i>
+                <h2>Calendário econômico</h2>
+              </div>
+            </div>
+            <div id="globalCalendar"></div>
+          </section>
+        </div>
+        <p class="editorialDate">
+          Seleção editorial de 17/11/2026 · Fontes oficiais · Datas dos eventos
+          no horário local de cada instituição.
+        </p>
+      </section>
       <section id="comparison" class="card" aria-labelledby="compareTitle">
         <div class="cardhead">
           <div class="headtitle">
