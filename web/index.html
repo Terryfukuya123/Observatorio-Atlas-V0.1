@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
-    <title>Panorama global · Observatório Econômico Global</title>
+    <title>Atlas de mercados · Observatório Econômico Global</title>
     <link rel="icon" href="/mark.svg" />
     <link rel="stylesheet" href="/app.css" />
     <script type="module" src="/app.js"></script>
@@ -19,7 +19,8 @@
         >
         <nav aria-label="Navegação principal">
           <a class="active" href="#top">Panorama</a
-          ><a href="#markets">Mercados</a><button id="sources">Fontes</button>
+          ><a href="#comparison">Comparar</a><a href="#markets">Mercados</a
+          ><button id="sources">Fontes</button>
         </nav>
         <div class="tools">
           <button id="searchOpen" class="search">
@@ -34,11 +35,10 @@
     <main id="top" class="shell">
       <section class="hero">
         <div>
-          <div class="eyebrow">
-            <span class="rule"></span>INTELIGÊNCIA ECONÔMICA
-          </div>
-          <h1>Panorama global</h1>
-          <p>Explore mercados, moedas e indicadores por região.</p>
+          <h1>Atlas de mercados</h1>
+          <p id="edition">
+            Referências cambiais diárias do Banco Central Europeu
+          </p>
         </div>
         <button class="health" id="health">
           <b class="dot"></b><span id="healthText">Consultando fonte</span
@@ -93,10 +93,38 @@
           </div>
         </section>
         <aside class="card context" aria-label="Painel contextual">
-          <div class="eyebrow"><b class="dot"></b> MERCADO SELECIONADO</div>
+          <div class="cardhead contexthead">
+            <div class="headtitle">
+              <i data-icon="globe"></i>
+              <h2>Ficha do mercado</h2>
+            </div>
+          </div>
           <div id="detail" aria-live="polite"></div>
         </aside>
       </div>
+      <section id="comparison" class="card" aria-labelledby="compareTitle">
+        <div class="cardhead">
+          <div class="headtitle">
+            <i data-icon="chart"></i>
+            <h2 id="compareTitle">Comparador de câmbio</h2>
+          </div>
+          <span class="unit-label">BASE 100</span>
+        </div>
+        <div class="comparebody">
+          <div class="parameters">
+            <label>Primeiro par<select id="compareA"></select></label>
+            <label>Segundo par<select id="compareB"></select></label>
+            <label
+              >Janela<select id="compareDays">
+                <option value="7">7 dias</option>
+                <option value="30" selected>30 dias</option>
+                <option value="90">90 dias</option>
+              </select></label
+            >
+          </div>
+          <div id="compareResult" aria-live="polite">Carregando séries…</div>
+        </div>
+      </section>
       <section id="markets" class="card">
         <div class="cardhead">
           <div class="headtitle">

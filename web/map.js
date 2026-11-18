@@ -59,6 +59,7 @@ export function makeMap(geography, onPick) {
       Math.min(480 - view[3] * 0.55, view[1]),
     );
     map.setAttribute("viewBox", view.join(" "));
+    map.dataset.close = view[2] < 600 ? "yes" : "no";
     sizeMarkers();
   }
   function zoom(factor, anchor) {
@@ -82,6 +83,21 @@ export function makeMap(geography, onPick) {
     gridLine(Array.from({ length: 37 }, (_, i) => project(lon, i * 5 - 90)));
   for (let lat = -75; lat <= 75; lat += 15)
     gridLine([project(-180, lat), project(180, lat)]);
+  for (const [name, lon, lat] of [
+    ["Pacífico", -131, -15],
+    ["Atlântico", -31, 19],
+    ["Índico", 75, -24],
+  ]) {
+    const [x, y] = project(lon, lat);
+    const label = svg("text", {
+      x,
+      y,
+      class: "oceanLabel",
+      "text-anchor": "middle",
+    });
+    label.textContent = name;
+    grid.append(label);
+  }
   for (const g of geography) {
     const path = svg("path", {
       d: g.d,

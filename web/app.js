@@ -1,4 +1,5 @@
 import { makeMap, svg } from "./map.js";
+import { comparison } from "./comparison.js";
 const $ = (s) => document.querySelector(s);
 const fmt = (s) =>
   s
@@ -37,7 +38,9 @@ const save = (k, v) => {
     localStorage.setItem("oeg." + k, v);
   } catch {}
 };
+const compare = comparison({ read, save, fmt, timestamp });
 const icons = {
+  chart: '<path d="M3 3v17h18M5 15l5-6 4 3 6-8"/>',
   search: '<circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/>',
   layers: '<path d="m3 8 9-5 9 5-9 5-9-5Zm0 5 9 5 9-5"/>',
@@ -58,12 +61,28 @@ $("#theme").onclick = () => {
   $("html").dataset.theme = t;
   save("theme", t);
 };
+function markSection() {
+  const target =
+    ["#markets", "#comparison"].find(
+      (id) => $(id).getBoundingClientRect().top <= 24,
+    ) || "#top";
+  for (const link of document.querySelectorAll(".nav nav a")) {
+    const active = link.hash === target;
+    link.classList.toggle("active", active);
+    if (active) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  }
+}
+window.addEventListener("scroll", markSection, { passive: true });
+window.addEventListener("hashchange", markSection);
+markSection();
 const state = {
   id: read("country", "BRA"),
   region: read("region", ""),
   period: read("period", "30"),
   geo: new Map(),
   markets: {},
+  crosses: {},
   series: {},
   source: { status: "Consultando fonte" },
 };
@@ -339,6 +358,12 @@ function detail() {
   $("#detail").insertAdjacentHTML(
     "beforeend",
     '<div class="facts">' +
+      (state.crosses[m.currency]
+        ? fact(
+            state.crosses[m.currency].instrument + " · calculado",
+            number(state.crosses[m.currency].value),
+          )
+        : "") +
       fact(
         m.index || "Índice de bolsa",
         m.index ? "Uso não autorizado" : "Sem cobertura",
@@ -348,9 +373,13 @@ function detail() {
       (s
         ? fact("Coleta · BRT", timestamp(s.received).replace(" BRT", ""))
         : "") +
-      '</div><button class="contextlink" id="record">Ver origem e metodologia ↗</button>',
+      '</div><div class="detailActions">' +
+      (s ? '<button id="compareMarket">Comparar este par →</button>' : "") +
+      '<button class="contextlink" id="record">Origem e método</button></div>',
   );
   $("#record").onclick = openMeta;
+  if ($("#compareMarket"))
+    $("#compareMarket").onclick = () => compare.pick(m.series);
 }
 function renderAll() {
   $("#healthText").textContent =
@@ -413,6 +442,20 @@ function openMeta() {
       entry("Identificador SHA-256 do arquivo", h.snapshot);
   html +=
     "</dl><p>A variação diária é calculada pelo Observatório contra a referência do dia útil TARGET anterior. O gráfico apresenta níveis do par. Uma alta indica que um euro compra mais unidades da moeda de cotação.</p><p>O BCE costuma publicar por volta das 16h na Europa Central. A aplicação admite margem até 17h UTC. Falhas identificam a fonte como indisponível e os valores retidos como históricos.</p><p>Para mercados da zona do euro, EUR/USD representa o contexto cambial comum. Os índices listados identificam os mercados. Suas cotações aguardam licença de exibição.</p>";
+  const cross = state.crosses[info(state.id).currency];
+  if (cross)
+    html +=
+      "<p><strong>" +
+      escape(cross.instrument) +
+      " · cálculo do Observatório</strong><br>" +
+      escape(cross.unit) +
+      " · " +
+      fmt(cross.observed) +
+      " · " +
+      escape(cross.status) +
+      ". Séries BCE: " +
+      escape(cross.inputs.join(", ")) +
+      ". Taxa da moeda local por EUR dividida por USD por EUR; para EUR usa-se o inverso de EUR/USD. Exibição com cinco casas decimais.</p>";
   if (s)
     html +=
       "<details><summary>Observações diárias · " +
@@ -541,16 +584,26 @@ async function refresh() {
     const data = await json("/api/atlas");
     Object.assign(state, {
       markets: data.markets,
+      crosses: data.usd_crosses || {},
       series: data.series,
       source: data.source,
     });
   } catch {
     state.series = {};
+    state.crosses = {};
     state.source = {
       status: "Fonte indisponível",
       error: "API local indisponível",
     };
   }
+  compare.refresh(state.series);
+  const observed = Object.values(state.series)
+    .map((s) => s.observed)
+    .sort()
+    .at(-1);
+  $("#edition").textContent = observed
+    ? "Câmbio de referência · BCE · Última observação em " + fmt(observed)
+    : "Câmbio de referência · BCE · Sem observação disponível";
   if (!state.geo.has(state.id) && !state.markets[state.id]) state.id = "BRA";
   renderAll();
 }

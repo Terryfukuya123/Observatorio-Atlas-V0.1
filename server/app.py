@@ -1,12 +1,14 @@
 """Servidor de leitura, vinculado exclusivamente ao loopback."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 import argparse
 import json
 import mimetypes
 
 from server.service import Feed
+from core.fx import compare_rates, usd_cross
+from providers.ecb import CURRENCIES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -24,9 +26,28 @@ class Handler(BaseHTTPRequestHandler):
             return
         path = urlsplit(self.path).path
         if path == "/api/atlas":
-            body = json.dumps(dict(markets=MARKETS, **self.server.feed.read()), allow_nan=False).encode()
+            snapshot = self.server.feed.read()
+            series = snapshot["series"]
+            crosses = {}
+            for market in MARKETS.values():
+                currency = market["currency"]
+                local = series.get(market["series"])
+                if local and currency not in crosses:
+                    cross = usd_cross(local, series.get("USD"), currency)
+                    if cross:
+                        crosses[currency] = cross
+            body = json.dumps(dict(markets=MARKETS, usd_crosses=crosses, **snapshot), allow_nan=False).encode()
             mime = "application/json"
-        elif path in {"/", "/index.html", "/app.css", "/app.js", "/map.js", "/world.json", "/mark.svg", "/dmsans.ttf"}:
+        elif path == "/api/comparacao":
+            params = parse_qs(urlsplit(self.path).query)
+            first, second, period = (params.get(k, [""])[0] for k in ("a", "b", "dias"))
+            if first not in CURRENCIES or second not in CURRENCIES or period not in {"7", "30", "90"}:
+                self.send_error(400, "Parametros invalidos")
+                return
+            result = compare_rates(self.server.feed.read(), first, second, int(period))
+            body = json.dumps(result, allow_nan=False).encode()
+            mime = "application/json"
+        elif path in {"/", "/index.html", "/app.css", "/app.js", "/map.js", "/comparison.js", "/world.json", "/mark.svg", "/dmsans.ttf"}:
             file = WEB / ("index.html" if path == "/" else path[1:])
             if not file.is_file():
                 self.send_error(404)

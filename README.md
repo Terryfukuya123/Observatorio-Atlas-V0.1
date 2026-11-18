@@ -27,6 +27,12 @@ Também é possível executar **em primeiro plano** com `python observatorio.py`
 - Alterne o intervalo do gráfico entre 7, 30 e 90 dias corridos. A tabela em **Ver origem e metodologia** mostra todas as observações disponíveis. Tema, país, região e intervalo ficam no armazenamento local do navegador, por endereço.
 - **Fontes** apresenta saúde, tentativas, latência, datas de coleta e observação, identificador da captura, metodologia e direitos. O indicador de saúde representa a consulta ao BCE. A sessão das bolsas depende de calendário próprio e está identificada como não verificada.
 
+## Câmbio e comparação
+
+Na ficha de um mercado há uma taxa calculada em moeda local por USD quando as referências necessárias têm a mesma data. Em **Origem e método** é possível conferir os pares de entrada. Use **Comparar este par** para levá-lo ao comparador. Escolha o segundo par e uma janela de 7, 30 ou 90 dias. O gráfico coloca ambas as séries em 100 na primeira observação comum. **Dados e método** mostra as datas, os valores normalizados e a captura utilizada.
+
+[Relatório da atualização visual e cambial](docs/atlas-e-cambio.md)
+
 ## Estrutura
 
 | Diretório | Responsabilidade |

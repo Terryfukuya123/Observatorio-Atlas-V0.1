@@ -32,9 +32,39 @@ const path = require("node:path");
     assert.equal(await page.locator("#land path").count(), 242);
     assert.equal(await page.locator("#rows tr").count(), 12);
     const media =
-      process.env.OEG_SCREENSHOTS || path.join(__dirname, "../docs/evidencias");
+      process.env.OEG_SCREENSHOTS ||
+      path.join(__dirname, "../data/run/capturas");
     fs.mkdirSync(media, { recursive: true });
+    await page.waitForSelector(".comparisonPlot .trace2");
+    assert.match(
+      await page.locator("#detail").innerText(),
+      /USD\/BRL · calculado/,
+    );
+    assert.equal(
+      await page
+        .locator("body")
+        .evaluate((el) => getComputedStyle(el).backgroundColor),
+      "rgb(233, 189, 87)",
+    );
     await page.screenshot({ path: media + "/panorama.png" });
+    await page.click("#compareMarket");
+    assert.equal(await page.locator("#compareA").inputValue(), "BRL");
+    await page.selectOption("#compareB", "JPY");
+    await page.selectOption("#compareDays", "7");
+    await page.waitForFunction(
+      () => document.querySelector(".key2 strong")?.textContent === "EUR/JPY",
+    );
+    await page.locator("#compareResult summary").click();
+    assert.ok((await page.locator("#compareResult tbody tr").count()) >= 2);
+    await page.locator("#compareResult summary").click();
+    await page
+      .locator("#comparison")
+      .screenshot({ path: media + "/comparador.png" });
+    await page.selectOption("#compareB", "BRL");
+    await page
+      .getByText("Selecione dois pares distintos.", { exact: true })
+      .waitFor();
+    await page.selectOption("#compareB", "USD");
     await page.locator('#pins [data-id="CAN"] circle').click();
     assert.equal(await page.locator("#detail h2").textContent(), "Canadá");
     const initial = await page.locator("#map").getAttribute("viewBox");
@@ -72,11 +102,13 @@ const path = require("node:path");
       "light",
     );
     assert.equal(await page.locator("#region").inputValue(), "Europa");
+    assert.equal(await page.locator("#compareDays").inputValue(), "7");
     assert.equal(await page.locator("#detail h2").textContent(), "França");
     assert.equal(
       await page.locator('[data-days="7"]').getAttribute("aria-pressed"),
       "true",
     );
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: media + "/europa.png" });
     await page.click("#record");
     await page.waitForSelector("#metadata[open]");
@@ -106,12 +138,15 @@ const path = require("node:path");
       true,
     );
     await page.screenshot({ path: media + "/mobile.png", fullPage: true });
+    await page.locator("#compareMarket").click();
+    assert.equal(await page.locator("#compareA").inputValue(), "BRL");
     await page.route("**/api/atlas", async (route) => {
       const response = await route.fetch();
       const simulated = await response.json();
       simulated.source.status = "Fonte indisponível";
       simulated.source.error = "Simulação local de falha";
       simulated.series = {};
+      simulated.usd_crosses = {};
       await route.fulfill({ json: simulated });
     });
     await page.reload();
@@ -121,6 +156,11 @@ const path = require("node:path");
       .waitFor();
     assert.equal(await page.locator("#detail .rate").count(), 0);
     assert.equal(await page.locator("#land .covered").count(), 0);
+    assert.match(
+      await page.locator("#compareResult").innerText(),
+      /Comparação indisponível/,
+    );
+    assert.equal(await page.locator("#compareResult .trace").count(), 0);
     assert.deepEqual(errors, []);
     assert.deepEqual(external, []);
     console.log(
