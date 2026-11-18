@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from threading import Thread
 from unittest import TestCase
 
-from providers import bcb, worldbank
+from providers import bcb, treasury, worldbank
 from server.app import Handler, ThreadingHTTPServer, ROOT
 from server.macro import MacroStore, load_catalog
 
@@ -32,6 +32,18 @@ FOCUS = focus(*[("IPCA", d, "2026", m, 140) for d, m in [("2026-10-13", 5.0), ("
                                                        ("2026-11-03", 5.1), ("2026-11-12", 5.1082), ("2026-11-13", 5.1082)]],
               ("IPCA", "2026-11-13", "2027", 5.0, 146), ("IPCA", "2026-11-13", "2035", 3.0, 20),
               ("Selic", "2026-11-13", "2026", 13.75, 144))
+
+
+HEADER = 'Date,"1 Mo","1.5 Month","2 Mo","3 Mo","4 Mo","6 Mo","1 Yr","2 Yr","3 Yr","5 Yr","7 Yr","10 Yr","20 Yr","30 Yr"'
+UST = {
+    "2026": "\n".join([HEADER, "11/17/2026,4.09,4.24,4.26,4.33,4.32,4.41,4.60,4.80,4.84,4.90,4.99,5.10,5.50,5.46",
+                        "11/10/2026,4.10,4.19,4.27,4.34,4.33,4.42,4.62,4.90,4.87,4.93,5.01,5.12,5.51,5.46",
+                        "01/02/2026,3.72,3.71,3.66,3.65,3.62,3.58,3.47,3.47,3.55,3.74,3.95,4.19,4.81,4.86"]).encode(),
+    # Ano anterior sem a coluna de 6 semanas, como nos arquivos antigos.
+    "2025": "\n".join(['Date,"1 Mo","2 Mo","3 Mo","4 Mo","6 Mo","1 Yr","2 Yr","3 Yr","5 Yr","7 Yr","10 Yr","20 Yr","30 Yr"',
+                        "12/31/2025,3.80,3.75,3.70,3.66,3.60,3.50,3.48,3.55,3.75,3.96,4.20,4.80,4.85",
+                        "11/14/2025,4.50,4.48,4.45,4.40,4.35,4.20,4.60,4.10,4.15,4.20,4.40,4.70,4.70"]).encode(),
+}
 
 
 def wb(code, *rows):
@@ -92,6 +104,20 @@ class Providers(TestCase):
         with self.assertRaises(ValueError):
             bcb.focus_url({"x' or 1 eq 1"}, TODAY)
 
+    def test_treasury(self):
+        rows = treasury.normalize(UST["2025"], TODAY)
+        self.assertEqual(rows[0][0], "2025-11-14")
+        self.assertNotIn("6S", rows[0][1])
+        self.assertEqual(treasury.normalize(UST["2026"], TODAY)[-1][1]["10A"], "5.10")
+        self.assertTrue(treasury.url(2026).startswith(treasury.BASE))
+        for body in (b"Data,x\n", (HEADER + "\n11/18/2026,1,1,1,1,1,1,1,1,1,1,1,1,1,1").encode(),
+                     (HEADER + "\n11/17/2026,abc,1,1,1,1,1,1,1,1,1,1,1,1,1").encode(),
+                     "\n".join([HEADER, "11/17/2026,1,1,1,1,1,1,1,1,1,1,1,1,1,1"] * 1 + ["11/17/2026,1,1,1,1,1,1,1,1,1,1,1,1,1,1"]).encode()):
+            with self.subTest(body=body[:40]), self.assertRaises(ValueError):
+                treasury.normalize(body, TODAY)
+        with self.assertRaises(ValueError):
+            treasury.download("https://example.com/x.csv")
+
     def test_catalog_matches_map(self):
         catalog = load_catalog(ROOT)
         self.assertGreaterEqual(len(catalog["brasil"]), 10)
@@ -109,6 +135,8 @@ class Fake:
         self.calls.append(url)
         if self.fail:
             raise OSError("rede")
+        if url.startswith(treasury.BASE):
+            return UST[url.split("csv/")[1][:4]]
         if "Expectativas" in url:
             return FOCUS
         if "olinda" in url:
@@ -135,7 +163,7 @@ class Store(TestCase):
     def test_overview_and_reuse(self):
         store = self.store()
         data = store.overview()
-        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + 1
+        total = len(store.catalog["brasil"]) + len(store.catalog["ptax"]) + len(store.catalog["global"]) + 3
         self.assertEqual(len(self.fake.calls), total)
         selic = data["brasil"][0]
         self.assertEqual((selic["value"], selic["observed"], selic["previous"]["delta"]), ("13.75", "2026-11-17", "0.25"))
@@ -151,11 +179,35 @@ class Store(TestCase):
         self.assertEqual(ipca["trend"], {"direction": "alta", "weeks": 4})
         self.assertNotIn("history", ipca)
         self.assertEqual(data["focus"]["license"], "ODbL 1.0")
+        self.assertEqual(data["us_curve"]["spreads"], {"10A-2A": "0.30", "10A-3M": "0.77"})
+        self.assertEqual([c["code"] for c in data["us_curve"]["key"]], ["3M", "2A", "10A", "30A"])
         store.overview()
         self.assertEqual(len(self.fake.calls), total)  # Dentro do TTL não há nova coleta.
         restarted = self.store()
         restarted.overview()
         self.assertEqual(len(self.fake.calls), total)  # Cache sobrevive ao reinício.
+
+    def test_curve(self):
+        curve = self.store().curve_detail()
+        self.assertEqual(curve["observed"], "2026-11-17")
+        self.assertEqual(len(curve["curve"]), 14)
+        labels = {c["label"]: c["observed"] for c in curve["comparisons"]}
+        self.assertEqual(labels, {"1 semana": "2026-11-10", "1 mês": "2026-01-02", "início do ano": "2025-12-31", "1 ano": "2025-11-14"})
+        self.assertEqual(curve["spread_history"]["10A-2A"][0], ["2025-11-14", "-0.20"])
+        self.assertEqual(curve["inverted"], {"10A-2A": False, "10A-3M": False})
+        self.assertEqual(len(curve["history"]["10A"]), 5)
+        self.assertIn("Domínio público", curve["license"])
+
+    def test_closed_year_refreshes_weekly(self):
+        self.assertEqual(MacroStore.ttl("ust:2025", NOW), timedelta(days=7))
+        self.assertEqual(MacroStore.ttl("ust:2026", NOW), timedelta(hours=4))
+
+    def test_downloader_by_source(self):
+        store = MacroStore(ROOT, clock=lambda: NOW, background=False, path=self.path)
+        expected = {"sgs": bcb.download, "ptax": bcb.download, "focus": bcb.download,
+                    "wb": worldbank.download, "ust": treasury.download}
+        for key, _, _ in store.jobs(TODAY):
+            self.assertIs(store.downloader(key), expected[key.split(":")[0]], key)
 
     def test_failure_keeps_last_valid(self):
         self.store().overview()
@@ -213,7 +265,7 @@ class Http(TestCase):
             worker.start()
             try:
                 for path, code in [("/api/macro", 200), ("/api/macro/pais?iso=bra", 200), ("/api/macro/pais?iso=ZZZ", 400),
-                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/indicador?id=x", 400)]:
+                                   ("/api/macro/indicador?id=inflacao", 200), ("/api/macro/focus", 200), ("/api/macro/curva", 200), ("/api/macro/indicador?id=x", 400)]:
                     with self.subTest(path=path):
                         conn = HTTPConnection("127.0.0.1", server.server_port, timeout=5)
                         conn.request("GET", path)

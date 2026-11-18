@@ -14,9 +14,9 @@ from pathlib import Path
 from threading import Lock, Thread
 from time import monotonic
 
-from providers import bcb, worldbank
+from providers import bcb, treasury, worldbank
 
-TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "wb": timedelta(hours=24)}
+TTL = {"sgs": timedelta(hours=4), "ptax": timedelta(hours=4), "focus": timedelta(hours=4), "ust": timedelta(hours=4), "wb": timedelta(hours=24)}
 RETRY = timedelta(minutes=30)
 HISTORY = {"Diária": 260, "Mensal": 60, "Anual": 30}
 LIMIT = 8_000_000
@@ -32,6 +32,9 @@ RIGHTS = {
     "focus": dict(source="Banco Central do Brasil · Focus, expectativas de mercado", license="ODbL 1.0",
                   license_url="https://opendatacommons.org/licenses/odbl/1-0/",
                   dataset="https://dadosabertos.bcb.gov.br/dataset/expectativas-mercado"),
+    "ust": dict(source="Departamento do Tesouro dos EUA · Daily Treasury Par Yield Curve Rates", license="Domínio público (obra do governo federal dos EUA)",
+                license_url="https://home.treasury.gov/subfooter/site-policies-and-notices",
+                dataset="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve"),
     "wb": dict(source="Banco Mundial · World Development Indicators", license="CC BY 4.0",
                license_url="https://creativecommons.org/licenses/by/4.0/",
                dataset="https://databank.worldbank.org/source/world-development-indicators"),
@@ -95,6 +98,8 @@ class MacroStore:
         if names:
             yield ("focus:anuais", bcb.focus_url(names, today),
                    lambda body, t=today: bcb.normalize_focus(body, t, names))
+        for year in (today.year - 1, today.year):
+            yield (f"ust:{year}", treasury.url(year), lambda body, t=today: treasury.normalize(body, t))
         for s in self.catalog["global"]:
             yield (f"wb:{s['code']}", worldbank.url(s["code"]),
                    lambda body, c=s["code"]: worldbank.normalize(body, c, self.territories))
@@ -106,7 +111,7 @@ class MacroStore:
     def downloader(self, key):
         if self.fetch:
             return self.fetch
-        return worldbank.download if key.startswith("wb:") else bcb.download
+        return {"wb": worldbank.download, "ust": treasury.download}.get(key.split(":")[0], bcb.download)
 
     def collect(self, now):
         pending = set(self.due(now))
@@ -123,7 +128,7 @@ class MacroStore:
                     raise ValueError("Regressão da última observação")
                 received = self.clock()
                 entry.update(data=data, sha256=sha256(body).hexdigest(), received=received.isoformat(),
-                             url=address, error=None, next=(received + TTL[key.split(":")[0]]).isoformat(),
+                             url=address, error=None, next=(received + self.ttl(key, now)).isoformat(),
                              successes=entry.get("successes", 0) + 1)
             except Exception as error:
                 detail = getattr(error, "code", None)
@@ -134,6 +139,13 @@ class MacroStore:
             with self.lock:
                 self.entries[key] = entry
         self.save()
+
+    @staticmethod
+    def ttl(key, now):
+        prefix, _, suffix = key.partition(":")
+        if prefix == "ust" and int(suffix) < now.astimezone(BRASILIA).year:
+            return timedelta(days=7)
+        return TTL[prefix]
 
     def save(self):
         with self.lock:
@@ -247,6 +259,50 @@ class MacroStore:
             direction, count = step, count + 1
         return {"direction": {1: "alta", -1: "queda", 0: "estável"}[direction], "weeks": count}
 
+    def curve(self, history=False):
+        merged = {}
+        keys = sorted(k for k in self.entries if k.startswith("ust:"))
+        for key in keys:
+            for day, values in self.entries[key].get("data") or []:
+                merged[day] = values
+        current = f"ust:{self.clock().astimezone(BRASILIA).year}"
+        out = dict(collection=self.status(current if current in self.entries else (keys[-1] if keys else current)), **RIGHTS["ust"])
+        if not merged:
+            return out
+        points = sorted(merged.items())
+        day, latest = points[-1]
+
+        def shape(values):
+            return [dict(code=code, label=label, years=years, value=values[code])
+                    for code, label, years in treasury.TENORS.values() if code in values]
+
+        def spread(values, long, short):
+            if long in values and short in values:
+                return str(Decimal(values[long]) - Decimal(values[short]))
+            return None
+
+        end = date.fromisoformat(day)
+        targets = (("1 semana", end - timedelta(days=7)), ("1 mês", end - timedelta(days=30)),
+                   ("início do ano", end.replace(month=1, day=1) - timedelta(days=1)), ("1 ano", end - timedelta(days=365)))
+        comparisons = []
+        for label, target in targets:
+            earlier = [pt for pt in points if pt[0] <= target.isoformat()]
+            if earlier:
+                comparisons.append(dict(label=label, observed=earlier[-1][0], curve=shape(earlier[-1][1])))
+        spreads = {name: spread(latest, long, short) for name, long, short in (("10A-2A", "10A", "2A"), ("10A-3M", "10A", "3M"))}
+        out.update(observed=day, curve=shape(latest), comparisons=comparisons, spreads=spreads,
+                   inverted={k: v is not None and Decimal(v) < 0 for k, v in spreads.items()})
+        if history:
+            out["history"] = {code: [[d, v[code]] for d, v in points if code in v] for code in ("3M", "2A", "10A", "30A")}
+            out["spread_history"] = {"10A-2A": [[d, spread(v, "10A", "2A")] for d, v in points if spread(v, "10A", "2A")]}
+        return out
+
+    def curve_summary(self):
+        full = self.curve()
+        summary = {k: full.get(k) for k in ("observed", "spreads", "inverted", "collection", "source", "license")}
+        summary["key"] = [c for c in full.get("curve", []) if c["code"] in {"3M", "2A", "10A", "30A"}]
+        return summary
+
     def indicators(self):
         out = []
         for s in self.catalog["global"]:
@@ -260,8 +316,13 @@ class MacroStore:
     def overview(self):
         self.refresh_if_due()
         with self.lock:
-            return dict(brasil=self.brasil(), ptax=self.ptax(), focus=self.focus(), indicators=self.indicators(),
+            return dict(brasil=self.brasil(), ptax=self.ptax(), focus=self.focus(), us_curve=self.curve_summary(), indicators=self.indicators(),
                         warning=self.warning, generated=self.clock().isoformat())
+
+    def curve_detail(self):
+        self.refresh_if_due()
+        with self.lock:
+            return self.curve(history=True)
 
     def focus_detail(self):
         self.refresh_if_due()
